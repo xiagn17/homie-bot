@@ -1,0 +1,13 @@
+.idea
+.vscode
+*.iml
+.coverage
+.npm-cache
+.jest-cache
+.DS_Store
+**/data
+**/node_modules
+**/build
+**/*.sh
+**/*.scss.d.ts
+package-lock.json
