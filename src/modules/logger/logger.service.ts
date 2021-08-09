@@ -4,6 +4,7 @@ import { ConsoleLogger, Injectable, Scope } from '@nestjs/common';
 export class AppLogger extends ConsoleLogger {
   warn(message: string): void {
     super.log(message);
+    // eslint-disable-next-line no-console
     console.log(message);
   }
 

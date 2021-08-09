@@ -6,7 +6,7 @@ export class SheetsParserController {
   constructor(private sheetsParserService: SheetsParserService) {}
 
   @Get()
-  defaultRoute() {
-    return this.sheetsParserService.parseSheet();
+  async defaultRoute(): Promise<void> {
+    await this.sheetsParserService.parseSheet();
   }
 }
