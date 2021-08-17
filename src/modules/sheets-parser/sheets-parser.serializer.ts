@@ -18,7 +18,14 @@ export class SheetsParserSerializer {
         location,
         subwayStations,
         university,
+        socials,
+        telegram,
         interests,
+        requestId,
+        sentTime,
+        referrerLink,
+        utmSource,
+        interestsAdditionalArea,
       ] = cur;
       const age = new Date().getFullYear() - Number(birthdayDate);
       const renter = {
@@ -33,6 +40,13 @@ export class SheetsParserSerializer {
         subwayStations,
         university,
         interests,
+        interestsAdditionalArea,
+        socials,
+        telegram,
+        referrerLink,
+        utmSource,
+        requestId,
+        sentTime,
       };
       acc.push(renter);
       return acc;
@@ -52,6 +66,13 @@ export class SheetsParserSerializer {
       subwayStations,
       university,
       interests,
+      interestsAdditionalArea,
+      socials,
+      telegram,
+      referrerLink,
+      utmSource,
+      requestId,
+      sentTime,
     } = renter;
     return [
       name,
@@ -64,6 +85,13 @@ export class SheetsParserSerializer {
       subwayStations,
       university,
       interests,
+      interestsAdditionalArea,
+      socials,
+      telegram,
+      referrerLink,
+      utmSource,
+      requestId,
+      sentTime,
     ];
   }
 }

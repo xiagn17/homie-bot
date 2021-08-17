@@ -13,11 +13,11 @@ import {
   RenterType,
 } from './sheets-parser.types';
 
-const OLD_RENTERS_REQS_SPREADSHEET_ID = '1P9BwVJ6Xvah_IrfHZ03xjMwiJAG9TBVCSwGQJ7ZW9Sk';
-const OLD_LIST_REQS_NAME = 'LeadsFromTilda';
+const RENTERS_REQS_SPREADSHEET_ID = '1IkRrAJFUBPwjOOqRCTcMLFJVz4gasO6iBnFjwUjdTgM';
+const LIST_REQS_NAME = 'LeadsFromTilda';
 
 const PARSED_RENTERS_SPREADSHEET_ID = '1tdKgaw1MQvoifl84wzJFiAtxZWYhELRCsMlKQB0zR7I';
-const OLD_PARSED_LIST_NAME = 'List1';
+const PARSED_LIST_NAME = 'renters_new';
 
 @Injectable()
 export class SheetsParserService {
@@ -28,15 +28,15 @@ export class SheetsParserService {
 
   async parseSheet(): Promise<void> {
     const dataFromTable = await this.googleAuthService.getDataFromTable(
-      OLD_RENTERS_REQS_SPREADSHEET_ID,
-      OLD_LIST_REQS_NAME,
+      RENTERS_REQS_SPREADSHEET_ID,
+      LIST_REQS_NAME,
     );
     const renters = this.sheetsParserSerializer.serialize(dataFromTable);
     const filtered = this.filterRenters(renters);
     const dataForDocs = this.prepareBeforeDocs(filtered);
     await this.googleAuthService.putDataToTable(dataForDocs, {
       sheetId: PARSED_RENTERS_SPREADSHEET_ID,
-      listName: OLD_PARSED_LIST_NAME,
+      listName: PARSED_LIST_NAME,
     });
   }
 
@@ -61,7 +61,7 @@ export class SheetsParserService {
           const deserialized = this.sheetsParserSerializer.deserialize(renter);
           data.push(deserialized);
         });
-        data.push(['----']);
+        data.push(['--------------------------------------------------------------------------']);
       });
 
     return data;

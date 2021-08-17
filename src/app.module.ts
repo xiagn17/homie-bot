@@ -6,6 +6,7 @@ import 'reflect-metadata';
 import { AppLogger } from './modules/logger/logger.service';
 import { SheetsParserModule } from './modules/sheets-parser/sheets-parser.module';
 import configuration from './modules/configuration/configuration';
+import { TildaFormModule } from './modules/tilda-form/tilda-form.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import configuration from './modules/configuration/configuration';
       load: [configuration],
     }),
     SheetsParserModule,
+    TildaFormModule,
   ],
 })
 export class AppModule {}

@@ -10,11 +10,25 @@ export interface RenterType {
   subwayStations: string;
   university: string;
   interests: string;
+  interestsAdditionalArea: string;
+  socials: string;
+  telegram: string;
+  referrerLink: string;
+  utmSource: string;
+  requestId: string;
+  sentTime: string;
 }
 
 export type SheetRenterType = [
   string,
   'Муж.' | 'Жен.',
+  string,
+  string,
+  string,
+  string,
+  string,
+  string,
+  string,
   string,
   string,
   string,
