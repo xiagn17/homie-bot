@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  backend:
+    container_name: backend_prod
+    build:
+      context: .
+      target: production
+      dockerfile: ./Dockerfile
+    command: npm run start:prod
+    restart: unless-stopped
+
+  postgres:
+    container_name: postgres_prod

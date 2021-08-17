@@ -10,7 +10,21 @@ export interface GoogleSheetsConfigType {
   auth_provider_x509_cert_url: string;
   client_x509_cert_url: string;
 }
+export interface DatabaseConfigType {
+  db_username: string;
+  db_password: string;
+  db_database: string;
+  host: string;
+  port: number;
+  settings: {
+    synchronize: boolean;
+    logging: boolean;
+    migrationsRun: boolean;
+  };
+}
+
 export interface ConfigurationType {
   port: number;
   google_sheets: GoogleSheetsConfigType;
+  database: DatabaseConfigType;
 }

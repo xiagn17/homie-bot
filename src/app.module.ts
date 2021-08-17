@@ -7,6 +7,7 @@ import { AppLogger } from './modules/logger/logger.service';
 import { SheetsParserModule } from './modules/sheets-parser/sheets-parser.module';
 import configuration from './modules/configuration/configuration';
 import { TildaFormModule } from './modules/tilda-form/tilda-form.module';
+import { DatabaseModule } from './modules/database/database.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TildaFormModule } from './modules/tilda-form/tilda-form.module';
       isGlobal: true,
       load: [configuration],
     }),
+    DatabaseModule,
     SheetsParserModule,
     TildaFormModule,
   ],

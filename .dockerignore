@@ -1,0 +1,16 @@
+.git
+.idea
+.vscode
+.coverage
+.npm-cache
+.jest-cache
+.gitignore
+.gitlab
+.dockerignore
+.DS_Store
+**/data
+**/node_modules
+**/build
+**/*.sh
+Dockerfile
+docker-compose.*yml

@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  backend:
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    networks:
+      - web
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:13
+    networks:
+      - web
+    environment:
+      POSTGRES_PASSWORD: xiagn17homie
+      POSTGRES_USER: xiagn17
+      POSTGRES_DB: homie_db
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+networks:
+  web:
+volumes:
+  pgdata:

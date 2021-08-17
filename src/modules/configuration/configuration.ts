@@ -15,6 +15,18 @@ export default (): ConfigurationType => {
 
   return {
     google_sheets: googleSheetConfig,
-    port: 3000,
+    port: Number(process.env.PORT) || 3000,
+    database: {
+      db_username: process.env.POSTGRES_USERNAME,
+      db_password: process.env.POSTGRES_PASSWORD,
+      db_database: process.env.POSTGRES_DATABASE,
+      host: process.env.POSTGRES_HOST,
+      port: parseInt(process.env.POSTGRES_PORT, 10),
+      settings: {
+        synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
+        logging: process.env.TYPEORM_LOGGING === 'true',
+        migrationsRun: process.env.TYPEORM_MIGRATIONS_RUN === 'true',
+      },
+    },
   };
 };

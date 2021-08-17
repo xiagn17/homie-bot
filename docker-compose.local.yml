@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  backend:
+    container_name: backend_local
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+    command: npm run start:dev
+    restart: always
+
+  postgres:
+    container_name: postgres_local

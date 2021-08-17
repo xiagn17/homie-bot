@@ -10,6 +10,7 @@
     "sourceMap": true,
     "outDir": "./build",
     "baseUrl": "./",
+    "typeRoots": ["./src/typings"],
     "incremental": true,
     "skipLibCheck": true, // custom
     "moduleResolution": "node",
