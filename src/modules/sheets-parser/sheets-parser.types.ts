@@ -1,7 +1,7 @@
 export interface RenterType {
   name: string;
-  sex: 'Муж.' | 'Жен.';
-  birthdayDate: string;
+  gender: 'Муж.' | 'Жен.';
+  birthdayYear: string;
   age: number;
   phone: string;
   moneyRange: string;
@@ -10,7 +10,7 @@ export interface RenterType {
   subwayStations: string;
   university: string;
   interests: string;
-  interestsAdditionalArea: string;
+  preferences: string;
   socials: string;
   telegram: string;
   referrerLink: string;

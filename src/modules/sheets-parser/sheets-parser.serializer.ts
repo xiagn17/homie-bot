@@ -10,8 +10,8 @@ export class SheetsParserSerializer {
     const serializedRenters = rows.filter(filterToRemoveEmptyRows).reduce<RenterType[]>((acc, cur) => {
       const [
         name,
-        sex,
-        birthdayDate,
+        gender,
+        birthdayYear,
         phone,
         moneyRange,
         plannedArrival,
@@ -25,13 +25,13 @@ export class SheetsParserSerializer {
         sentTime,
         referrerLink,
         utmSource,
-        interestsAdditionalArea,
+        preferences,
       ] = cur;
-      const age = new Date().getFullYear() - Number(birthdayDate);
+      const age = new Date().getFullYear() - Number(birthdayYear);
       const renter = {
         name,
-        sex,
-        birthdayDate,
+        gender,
+        birthdayYear,
         age,
         phone,
         moneyRange,
@@ -40,7 +40,7 @@ export class SheetsParserSerializer {
         subwayStations,
         university,
         interests,
-        interestsAdditionalArea,
+        preferences,
         socials,
         telegram,
         referrerLink,
@@ -57,8 +57,8 @@ export class SheetsParserSerializer {
   deserialize(renter: RenterType): SheetRenterType {
     const {
       name,
-      sex,
-      birthdayDate,
+      gender,
+      birthdayYear,
       phone,
       moneyRange,
       plannedArrival,
@@ -66,7 +66,7 @@ export class SheetsParserSerializer {
       subwayStations,
       university,
       interests,
-      interestsAdditionalArea,
+      preferences,
       socials,
       telegram,
       referrerLink,
@@ -76,8 +76,8 @@ export class SheetsParserSerializer {
     } = renter;
     return [
       name,
-      sex,
-      birthdayDate,
+      gender,
+      birthdayYear,
       phone,
       moneyRange,
       plannedArrival,
@@ -85,7 +85,7 @@ export class SheetsParserSerializer {
       subwayStations,
       university,
       interests,
-      interestsAdditionalArea,
+      preferences,
       socials,
       telegram,
       referrerLink,

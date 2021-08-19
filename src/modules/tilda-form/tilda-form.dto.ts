@@ -1,51 +1,59 @@
-import { IsString, IsNumber, IsDate } from 'class-validator';
-import { RenterRequestType } from './tilda-form.types';
+import { IsString, IsNumber, IsDate, IsEnum, IsOptional } from 'class-validator';
+import {
+  GenderEnumType,
+  InterestEnumType,
+  LocationEnumType,
+  MoneyRangeEnumType,
+  RenterRequestType,
+  SubwayStationEnumType,
+} from './tilda-form.types';
 
 export class RenterRequest implements RenterRequestType {
   @IsString()
   name: string;
 
-  @IsString()
-  sex: 'Муж.' | 'Жен.';
+  @IsEnum(GenderEnumType)
+  gender: GenderEnumType;
 
   @IsNumber()
-  birthdayDate: number;
+  birthdayYear: number;
 
   @IsString()
   phone: string;
 
-  @IsString()
-  moneyRange: string;
+  @IsEnum(MoneyRangeEnumType, { each: true })
+  moneyRange: MoneyRangeEnumType[];
 
-  @IsString()
-  plannedArrivalDate: string;
+  @IsDate()
+  plannedArrivalDate: Date;
 
-  @IsString()
-  location: string;
+  @IsEnum(LocationEnumType)
+  location: LocationEnumType;
 
-  @IsString()
-  subwayStations: string;
+  @IsEnum(SubwayStationEnumType, { each: true })
+  subwayStations: SubwayStationEnumType[];
 
+  @IsOptional()
   @IsString()
-  university: string;
+  university?: string;
 
-  @IsString()
-  interests: string;
+  @IsOptional()
+  @IsEnum(InterestEnumType, { each: true })
+  interests?: InterestEnumType[];
 
+  @IsOptional()
   @IsString()
-  interestsAdditionalArea: string;
+  preferences?: string;
+
+  @IsOptional()
+  @IsString()
+  zodiacSign?: string;
 
   @IsString()
   socials: string;
 
   @IsString()
   telegram: string;
-
-  @IsString()
-  zodiacSign: string;
-
-  @IsString()
-  referrerLink: string;
 
   @IsString()
   utmSource: string;
