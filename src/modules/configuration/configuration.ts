@@ -6,7 +6,7 @@ const GOOGLE_SHEETS_CONFIG_FILENAME = 'google-sheets.json';
 
 export default (): ConfigurationType => {
   const googleSheetConfigJson = readFileSync(
-    join(__dirname, '../../../', GOOGLE_SHEETS_CONFIG_FILENAME),
+    join(__dirname, '..', '..', '..', GOOGLE_SHEETS_CONFIG_FILENAME),
     'utf8',
   );
   const googleSheetConfig: GoogleSheetsConfigType = JSON.parse(

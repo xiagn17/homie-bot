@@ -8,9 +8,6 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
-    "outDir": "./build",
-    "baseUrl": "./",
-    "typeRoots": ["./src/typings"],
     "incremental": true,
     "skipLibCheck": true, // custom
     "moduleResolution": "node",
@@ -23,6 +20,9 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "strictNullChecks": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "outDir": "./build",
+    "typeRoots": ["./src/typings"],
+    "rootDir": "."
   }
 }

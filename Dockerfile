@@ -26,4 +26,4 @@ COPY . .
 
 COPY --from=development /app/build ./build
 
-CMD ["node", "build/app.module"]
+CMD ["npm", "run", "start:prod"]

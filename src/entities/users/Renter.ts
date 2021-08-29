@@ -1,4 +1,13 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+} from 'typeorm';
+
 import { MoneyRange } from '../directories/MoneyRange';
 import { GenderEnumType } from '../../modules/tilda-form/tilda-form.types';
 import { SubwayStation } from '../directories/SubwayStation';
@@ -23,7 +32,7 @@ export class Renter {
 
   @Column({
     type: 'smallint',
-    name: 'birthdayYear',
+    name: 'birthday_year',
     nullable: false,
   })
   birthdayYear: number;
@@ -41,18 +50,17 @@ export class Renter {
     joinColumn: { name: 'renter_id' },
     inverseJoinColumn: { name: 'money_range_id' },
   })
-  moneyRange: MoneyRange[];
+  moneyRanges: MoneyRange[];
 
   @Column({ name: 'planned_arrival', type: 'date', nullable: false })
   plannedArrival: Date;
 
-  @ManyToMany(() => Location)
-  @JoinTable({
-    name: 'renters_j_directory_locations',
-    joinColumn: { name: 'renter_id' },
-    inverseJoinColumn: { name: 'location_id' },
-  })
-  locations: Location[];
+  @ManyToOne(() => Location)
+  @JoinColumn({ name: 'location_id' })
+  location: Location;
+
+  @Column('uuid', { name: 'location_id' })
+  locationId: string;
 
   @ManyToMany(() => SubwayStation)
   @JoinTable({
@@ -93,6 +101,6 @@ export class Renter {
   utmSource: string | null;
 
   // form' request sent time
-  @Column({ type: 'timestamptz', name: 'sent_time', nullable: false })
-  sentTime: Date;
+  @Column({ name: 'created_at', type: 'timestamptz', default: 'now()' })
+  createdAt: Date;
 }

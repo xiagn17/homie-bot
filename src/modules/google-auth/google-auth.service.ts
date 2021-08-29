@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { google, sheets_v4 } from 'googleapis';
 
-const CONFIG_FILE = './google-sheets.json';
+const CONFIG_FILE = './src/google-sheets.json';
 const SCOPES_AUTH = ['https://www.googleapis.com/auth/spreadsheets'];
 
 interface PutOptionsType {

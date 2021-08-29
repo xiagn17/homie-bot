@@ -18,7 +18,6 @@ export class RenterTransformToDTO implements PipeTransform {
 
     value.requestId = value.tranid;
     value.utmSource = value.utm_source;
-    value.sentTime = new Date();
     value.gender = value.gender === 'Муж.' ? 'male' : 'female';
     value.moneyRange = stringSeparator(value.moneyRange);
     value.plannedArrivalDate = dateTransformer(value.plannedArrivalDate);

@@ -60,7 +60,4 @@ export class RenterRequest implements RenterRequestType {
 
   @IsString()
   requestId: string;
-
-  @IsDate()
-  sentTime: Date;
 }

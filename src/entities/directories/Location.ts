@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { LocationEnumType } from '../../modules/tilda-form/tilda-form.types';
 import { Renter } from '../users/Renter';
 
@@ -14,11 +14,6 @@ export class Location {
   })
   area: LocationEnumType;
 
-  @ManyToMany(() => Renter)
-  @JoinTable({
-    name: 'renters_j_directory_locations',
-    joinColumn: { name: 'location_id' },
-    inverseJoinColumn: { name: 'renter_id' },
-  })
+  @OneToMany(() => Renter, renter => renter.location)
   renters: Renter[];
 }

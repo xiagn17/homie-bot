@@ -1,5 +1,10 @@
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
-  "entryFile": "app.module"
+  "entryFile": "app.module",
+  "root": ".",
+  "compilerOptions": {
+    "tsConfigPath": "./tsconfig.build.json",
+    "assets":["**/google-sheets.json"]
+  }
 }

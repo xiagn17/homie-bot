@@ -15,7 +15,6 @@ export interface RenterRequestType {
   telegram: string;
   utmSource: string;
   requestId: string;
-  sentTime: Date;
 }
 
 export enum GenderEnumType {
