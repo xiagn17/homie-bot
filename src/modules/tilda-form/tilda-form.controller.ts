@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UsePipes } from '@nestjs/common';
 
 import { TildaFormService } from './tilda-form.service';
-import { RenterRequest } from './tilda-form.dto';
+import { RenterRequestDTO } from './tilda-form.dto';
 import { RenterTransformToDTO } from './tilda-form.pipe';
 
 @Controller('tilda-form')
@@ -10,7 +10,7 @@ export class TildaFormController {
 
   @Post('/accept-renter')
   @UsePipes(new RenterTransformToDTO())
-  async processRenter(@Body() data: RenterRequest): Promise<void> {
+  async processRenter(@Body() data: RenterRequestDTO): Promise<void> {
     await this.tildaFormWebhookService.processRenter(data);
   }
 }

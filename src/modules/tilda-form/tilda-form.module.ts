@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Renter } from '../../entities/users/Renter';
 import { LoggerModule } from '../logger/logger.module';
 import { TildaFormController } from './tilda-form.controller';
 import { TildaFormService } from './tilda-form.service';
+import { TildaFormSerializer } from './tilda-form.serializer';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Renter]), LoggerModule],
+  imports: [LoggerModule],
   controllers: [TildaFormController],
-  providers: [TildaFormService],
+  providers: [TildaFormService, TildaFormSerializer],
 })
 export class TildaFormModule {}

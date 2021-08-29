@@ -8,7 +8,7 @@ import {
   SubwayStationEnumType,
 } from './tilda-form.types';
 
-export class RenterRequest implements RenterRequestType {
+export class RenterRequestDTO implements RenterRequestType {
   @IsString()
   name: string;
 
