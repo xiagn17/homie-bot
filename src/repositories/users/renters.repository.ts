@@ -20,4 +20,13 @@ export class RentersRepository extends Repository<Renter> {
 
     return this.findOneOrFail(renter.id);
   }
+
+  async archiveById(renterId: string): Promise<Renter> {
+    const renter = await this.findOneOrFail(renterId);
+    return this.save(
+      this.merge(renter, {
+        archivedAt: new Date(),
+      }),
+    );
+  }
 }

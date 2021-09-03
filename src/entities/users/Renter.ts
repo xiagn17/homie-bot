@@ -103,4 +103,7 @@ export class Renter {
   // form' request sent time
   @Column({ name: 'created_at', type: 'timestamptz', default: 'now()' })
   createdAt: Date;
+
+  @Column({ name: 'archived_at', type: 'timestamptz' })
+  archivedAt: Date | null;
 }

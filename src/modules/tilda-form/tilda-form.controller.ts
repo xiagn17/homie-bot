@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UsePipes } from '@nestjs/common';
+import { Body, Controller, Post, Put, UsePipes } from '@nestjs/common';
 
 import { TildaFormService } from './tilda-form.service';
 import { RenterRequestDTO } from './tilda-form.dto';
@@ -12,5 +12,10 @@ export class TildaFormController {
   @UsePipes(new RenterTransformToDTO())
   async processRenter(@Body() data: RenterRequestDTO): Promise<void> {
     await this.tildaFormWebhookService.processRenter(data);
+  }
+
+  @Put('/archive-renter')
+  async archiveRenter(renterId: string): Promise<void> {
+    await this.tildaFormWebhookService.archiveRenter(renterId);
   }
 }

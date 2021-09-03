@@ -125,7 +125,8 @@ export class Initializing1629241839172 implements MigrationInterface {
         telegram varchar NOT NULL,
         request_id varchar NULL,
         utm_source varchar NULL,
-        created_at timestamptz NOT NULL DEFAULT now()
+        created_at timestamptz NOT NULL DEFAULT now(),
+        archived_at timestamptz NULL
       );
     `);
     await queryRunner.query(`
@@ -155,9 +156,24 @@ export class Initializing1629241839172 implements MigrationInterface {
         UNIQUE(renter_id, interest_id)
       );
     `);
+
+    await this.createMatchedRenters(queryRunner);
+  }
+
+  public async createMatchedRenters(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
+      CREATE TABLE matched_renters (
+        matched_renters_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        first_id uuid NOT NULL REFERENCES renters (renter_id),
+        second_id uuid NOT NULL REFERENCES renters (renter_id),
+        is_completed boolean NOT NULL DEFAULT FALSE,
+        UNIQUE(first_id, second_id)
+      );
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE IF EXISTS matched_renters`);
     await queryRunner.query(`DROP TABLE IF EXISTS renters_j_directory_interests`);
     await queryRunner.query(`DROP TABLE IF EXISTS renters_j_directory_subway_stations`);
     await queryRunner.query(`DROP TABLE IF EXISTS renters_j_directory_money_ranges`);
