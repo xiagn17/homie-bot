@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager, LessThanOrEqual, MoreThan, FindConditions, Equal, Not, Any } from 'typeorm';
+import { EntityManager, LessThanOrEqual, MoreThan, FindConditions, Equal, Not, Any, IsNull } from "typeorm";
 import { Logger } from '../logger/logger.service';
 import { Renter } from '../../entities/users/Renter';
 import { MatchedRenters } from '../../entities/matched/MatchedRenters';
@@ -26,6 +26,7 @@ export class MatchRentersService {
     const conditions: FindConditions<Renter> = {
       id: Not(renter.id),
       gender: Equal(renter.gender),
+      archivedAt: IsNull(),
     };
 
     if (renter.locationId !== nevermindLocation.id) {
