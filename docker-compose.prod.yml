@@ -9,6 +9,3 @@ services:
       dockerfile: ./Dockerfile
     command: npm run start:prod
     restart: unless-stopped
-
-  postgres:
-    container_name: postgres_prod

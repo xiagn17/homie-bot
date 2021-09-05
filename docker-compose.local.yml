@@ -17,5 +17,16 @@ services:
 
   postgres:
     container_name: postgres_local
+    image: postgres:13
+    networks:
+      - web
+    environment:
+      POSTGRES_PASSWORD: xiagn17homie
+      POSTGRES_USER: xiagn17
+      POSTGRES_DB: homie_db
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    restart: unless-stopped
