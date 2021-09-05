@@ -6,8 +6,6 @@ services:
       - .env
     networks:
       - web
-    depends_on:
-      - postgres
 
   nginx:
     image: nginx
