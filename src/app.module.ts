@@ -8,6 +8,7 @@ import { SheetsParserModule } from './modules/sheets-parser/sheets-parser.module
 import configuration from './modules/configuration/configuration';
 import { TildaFormModule } from './modules/tilda-form/tilda-form.module';
 import { DatabaseModule } from './modules/database/database.module';
+import { TelegramBotModule } from './modules/telegram-bot/telegram-bot.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { DatabaseModule } from './modules/database/database.module';
     DatabaseModule,
     SheetsParserModule,
     TildaFormModule,
+    TelegramBotModule,
   ],
 })
 export class AppModule {}

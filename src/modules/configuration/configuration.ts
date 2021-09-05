@@ -28,5 +28,6 @@ export default (): ConfigurationType => {
         migrationsRun: process.env.TYPEORM_MIGRATIONS_RUN === 'true',
       },
     },
+    telegramToken: process.env.TELEGRAM_TOKEN,
   };
 };

@@ -27,4 +27,5 @@ export interface ConfigurationType {
   port: number;
   google_sheets: GoogleSheetsConfigType;
   database: DatabaseConfigType;
+  telegramToken: string;
 }

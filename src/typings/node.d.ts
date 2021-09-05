@@ -11,5 +11,7 @@ declare namespace NodeJS {
     TYPEORM_SYNCHRONIZE: string;
     TYPEORM_LOGGING: string;
     TYPEORM_MIGRATIONS_RUN: string;
+
+    TELEGRAM_TOKEN: string;
   }
 }
