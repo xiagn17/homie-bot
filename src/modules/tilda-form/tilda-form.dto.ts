@@ -60,4 +60,8 @@ export class RenterRequestDTO implements RenterRequestType {
 
   @IsString()
   requestId: string;
+
+  @IsOptional()
+  @IsString()
+  test?: string;
 }

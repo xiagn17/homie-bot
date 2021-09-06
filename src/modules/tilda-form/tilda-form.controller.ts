@@ -9,10 +9,11 @@ export class TildaFormController {
 
   @Post('/accept-renter')
   @UsePipes(new RenterTransformToDTO())
-  async processRenter(@Body() data: RenterRequestDTO | { test: 'test' }): Promise<void> {
-    if (data instanceof RenterRequestDTO) {
-      await this.tildaFormWebhookService.processRenter(data);
+  async processRenter(@Body() data: RenterRequestDTO): Promise<void> {
+    if (data.test) {
+      return;
     }
+    await this.tildaFormWebhookService.processRenter(data);
   }
 
   @Put('/archive-renter')
