@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homie-deployment
+  labels:
+    env: prod
+    app: homie-api-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: homie-api
+  template:
+    metadata:
+      labels:
+        app: homie-api
+    spec:
+      containers:
+        - name: container-backend
+          image: eu.gcr.io/homie-bot/homie-bot:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: POSTGRES_USERNAME
+              value: "xiagn17"
+            - name: POSTGRES_PASSWORD
+              value: "xiagn17homie"
+            - name: POSTGRES_DATABASE
+              value: "homie_db"
+            - name: POSTGRES_HOST
+              value: "34.118.48.118"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: TYPEORM_SYNCHRONIZE
+              value: "false"
+            - name: TYPEORM_LOGGING
+              value: "true"
+            - name: TYPEORM_MIGRATIONS_RUN
+              value: "true"
+            - name: TELEGRAM_TOKEN
+              value: "1996984517:AAFavrE0pzX5TCdUsx1gmkIsg-8QEy9TNKM"
