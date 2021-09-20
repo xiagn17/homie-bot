@@ -6,13 +6,15 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 
 import { MoneyRange } from '../directories/MoneyRange';
-import { GenderEnumType } from '../../modules/tilda-form/tilda-form.types';
 import { SubwayStation } from '../directories/SubwayStation';
 import { Interest } from '../directories/Interest';
 import { Location } from '../directories/Location';
+import { GenderEnumType, WithAnotherGenderEnumType } from '../../modules/renters/renters.type';
+import { TelegramUser } from './TelegramUser';
 
 @Entity({ name: 'renters' })
 export class Renter {
@@ -44,16 +46,15 @@ export class Renter {
   })
   phoneNumber: string;
 
-  @ManyToMany(() => MoneyRange)
-  @JoinTable({
-    name: 'renters_j_directory_money_ranges',
-    joinColumn: { name: 'renter_id' },
-    inverseJoinColumn: { name: 'money_range_id' },
-  })
-  moneyRanges: MoneyRange[];
+  @ManyToOne(() => MoneyRange)
+  @JoinColumn({ name: 'money_range_id' })
+  moneyRange: MoneyRange;
+
+  @Column('uuid', { name: 'money_range_id' })
+  moneyRangeId: string;
 
   @Column({ name: 'planned_arrival', type: 'date', nullable: false })
-  plannedArrival: Date;
+  plannedArrival: string;
 
   @ManyToOne(() => Location)
   @JoinColumn({ name: 'location_id' })
@@ -90,17 +91,21 @@ export class Renter {
   @Column({ type: 'varchar', name: 'socials', nullable: false })
   socials: string;
 
-  @Column({ type: 'varchar', name: 'telegram', nullable: false })
-  telegram: string;
+  @Column({
+    type: 'enum',
+    name: 'live_with_another_gender',
+    nullable: false,
+    enum: WithAnotherGenderEnumType,
+  })
+  liveWithAnotherGender: WithAnotherGenderEnumType;
 
-  // form's request id
-  @Column({ type: 'varchar', name: 'request_id', nullable: true })
-  requestId: string | null;
+  @Column({ name: 'telegram_user_id', type: 'uuid', nullable: false, unique: true })
+  telegramUserId: string;
 
-  @Column({ type: 'varchar', name: 'utm_source', nullable: true })
-  utmSource: string | null;
+  @JoinColumn({ name: 'telegram_user_id' })
+  @OneToOne(() => TelegramUser)
+  telegramUser: TelegramUser;
 
-  // form' request sent time
   @Column({ name: 'created_at', type: 'timestamptz', default: 'now()' })
   createdAt: Date;
 

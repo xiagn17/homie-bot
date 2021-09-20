@@ -1,10 +1,11 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Renter } from '../users/Renter';
+import { MatchStatusEnumType } from '../../modules/renter-matches/renter-matches.type';
 
-@Entity({ name: 'matched_renters' })
+@Entity({ name: 'renter_matches' })
 @Unique(['firstId', 'secondId'])
-export class MatchedRenters {
-  @PrimaryGeneratedColumn('uuid', { name: 'matched_renters_id' })
+export class RenterMatch {
+  @PrimaryGeneratedColumn('uuid', { name: 'renter_match_id' })
   readonly id: string;
 
   @ManyToOne(() => Renter)
@@ -21,6 +22,12 @@ export class MatchedRenters {
   @Column('uuid', { name: 'second_id', nullable: false })
   secondId: string;
 
-  @Column('boolean', { name: 'is_completed', nullable: false, default: false })
-  isCompleted: boolean;
+  @Column({
+    type: 'enum',
+    name: 'status',
+    nullable: false,
+    enum: MatchStatusEnumType,
+    default: MatchStatusEnumType.able,
+  })
+  status: MatchStatusEnumType;
 }

@@ -6,9 +6,9 @@ import 'reflect-metadata';
 import { Logger } from './modules/logger/logger.service';
 import { SheetsParserModule } from './modules/sheets-parser/sheets-parser.module';
 import configuration from './modules/configuration/configuration';
-import { TildaFormModule } from './modules/tilda-form/tilda-form.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { TelegramBotModule } from './modules/telegram-bot/telegram-bot.module';
+import { RentersModule } from './modules/renters/renters.module';
 
 @Module({
   imports: [
@@ -18,8 +18,8 @@ import { TelegramBotModule } from './modules/telegram-bot/telegram-bot.module';
     }),
     DatabaseModule,
     SheetsParserModule,
-    TildaFormModule,
     TelegramBotModule,
+    RentersModule,
   ],
 })
 export class AppModule {}

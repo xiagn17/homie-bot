@@ -1,14 +1,18 @@
-import { IsString, IsNumber, IsDate, IsEnum, IsOptional } from 'class-validator';
+import { IsDate, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import {
+  RenterType,
   GenderEnumType,
   InterestEnumType,
+  WithAnotherGenderEnumType,
   LocationEnumType,
   MoneyRangeEnumType,
-  RenterRequestType,
   SubwayStationEnumType,
-} from './tilda-form.types';
+} from './renters.type';
 
-export class RenterRequestDTO implements RenterRequestType {
+export class CreateRenterDTO implements RenterType {
+  @IsString()
+  chatId: string;
+
   @IsString()
   name: string;
 
@@ -21,8 +25,8 @@ export class RenterRequestDTO implements RenterRequestType {
   @IsString()
   phone: string;
 
-  @IsEnum(MoneyRangeEnumType, { each: true })
-  moneyRange: MoneyRangeEnumType[];
+  @IsEnum(MoneyRangeEnumType)
+  moneyRange: MoneyRangeEnumType;
 
   @IsDate()
   plannedArrivalDate: Date;
@@ -33,6 +37,9 @@ export class RenterRequestDTO implements RenterRequestType {
   @IsEnum(SubwayStationEnumType, { each: true })
   subwayStations: SubwayStationEnumType[];
 
+  @IsString()
+  zodiacSign?: string;
+
   @IsOptional()
   @IsString()
   university?: string;
@@ -41,27 +48,12 @@ export class RenterRequestDTO implements RenterRequestType {
   @IsEnum(InterestEnumType, { each: true })
   interests?: InterestEnumType[];
 
-  @IsOptional()
   @IsString()
   preferences?: string;
-
-  @IsOptional()
-  @IsString()
-  zodiacSign?: string;
 
   @IsString()
   socials: string;
 
-  @IsString()
-  telegram: string;
-
-  @IsString()
-  utmSource: string;
-
-  @IsString()
-  requestId: string;
-
-  @IsOptional()
-  @IsString()
-  test?: string;
+  @IsEnum(WithAnotherGenderEnumType)
+  liveWithAnotherGender: WithAnotherGenderEnumType;
 }

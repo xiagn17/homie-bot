@@ -2,21 +2,22 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 import format from 'pg-format';
 
 const MONEY_RANGES_DATA = ['15000-20000', '20000-25000', '25000-30000', '30000-40000'];
-const SUBWAY_STATIONS_DATA = [
-  'Сокольническая',
-  'Замоскворецкая',
-  'Арбатско-покровская',
-  'Филёвская',
+export const SUBWAY_STATIONS_DATA = [
+  'Любая',
+  'Красная',
+  'Зеленая',
+  'Синяя',
+  'Голубая',
   'Кольцевая',
-  'Калужско-Рижская',
-  'Таганско-Краснопресненская',
-  'Калининская',
-  'Серпуховская',
-  'Люблинская',
-  'Каховская',
-  'Бутовская',
+  'Оранжевая',
+  'Фиолетовая',
+  'Желтая',
+  'Серая',
+  'Салатовая',
+  'Бирюзовая',
+  'Серо-голубая',
 ];
-const INTERESTS_DATA = [
+export const INTERESTS_DATA = [
   'Бары и клубы',
   'Спорт, йога',
   'Литература, живопись',
@@ -27,13 +28,7 @@ const INTERESTS_DATA = [
   'Мода',
   'Кулинария',
 ];
-const LOCATIONS_DATA = [
-  'Внутри садового кольца',
-  'Внутри ТТК',
-  'Внутри МКАД, близко к метро',
-  'Внутри МКАД, неважно сколько до метро',
-  'Не имеет значения',
-];
+const LOCATIONS_DATA = ['Центр (любая ветка)', 'Север', 'Юг', 'Запад', 'Восток', 'Не имеет значения'];
 
 export class Initializing1629241839172 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -41,6 +36,21 @@ export class Initializing1629241839172 implements MigrationInterface {
       CREATE TYPE gender_type AS ENUM (
         'male',
         'female'
+      );
+    `);
+    await queryRunner.query(`
+      CREATE TYPE with_another_type AS ENUM (
+        'yes',
+        'not'
+      );
+    `);
+
+    await queryRunner.query(`
+      CREATE TYPE match_status AS ENUM (
+        'resolved',
+        'rejected',
+        'able',
+        'processing'
       );
     `);
 
@@ -109,6 +119,8 @@ export class Initializing1629241839172 implements MigrationInterface {
       ),
     );
 
+    await this.createTelegramTable(queryRunner);
+
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS renters (
         renter_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -117,25 +129,17 @@ export class Initializing1629241839172 implements MigrationInterface {
         birthday_year smallint NOT NULL,
         phone_number varchar(40) NOT NULL,
         planned_arrival date NOT NULL,
+        money_range_id uuid NOT NULL REFERENCES directory_money_ranges (money_range_id),
         location_id uuid NOT NULL REFERENCES directory_locations (location_id),
         university varchar NULL,
         preferences text NULL,
         zodiac_sign varchar NULL,
         socials varchar NOT NULL,
-        telegram varchar NOT NULL,
-        request_id varchar NULL,
-        utm_source varchar NULL,
+        live_with_another_gender with_another_type NOT NULL,
+        telegram_user_id uuid NOT NULL REFERENCES telegram_users (telegram_user_id),
         created_at timestamptz NOT NULL DEFAULT now(),
-        archived_at timestamptz NULL
-      );
-    `);
-    await queryRunner.query(`
-      CREATE TABLE renters_j_directory_money_ranges (
-        renter_id uuid NOT NULL
-          REFERENCES renters (renter_id),
-        money_range_id uuid NOT NULL
-          REFERENCES directory_money_ranges (money_range_id),
-        UNIQUE(renter_id, money_range_id)
+        archived_at timestamptz NULL,
+        UNIQUE(telegram_user_id)
       );
     `);
     await queryRunner.query(`
@@ -162,26 +166,39 @@ export class Initializing1629241839172 implements MigrationInterface {
 
   public async createMatchedRenters(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-      CREATE TABLE matched_renters (
-        matched_renters_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+      CREATE TABLE renter_matches (
+        renter_match_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         first_id uuid NOT NULL REFERENCES renters (renter_id),
         second_id uuid NOT NULL REFERENCES renters (renter_id),
-        is_completed boolean NOT NULL DEFAULT FALSE,
+        status match_status NOT NULL DEFAULT 'able',
         UNIQUE(first_id, second_id)
       );
     `);
   }
 
+  public async createTelegramTable(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
+      CREATE TABLE IF NOT EXISTS telegram_users (
+        telegram_user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        username varchar NOT NULL,
+        chat_id varchar NOT NULL,
+        UNIQUE(username)
+      );
+    `);
+  }
+
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE IF EXISTS matched_renters`);
+    await queryRunner.query(`DROP TABLE IF EXISTS renter_matches`);
     await queryRunner.query(`DROP TABLE IF EXISTS renters_j_directory_interests`);
     await queryRunner.query(`DROP TABLE IF EXISTS renters_j_directory_subway_stations`);
-    await queryRunner.query(`DROP TABLE IF EXISTS renters_j_directory_money_ranges`);
     await queryRunner.query(`DROP TABLE IF EXISTS renters`);
+    await queryRunner.query(`DROP TABLE IF EXISTS telegram_users`);
     await queryRunner.query(`DROP TABLE IF EXISTS directory_locations`);
     await queryRunner.query(`DROP TABLE IF EXISTS directory_interests`);
     await queryRunner.query(`DROP TABLE IF EXISTS directory_subway_stations`);
     await queryRunner.query(`DROP TABLE IF EXISTS directory_money_ranges`);
+    await queryRunner.query(`DROP TYPE match_status`);
+    await queryRunner.query(`DROP TYPE with_another_type`);
     await queryRunner.query(`DROP TYPE gender_type`);
   }
 }

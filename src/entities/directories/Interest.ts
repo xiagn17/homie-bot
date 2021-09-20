@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { InterestEnumType } from '../../modules/tilda-form/tilda-form.types';
 import { Renter } from '../users/Renter';
+import { InterestEnumType } from '../../modules/renters/renters.type';
 
 @Entity({ name: 'directory_interests' })
 export class Interest {

@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { SubwayStationEnumType } from '../../modules/tilda-form/tilda-form.types';
 import { Renter } from '../users/Renter';
+import { SubwayStationEnumType } from '../../modules/renters/renters.type';
 
 @Entity({ name: 'directory_subway_stations' })
 export class SubwayStation {

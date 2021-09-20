@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { LocationEnumType } from '../../modules/tilda-form/tilda-form.types';
 import { Renter } from '../users/Renter';
+import { LocationEnumType } from '../../modules/renters/renters.type';
 
 @Entity({ name: 'directory_locations' })
 export class Location {

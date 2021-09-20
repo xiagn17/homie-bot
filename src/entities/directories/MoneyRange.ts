@@ -1,6 +1,6 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { MoneyRangeEnumType } from '../../modules/tilda-form/tilda-form.types';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Renter } from '../users/Renter';
+import { MoneyRangeEnumType } from '../../modules/renters/renters.type';
 
 @Entity({ name: 'directory_money_ranges' })
 export class MoneyRange {
@@ -14,11 +14,6 @@ export class MoneyRange {
   })
   range: MoneyRangeEnumType;
 
-  @ManyToMany(() => Renter)
-  @JoinTable({
-    name: 'renters_j_directory_money_ranges',
-    joinColumn: { name: 'money_range_id' },
-    inverseJoinColumn: { name: 'renter_id' },
-  })
+  @OneToMany(() => Renter, renter => renter.moneyRange)
   renters: Renter[];
 }
