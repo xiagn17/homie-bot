@@ -23,9 +23,15 @@ export interface DatabaseConfigType {
   };
 }
 
+export interface SendpulseConfigType {
+  clientId: string;
+  clientSecret: string;
+}
+
 export interface ConfigurationType {
   port: number;
   google_sheets: GoogleSheetsConfigType;
   database: DatabaseConfigType;
   telegramToken: string;
+  sendpulse: SendpulseConfigType;
 }

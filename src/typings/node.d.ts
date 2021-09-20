@@ -13,5 +13,8 @@ declare namespace NodeJS {
     TYPEORM_MIGRATIONS_RUN: string;
 
     TELEGRAM_TOKEN: string;
+
+    SENDPULSE_CLIENT_ID: string;
+    SENDPULSE_CLIENT_SECRET: string;
   }
 }

@@ -9,6 +9,7 @@ import { SubwayStationsRepository } from '../../repositories/directories/subwayS
 import { MoneyRangesRepository } from '../../repositories/directories/moneyRanges.repository';
 import { LocationsRepository } from '../../repositories/directories/locations.repository';
 import { TelegramUsersRepository } from '../../repositories/users/telegramUsers.repository';
+import { SendpulseService } from '../sendpulse/sendpulse.service';
 
 // todo matching
 // 0.1 после заполнения формы попытаться сфетчить метч(в цепочке) - проставить ему status = processing и скинуть назад информацию RenterType
@@ -19,7 +20,11 @@ import { TelegramUsersRepository } from '../../repositories/users/telegramUsers.
 
 @Injectable()
 export class RenterMatchesService {
-  constructor(private logger: Logger, private entityManager: EntityManager) {
+  constructor(
+    private logger: Logger,
+    private entityManager: EntityManager,
+    private sendpulseService: SendpulseService,
+  ) {
     this.logger.setContext(this.constructor.name);
   }
 
@@ -63,6 +68,8 @@ export class RenterMatchesService {
     const processingMatch = await this.entityManager
       .getCustomRepository(RenterMatchesRepository)
       .startProcessingMatch(match);
+
+    await this.sendpulseService.example(telegramUser.renter);
     return processingMatch;
   }
 

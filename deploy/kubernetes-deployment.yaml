@@ -41,6 +41,10 @@ spec:
               value: "true"
             - name: TELEGRAM_TOKEN
               value: "1996984517:AAFavrE0pzX5TCdUsx1gmkIsg-8QEy9TNKM"
+            - name: SENDPULSE_CLIENT_ID
+              value: "a067f09218be3a67a082a89412489667"
+            - name: SENDPULSE_CLIENT_SECRET
+              value: "5a87878e3ca511c655e3656e77eaf9c0"
           resources:
             requests:
               memory: "240Mi"

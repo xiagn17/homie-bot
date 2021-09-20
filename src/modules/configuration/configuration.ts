@@ -29,5 +29,9 @@ export default (): ConfigurationType => {
       },
     },
     telegramToken: process.env.TELEGRAM_TOKEN,
+    sendpulse: {
+      clientId: process.env.SENDPULSE_CLIENT_ID,
+      clientSecret: process.env.SENDPULSE_CLIENT_SECRET,
+    },
   };
 };
