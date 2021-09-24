@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import { Renter } from '../../entities/users/Renter';
 import { SubwayStation } from '../../entities/directories/SubwayStation';
 import { Interest } from '../../entities/directories/Interest';
@@ -19,18 +19,26 @@ export class RentersRepository extends Repository<Renter> {
     await this.createQueryBuilder('renter').relation('subwayStations').of(renter.id).add(subwayStations);
     await this.createQueryBuilder('renter').relation('interests').of(renter.id).add(interests);
 
-    return this.getFullRenter(renter.id);
+    const renterQb = this.createQueryBuilder('renter').where('renter.id = :renterId', {
+      renterId: renter.id,
+    });
+    return this.getWithRelationsQb(renterQb).getOneOrFail();
   }
 
-  getFullRenter(renterId: string): Promise<Renter> {
-    return this.createQueryBuilder('renter')
-      .where('renter.id = :renterId', { renterId })
+  getByChatId(chatId: string): Promise<Renter | undefined> {
+    const renterQb = this.createQueryBuilder('renter').where('telegramUser.chatId = :chatId', {
+      chatId: chatId,
+    });
+    return this.getWithRelationsQb(renterQb).getOne();
+  }
+
+  getWithRelationsQb(renterQb: SelectQueryBuilder<Renter>): SelectQueryBuilder<Renter> {
+    return renterQb
       .innerJoinAndSelect('renter.subwayStations', 'subwayStation')
       .innerJoinAndSelect('renter.location', 'location')
       .innerJoinAndSelect('renter.moneyRange', 'moneyRange')
       .innerJoinAndSelect('renter.telegramUser', 'telegramUser')
-      .leftJoinAndSelect('renter.interests', 'interest')
-      .getOneOrFail();
+      .leftJoinAndSelect('renter.interests', 'interest');
   }
 
   findMatchesForRenter(

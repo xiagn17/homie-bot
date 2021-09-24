@@ -11,6 +11,7 @@ export class Interest {
     name: 'interest',
     type: 'varchar',
     nullable: false,
+    unique: true,
   })
   interest: InterestEnumType;
 

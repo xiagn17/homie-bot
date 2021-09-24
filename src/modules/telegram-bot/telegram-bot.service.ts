@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Connection } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { Logger } from '../logger/logger.service';
 import { TelegramUsersRepository } from '../../repositories/users/telegramUsers.repository';
 import { TelegramBotSerializer } from './telegram-bot.serializer';
@@ -9,14 +9,14 @@ import { TelegramWebhookDTO } from './telegram-bot.dto';
 export class TelegramBotService {
   constructor(
     private logger: Logger,
-    private connection: Connection,
+    private entityManager: EntityManager,
     private telegramBotSerializer: TelegramBotSerializer,
   ) {
     this.logger.setContext(this.constructor.name);
   }
 
   async addNewTelegramRenter(newWebhookRenter: TelegramWebhookDTO): Promise<void> {
-    const telegramUser = this.telegramBotSerializer.deserialize(newWebhookRenter);
-    await this.connection.getCustomRepository(TelegramUsersRepository).createUser(telegramUser);
+    const telegramUserDbData = this.telegramBotSerializer.mapToDbData(newWebhookRenter);
+    await this.entityManager.getCustomRepository(TelegramUsersRepository).createUser(telegramUserDbData);
   }
 }

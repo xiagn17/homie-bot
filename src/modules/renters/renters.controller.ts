@@ -1,9 +1,9 @@
-import { Body, Controller, Post, Get, UsePipes } from '@nestjs/common';
+import { Body, Controller, Post, Get, UsePipes, Param } from '@nestjs/common';
 import { CreateRenterDTO } from './renters.dto';
 import { RentersService } from './renters.service';
 import { RentersPipe } from './renters.pipe';
 import { RentersSerializer } from './renters.serializer';
-import { RenterType } from './renters.type';
+import { ApiRenterExistsType, ApiRenterResponseType } from './renters.type';
 
 @Controller('renters')
 export class RentersController {
@@ -15,9 +15,15 @@ export class RentersController {
     return { result: renters.map(r => r.name).join(', ') };
   }
 
+  @Get('/:chatId')
+  async isRenterExists(@Param('chatId') chatId: string): Promise<ApiRenterExistsType> {
+    const renter = await this.rentersService.getRenterByChatId(chatId);
+    return this.rentersSerializer.toResponseRenterExists(renter);
+  }
+
   @Post()
   @UsePipes(new RentersPipe())
-  async createRenter(@Body() renter: CreateRenterDTO): Promise<RenterType> {
+  async createRenter(@Body() renter: CreateRenterDTO): Promise<ApiRenterResponseType> {
     const fullCreatedRenter = await this.rentersService.createRenter(renter);
     return this.rentersSerializer.toResponse(fullCreatedRenter);
   }

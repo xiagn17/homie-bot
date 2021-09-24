@@ -57,25 +57,29 @@ export class Initializing1629241839172 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS directory_money_ranges (
         money_range_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        range varchar NOT NULL
+        range varchar NOT NULL,
+        UNIQUE(range)
       );
     `);
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS directory_subway_stations (
         subway_station_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        station varchar NOT NULL
+        station varchar NOT NULL,
+        UNIQUE(station)
       );
     `);
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS directory_interests (
         interest_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        interest varchar NOT NULL
+        interest varchar NOT NULL,
+        UNIQUE(interest)
       );
     `);
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS directory_locations (
         location_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        area varchar NOT NULL
+        area varchar NOT NULL,
+        UNIQUE(area)
       );
     `);
     await queryRunner.query(
@@ -182,7 +186,8 @@ export class Initializing1629241839172 implements MigrationInterface {
         telegram_user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         username varchar NOT NULL,
         chat_id varchar NOT NULL,
-        UNIQUE(username)
+        UNIQUE(username),
+        UNIQUE(chat_id)
       );
     `);
   }

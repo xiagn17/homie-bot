@@ -11,6 +11,7 @@ export class MoneyRange {
     name: 'range',
     type: 'varchar',
     nullable: false,
+    unique: true,
   })
   range: MoneyRangeEnumType;
 

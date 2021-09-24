@@ -11,6 +11,7 @@ export class Location {
     name: 'area',
     type: 'varchar',
     nullable: false,
+    unique: true,
   })
   area: LocationEnumType;
 

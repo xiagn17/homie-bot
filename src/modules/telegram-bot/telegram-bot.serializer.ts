@@ -4,7 +4,7 @@ import { TelegramWebhookDTO } from './telegram-bot.dto';
 
 @Injectable()
 export class TelegramBotSerializer {
-  deserialize(newWebhookRenter: TelegramWebhookDTO): Partial<TelegramUser> {
+  mapToDbData(newWebhookRenter: TelegramWebhookDTO): Partial<TelegramUser> {
     return {
       username: newWebhookRenter.contact.username,
       chatId: newWebhookRenter.contact.id,

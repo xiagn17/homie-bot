@@ -55,6 +55,7 @@ export class RenterMatchesService {
     await entityManager.getCustomRepository(RenterMatchesRepository).insertMatches(renter, matchedRenters);
   }
 
+  // todo dodelat'
   async getMatchForRenter(userChatId: string): Promise<RenterMatch | undefined> {
     const telegramUser = await this.entityManager
       .getCustomRepository(TelegramUsersRepository)

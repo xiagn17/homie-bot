@@ -11,6 +11,7 @@ export class SubwayStation {
     name: 'station',
     type: 'varchar',
     nullable: false,
+    unique: true,
   })
   station: SubwayStationEnumType;
 

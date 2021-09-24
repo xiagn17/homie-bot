@@ -30,6 +30,10 @@ export class RentersService {
     return this.connection.getRepository(Renter).find();
   }
 
+  async getRenterByChatId(chatId: string): Promise<Renter | undefined> {
+    return this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
+  }
+
   async createRenter(renterDto: CreateRenterDTO): Promise<Renter> {
     const renter = await this.connection.transaction<Renter>(async manager => {
       const telegramUser = await manager

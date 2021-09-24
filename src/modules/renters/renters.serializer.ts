@@ -4,7 +4,7 @@ import { Location } from '../../entities/directories/Location';
 import { TelegramUser } from '../../entities/users/TelegramUser';
 import { MoneyRange } from '../../entities/directories/MoneyRange';
 import { CreateRenterDTO } from './renters.dto';
-import { RenterType } from './renters.type';
+import { ApiRenterExistsType, ApiRenterResponseType } from './renters.type';
 
 interface RenterData {
   renterDto: CreateRenterDTO;
@@ -33,23 +33,32 @@ export class RentersSerializer {
     };
   }
 
-  toResponse(fullRenter: Renter): RenterType {
+  toResponse(fullRenter: Renter): ApiRenterResponseType {
     return {
-      chatId: fullRenter.telegramUser.chatId,
+      username: fullRenter.telegramUser.username,
       name: fullRenter.name,
       gender: fullRenter.gender,
       birthdayYear: fullRenter.birthdayYear,
       phone: fullRenter.phoneNumber,
       moneyRange: fullRenter.moneyRange.range,
-      plannedArrivalDate: new Date(fullRenter.plannedArrival),
+      plannedArrivalDate: fullRenter.plannedArrival,
       location: fullRenter.location.area,
-      subwayStations: fullRenter.subwayStations.map(station => station.station),
-      zodiacSign: fullRenter.zodiacSign ?? undefined,
-      university: fullRenter.university ?? undefined,
-      interests: fullRenter.interests.map(interest => interest.interest),
-      preferences: fullRenter.preferences ?? undefined,
+      subwayStations: fullRenter.subwayStations.map(station => station.station).join(', '),
+      zodiacSign: fullRenter.zodiacSign ?? '-',
+      university: fullRenter.university ?? '-',
+      interests: fullRenter.interests.map(interest => interest.interest).join(', '),
+      preferences: fullRenter.preferences ?? '-',
       socials: fullRenter.socials,
-      liveWithAnotherGender: fullRenter.liveWithAnotherGender,
+    };
+  }
+
+  toResponseRenterExists(renterDb: Renter | undefined): ApiRenterExistsType {
+    if (!renterDb) {
+      return { result: 'no', renter: undefined };
+    }
+    return {
+      result: 'yes',
+      renter: this.toResponse(renterDb),
     };
   }
 }

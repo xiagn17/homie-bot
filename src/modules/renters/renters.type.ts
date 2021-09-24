@@ -1,6 +1,9 @@
 export interface TelegramUserType {
   chatId: string; // user's telegram id
 }
+export interface ApiTelegramUserResponseType {
+  username: string;
+}
 
 export interface RenterType extends TelegramUserType {
   name: string;
@@ -88,4 +91,25 @@ export enum InterestEnumType {
   politics = 'Политика, финансы',
   fashion = 'Мода',
   cooking = 'Кулинария',
+}
+
+export interface ApiRenterExistsType {
+  result: 'yes' | 'no';
+  renter: ApiRenterResponseType | undefined;
+}
+
+export interface ApiRenterResponseType extends ApiTelegramUserResponseType {
+  name: string;
+  gender: GenderEnumType;
+  birthdayYear: number;
+  phone: string;
+  moneyRange: MoneyRangeEnumType;
+  plannedArrivalDate: string;
+  location: LocationEnumType;
+  subwayStations: string;
+  zodiacSign: string;
+  university: string;
+  interests: string;
+  preferences: string;
+  socials: string;
 }
