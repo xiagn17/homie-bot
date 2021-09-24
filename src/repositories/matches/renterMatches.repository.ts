@@ -1,5 +1,5 @@
 import { DeleteResult, EntityRepository, InsertResult, Repository } from 'typeorm';
-import { RenterMatch } from '../../entities/matched/RenterMatch';
+import { RenterMatch } from '../../entities/matches/RenterMatch';
 import { Renter } from '../../entities/users/Renter';
 import { MatchStatusEnumType } from '../../modules/renter-matches/renter-matches.type';
 
