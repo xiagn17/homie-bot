@@ -30,7 +30,7 @@ spec:
             - name: POSTGRES_DATABASE
               value: "homie_db"
             - name: POSTGRES_HOST
-              value: "34.118.37.128"
+              value: "10.76.10.43"
             - name: POSTGRES_PORT
               value: "5432"
             - name: TYPEORM_SYNCHRONIZE

@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: homie-service
   labels:
+    name: homie-service
     env: prod
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: homie-api
   ports:
@@ -21,7 +22,7 @@ metadata:
 spec:
   selector:
     app: postgresql-db
-  type: LoadBalancer
+  type: NodePort
   ports:
     - port: 5432
       targetPort: 5432
