@@ -4,11 +4,10 @@ import { MatchDataType } from '../renter-matches/renter-matches.type';
 import { SendpulseRequests } from './sendpulse.requests';
 import { SendpulseSerializer } from './sendpulse.serializer';
 
-// todo получить айдишники цепочек!
 const CHAIN_IDS = {
   sendMatch: '614e32f90a04025f78354734',
-  sendExistingMatch: 'send-existing-match',
-  buyMatches: 'buy-2-matches',
+  sendExistingMatch: '61587a99beefa4547b083437',
+  buyMatches: '615366c14569c64414655657',
 };
 const VARIABLE_IDS = {
   lastMatchId: '61538f07a24aae1bb6141064',
