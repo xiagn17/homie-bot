@@ -8,7 +8,8 @@ import { Interest } from '../../entities/directories/Interest';
 import { RentersRepository } from '../../repositories/users/renters.repository';
 import { Renter } from '../../entities/users/Renter';
 import { TelegramUser } from '../../entities/users/TelegramUser';
-import { RenterMatchesService } from '../renter-matches/renter-matches.service';
+import { MatchesInfoRepository } from '../../repositories/matches/matchesInfo.repository';
+import { MatchesInfo } from '../../entities/matches/MatchesInfo';
 import { RentersSerializer } from './renters.serializer';
 import { CreateRenterDTO } from './renters.dto';
 
@@ -19,8 +20,6 @@ export class RentersService {
 
     private rentersSerializer: RentersSerializer,
 
-    private rentersMatchService: RenterMatchesService,
-
     private connection: Connection,
   ) {
     this.logger.setContext(this.constructor.name);
@@ -30,8 +29,18 @@ export class RentersService {
     return this.connection.getRepository(Renter).find();
   }
 
-  async getRenterByChatId(chatId: string): Promise<Renter | undefined> {
-    return this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
+  async getRenterByChatId(chatId: string): Promise<{ renter: Renter; matchesInfo: MatchesInfo } | undefined> {
+    const renter = await this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
+    if (!renter) {
+      return undefined;
+    }
+    const matchesInfo = await this.connection
+      .getCustomRepository(MatchesInfoRepository)
+      .getMatchesInfoByRenterId(renter.id);
+    if (!matchesInfo) {
+      return undefined;
+    }
+    return { renter, matchesInfo };
   }
 
   async createRenter(renterDto: CreateRenterDTO): Promise<Renter> {
@@ -63,13 +72,7 @@ export class RentersService {
 
       return renter;
     });
-    await this.rentersMatchService.createMatchesForRenter(renter);
 
     return renter;
-  }
-
-  async archiveRenter(renterId: string): Promise<void> {
-    await this.connection.getCustomRepository(RentersRepository).archiveById(renterId);
-    await this.rentersMatchService.deleteAbleMatchesOfRenter(renterId);
   }
 }

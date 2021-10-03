@@ -1,16 +1,27 @@
-import { DeleteResult, EntityRepository, InsertResult, Repository } from 'typeorm';
+import { DeleteResult, EntityRepository, Repository } from 'typeorm';
 import { RenterMatch } from '../../entities/matches/RenterMatch';
 import { Renter } from '../../entities/users/Renter';
 import { MatchStatusEnumType } from '../../modules/renter-matches/renter-matches.type';
 
 @EntityRepository(RenterMatch)
 export class RenterMatchesRepository extends Repository<RenterMatch> {
-  insertMatches(renter: Renter, matchedRenters: Renter[]): Promise<InsertResult> {
-    const result: Partial<RenterMatch>[] = matchedRenters.map(matchedRenter => ({
-      firstId: renter.id,
-      secondId: matchedRenter.id,
-    }));
-    return this.insert(result);
+  createMatch(renter: Renter, matchedRenter: Renter): Promise<RenterMatch> {
+    return this.save(
+      this.create({
+        firstId: renter.id,
+        secondId: matchedRenter.id,
+      }),
+    );
+  }
+
+  findResolvedRejectedMatches(renterId: string): Promise<RenterMatch[]> {
+    return this.createQueryBuilder('match')
+      .where('(match.firstId = :renterId OR match.secondId = :renterId)', { renterId })
+      .andWhere('(match.status = :rejected OR match.status = :resolved)', {
+        rejected: MatchStatusEnumType.rejected,
+        resolved: MatchStatusEnumType.resolved,
+      })
+      .getMany();
   }
 
   getAbleMatch(renterId: string): Promise<RenterMatch | undefined> {
@@ -20,11 +31,23 @@ export class RenterMatchesRepository extends Repository<RenterMatch> {
       .getOne();
   }
 
-  startProcessingMatch(renterMatch: RenterMatch): Promise<RenterMatch> {
-    return this.save({
-      id: renterMatch.id,
-      status: MatchStatusEnumType.processing,
+  async changeMatchStatus(matchId: string, status: MatchStatusEnumType): Promise<RenterMatch> {
+    await this.save({
+      id: matchId,
+      status: status,
     });
+    return this.findOneOrFail(matchId);
+  }
+
+  startProcessingMatch(renterMatch: RenterMatch): Promise<RenterMatch> {
+    return this.changeMatchStatus(renterMatch.id, MatchStatusEnumType.processing);
+  }
+
+  getProcessingMatch(renterId: string): Promise<RenterMatch | undefined> {
+    return this.createQueryBuilder('match')
+      .where('(match.firstId = :renterId OR match.secondId = :renterId)', { renterId })
+      .andWhere('match.status = :processingStatus', { processingStatus: MatchStatusEnumType.processing })
+      .getOne();
   }
 
   deleteAbleMatches(renterId: string): Promise<DeleteResult> {

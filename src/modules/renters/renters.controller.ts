@@ -3,7 +3,7 @@ import { CreateRenterDTO } from './renters.dto';
 import { RentersService } from './renters.service';
 import { RentersPipe } from './renters.pipe';
 import { RentersSerializer } from './renters.serializer';
-import { ApiRenterExistsType, ApiRenterResponseType } from './renters.type';
+import { ApiRenterFullType, ApiRenterResponseType } from './renters.type';
 
 @Controller('renters')
 export class RentersController {
@@ -16,9 +16,9 @@ export class RentersController {
   }
 
   @Get('/:chatId')
-  async isRenterExists(@Param('chatId') chatId: string): Promise<ApiRenterExistsType> {
-    const renter = await this.rentersService.getRenterByChatId(chatId);
-    return this.rentersSerializer.toResponseRenterExists(renter);
+  async getRenterWithMatches(@Param('chatId') chatId: string): Promise<ApiRenterFullType> {
+    const fullRenter = await this.rentersService.getRenterByChatId(chatId);
+    return this.rentersSerializer.toResponseRenterExists(fullRenter);
   }
 
   @Post()

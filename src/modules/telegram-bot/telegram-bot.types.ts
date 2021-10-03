@@ -18,5 +18,11 @@ export interface TelegramContactType {
   last_message: string;
   photo: any;
   variables: any; // variables from sendpulse
-  id: string; // sendpulse id
+  id: string; // sendpulse id or chatId
 }
+
+export interface TelegramUserType {
+  chatId: string; // user's telegram id
+}
+
+export type ApiTelegramUnsubscribeType = TelegramUserType;

@@ -12,8 +12,13 @@ export interface SendpulseAuthDataType {
 export interface SendpulseFlowRunDataType {
   contact_id: string;
   flow_id: string;
-  external_data: Record<string, string>; // user's variables
+  external_data?: Record<string, any>; // user's variables
 }
-export interface SendpulseFlowRunResponseType {
+export interface SendpulseDefaultResponseType {
   success: boolean;
+}
+export interface SendpulseSetVariableDataType {
+  contact_id: string;
+  variable_id: string;
+  variable_value: string;
 }

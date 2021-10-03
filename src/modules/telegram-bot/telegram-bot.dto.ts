@@ -1,22 +1,12 @@
 import { IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { TelegramContactType, TelegramWebhookType } from './telegram-bot.types';
+import {
+  ApiTelegramUnsubscribeType,
+  TelegramContactType,
+  TelegramUserType,
+  TelegramWebhookType,
+} from './telegram-bot.types';
 
-export class TelegramWebhookDTO implements TelegramWebhookType {
-  @ValidateNested()
-  @Type(() => TelegramContactDTO)
-  contact: TelegramContactDTO;
-
-  bot: { url: string; external_id: number; id: string; name: string };
-
-  date: number;
-
-  info: any;
-
-  service: 'telegram';
-
-  title: 'renter_form';
-}
 export class TelegramContactDTO implements TelegramContactType {
   @IsString()
   id: string;
@@ -33,4 +23,30 @@ export class TelegramContactDTO implements TelegramContactType {
   photo: any;
 
   tags: string[];
+}
+
+export class TelegramWebhookDTO implements TelegramWebhookType {
+  @ValidateNested()
+  @Type(() => TelegramContactDTO)
+  contact: TelegramContactDTO;
+
+  bot: { url: string; external_id: number; id: string; name: string };
+
+  date: number;
+
+  info: any;
+
+  service: 'telegram';
+
+  title: 'renter_form';
+}
+
+export class TelegramChatIdDTO implements TelegramUserType {
+  @IsString()
+  chatId: string;
+}
+
+export class TelegramUnsubscribeDTO implements ApiTelegramUnsubscribeType {
+  @IsString()
+  chatId: string;
 }

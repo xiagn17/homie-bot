@@ -6,7 +6,8 @@ import {
   SendpulseAuthDataType,
   SendpulseAuthResponseType,
   SendpulseFlowRunDataType,
-  SendpulseFlowRunResponseType,
+  SendpulseDefaultResponseType,
+  SendpulseSetVariableDataType,
 } from './sendpulse.type';
 import { SendpulseStore } from './sendpulse.store';
 
@@ -20,25 +21,41 @@ export class SendpulseRequests {
     this.logger.setContext(this.constructor.name);
   }
 
-  public async runFlowAtUser(chatId: string, flowId: string): Promise<void> {
+  public async runFlowAtUser(data: SendpulseFlowRunDataType): Promise<void> {
+    await this.baseRequestMethod<SendpulseFlowRunDataType, SendpulseDefaultResponseType>(data, {
+      endpoint: '/flows/run',
+      method: 'POST',
+      messageOnSuccess: `Flow is executed at user ${data.contact_id}`,
+    });
+  }
+
+  public async setVariableAtUser(data: SendpulseSetVariableDataType): Promise<void> {
+    await this.baseRequestMethod<SendpulseSetVariableDataType, SendpulseDefaultResponseType>(data, {
+      endpoint: '/contacts/setVariable',
+      method: 'POST',
+      messageOnSuccess: `Variable set at user ${data.contact_id}`,
+    });
+  }
+
+  private async baseRequestMethod<ReqT, ResT extends SendpulseDefaultResponseType>(
+    data: ReqT,
+    options: { endpoint: string; messageOnSuccess: string; method: 'POST' | 'GET' },
+  ): Promise<ResT> {
     try {
-      const response = await request<SendpulseFlowRunDataType, SendpulseFlowRunResponseType>(
-        '/flows/run',
+      const response = await request<ReqT, ResT>(
+        options.endpoint,
         'https://api.sendpulse.com/telegram',
-        'POST',
+        options.method,
         {},
         {
           Authorization: await this.getAuthToken(),
         },
-        {
-          contact_id: chatId,
-          flow_id: flowId,
-          external_data: {},
-        },
+        data,
       );
       if (response.success) {
-        this.logger.log(`Flow is executed at user ${chatId}`);
+        this.logger.log(options.messageOnSuccess);
       }
+      return response;
     } catch (error) {
       this.logger.error(error);
       throw error;

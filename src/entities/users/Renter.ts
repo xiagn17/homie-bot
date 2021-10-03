@@ -14,6 +14,7 @@ import { SubwayStation } from '../directories/SubwayStation';
 import { Interest } from '../directories/Interest';
 import { Location } from '../directories/Location';
 import { GenderEnumType, WithAnotherGenderEnumType } from '../../modules/renters/renters.type';
+import { MatchesInfo } from '../matches/MatchesInfo';
 import { TelegramUser } from './TelegramUser';
 
 @Entity({ name: 'renters' })
@@ -105,6 +106,9 @@ export class Renter {
   @JoinColumn({ name: 'telegram_user_id' })
   @OneToOne(() => TelegramUser)
   telegramUser: TelegramUser;
+
+  @OneToOne(() => MatchesInfo, info => info.renter)
+  matchesInfo: MatchesInfo;
 
   @Column({ name: 'created_at', type: 'timestamptz', default: 'now()' })
   createdAt: Date;

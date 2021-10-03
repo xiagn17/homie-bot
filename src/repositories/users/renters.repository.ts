@@ -19,8 +19,12 @@ export class RentersRepository extends Repository<Renter> {
     await this.createQueryBuilder('renter').relation('subwayStations').of(renter.id).add(subwayStations);
     await this.createQueryBuilder('renter').relation('interests').of(renter.id).add(interests);
 
+    return this.getFullRenter(renter.id);
+  }
+
+  getFullRenter(renterId: string): Promise<Renter> {
     const renterQb = this.createQueryBuilder('renter').where('renter.id = :renterId', {
-      renterId: renter.id,
+      renterId: renterId,
     });
     return this.getWithRelationsQb(renterQb).getOneOrFail();
   }
@@ -41,20 +45,31 @@ export class RentersRepository extends Repository<Renter> {
       .leftJoinAndSelect('renter.interests', 'interest');
   }
 
+  async getChatId(renterId: string): Promise<string> {
+    return (
+      await this.createQueryBuilder('renter')
+        .where('renter.id = :renterId', {
+          renterId: renterId,
+        })
+        .innerJoinAndSelect('renter.telegramUser', 'telegramUser')
+        .getOneOrFail()
+    ).telegramUser.chatId;
+  }
+
   findMatchesForRenter(
     renter: Renter,
     matchOptions: {
       moneyRangeIds: string[];
       locationIds: string[];
       subwayStationIds: string[];
+      renterIdsToExclude: string[];
     },
   ): Promise<Renter[]> {
-    const rentersQuery = this.createQueryBuilder('renter').where(
-      'renter.id != :renterId AND renter.archivedAt IS NULL ',
-      {
-        renterId: renter.id,
-      },
-    );
+    const rentersQuery = this.createQueryBuilder('renter')
+      .where('renter.id != ANY (:renterIds)', {
+        renterIds: matchOptions.renterIdsToExclude,
+      })
+      .innerJoin('renter.matchesInfo', 'matchesInfo', 'matchesInfo.inSearch = true');
 
     if (renter.liveWithAnotherGender === WithAnotherGenderEnumType.not) {
       rentersQuery.andWhere('renter.gender = :gender', {
@@ -108,14 +123,5 @@ export class RentersRepository extends Repository<Renter> {
     }
 
     return rentersQuery.getMany();
-  }
-
-  async archiveById(renterId: string): Promise<Renter> {
-    const renter = await this.findOneOrFail(renterId);
-    return this.save(
-      this.merge(renter, {
-        archivedAt: new Date(),
-      }),
-    );
   }
 }

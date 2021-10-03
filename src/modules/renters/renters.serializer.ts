@@ -3,8 +3,9 @@ import { Renter } from '../../entities/users/Renter';
 import { Location } from '../../entities/directories/Location';
 import { TelegramUser } from '../../entities/users/TelegramUser';
 import { MoneyRange } from '../../entities/directories/MoneyRange';
+import { MatchesInfo } from '../../entities/matches/MatchesInfo';
 import { CreateRenterDTO } from './renters.dto';
-import { ApiRenterExistsType, ApiRenterResponseType } from './renters.type';
+import { ApiRenterFullType, ApiRenterResponseType } from './renters.type';
 
 interface RenterData {
   renterDto: CreateRenterDTO;
@@ -52,13 +53,16 @@ export class RentersSerializer {
     };
   }
 
-  toResponseRenterExists(renterDb: Renter | undefined): ApiRenterExistsType {
-    if (!renterDb) {
-      return { result: 'no', renter: undefined };
+  toResponseRenterExists(
+    fullRenter: { renter: Renter; matchesInfo: MatchesInfo } | undefined,
+  ): ApiRenterFullType {
+    if (!fullRenter) {
+      return { result: 'no', renter: undefined, ableMatches: 0 };
     }
     return {
       result: 'yes',
-      renter: this.toResponse(renterDb),
+      renter: this.toResponse(fullRenter.renter),
+      ableMatches: fullRenter.matchesInfo.ableMatches,
     };
   }
 }

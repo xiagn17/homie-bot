@@ -166,6 +166,7 @@ export class Initializing1629241839172 implements MigrationInterface {
     `);
 
     await this.createMatchedRenters(queryRunner);
+    await this.createMatchesInfoTable(queryRunner);
   }
 
   public async createMatchedRenters(queryRunner: QueryRunner): Promise<void> {
@@ -192,7 +193,20 @@ export class Initializing1629241839172 implements MigrationInterface {
     `);
   }
 
+  public async createMatchesInfoTable(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
+      CREATE TABLE IF NOT EXISTS matches_info (
+        matches_info_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        renter_id uuid NOT NULL REFERENCES renters (renter_id),
+        able_matches smallint NOT NULL DEFAULT 0,
+        in_search boolean NOT NULL DEFAULT FALSE,
+        UNIQUE(renter_id)
+      );
+    `);
+  }
+
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE IF EXISTS matches_info`);
     await queryRunner.query(`DROP TABLE IF EXISTS renter_matches`);
     await queryRunner.query(`DROP TABLE IF EXISTS renters_j_directory_interests`);
     await queryRunner.query(`DROP TABLE IF EXISTS renters_j_directory_subway_stations`);

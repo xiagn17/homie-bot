@@ -1,6 +1,5 @@
-export interface TelegramUserType {
-  chatId: string; // user's telegram id
-}
+import { TelegramUserType } from '../telegram-bot/telegram-bot.types';
+
 export interface ApiTelegramUserResponseType {
   username: string;
 }
@@ -93,9 +92,10 @@ export enum InterestEnumType {
   cooking = 'Кулинария',
 }
 
-export interface ApiRenterExistsType {
+export interface ApiRenterFullType {
   result: 'yes' | 'no';
   renter: ApiRenterResponseType | undefined;
+  ableMatches: number;
 }
 
 export interface ApiRenterResponseType extends ApiTelegramUserResponseType {

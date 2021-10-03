@@ -8,6 +8,7 @@ import configuration from './modules/configuration/configuration';
 import { DatabaseModule } from './modules/database/database.module';
 import { TelegramBotModule } from './modules/telegram-bot/telegram-bot.module';
 import { RentersModule } from './modules/renters/renters.module';
+import { RenterMatchesModule } from './modules/renter-matches/renter-matches.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RentersModule } from './modules/renters/renters.module';
     DatabaseModule,
     TelegramBotModule,
     RentersModule,
+    RenterMatchesModule,
   ],
 })
 export class AppModule {}
