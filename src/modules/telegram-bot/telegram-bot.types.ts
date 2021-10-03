@@ -1,7 +1,7 @@
 export interface TelegramWebhookType {
   info: any;
   service: 'telegram';
-  title: 'renter_form';
+  title: 'renter_form' | 'unsubscribe';
   bot: {
     url: string;
     external_id: number;

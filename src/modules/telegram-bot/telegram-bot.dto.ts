@@ -38,7 +38,7 @@ export class TelegramWebhookDTO implements TelegramWebhookType {
 
   service: 'telegram';
 
-  title: 'renter_form';
+  title: 'renter_form' | 'unsubscribe';
 }
 
 export class TelegramChatIdDTO implements TelegramUserType {

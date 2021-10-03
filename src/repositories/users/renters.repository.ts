@@ -66,7 +66,7 @@ export class RentersRepository extends Repository<Renter> {
     },
   ): Promise<Renter[]> {
     const rentersQuery = this.createQueryBuilder('renter')
-      .where('renter.id != ANY (:renterIds)', {
+      .where('renter.id NOT IN (:...renterIds)', {
         renterIds: matchOptions.renterIdsToExclude,
       })
       .innerJoin('renter.matchesInfo', 'matchesInfo', 'matchesInfo.inSearch = true');

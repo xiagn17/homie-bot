@@ -18,20 +18,26 @@ export class TelegramBotService {
     this.logger.setContext(this.constructor.name);
   }
 
+  // todo учесть что username-а может и не быть! (очень редкий кейс)
   async subscribeUser(newWebhookRenter: TelegramWebhookDTO): Promise<void> {
     const telegramUserDbData = this.telegramBotSerializer.mapToDbData(newWebhookRenter);
-    try {
+    const isUserExists = await this.entityManager
+      .getCustomRepository(TelegramUsersRepository)
+      .findOne({ chatId: telegramUserDbData.chatId as string });
+    if (!isUserExists) {
       await this.entityManager.getCustomRepository(TelegramUsersRepository).createUser(telegramUserDbData);
-    } catch (e) {
-      this.logger.error(e);
-      const telegramUser = await this.entityManager
-        .getCustomRepository(TelegramUsersRepository)
-        .getUserByChatId(telegramUserDbData.chatId as string);
-      await this.entityManager.getRepository(Renter).save({
-        id: telegramUser.renter.id,
-        archivedAt: null,
-      });
+      return;
     }
+
+    this.logger.error(`User exists, undo archiving.`);
+
+    const telegramUser = await this.entityManager
+      .getCustomRepository(TelegramUsersRepository)
+      .getUserByChatId(telegramUserDbData.chatId as string);
+    await this.entityManager.getRepository(Renter).save({
+      id: telegramUser.renter.id,
+      archivedAt: null,
+    });
   }
 
   async unsubscribeUser(unsubscribeDTO: TelegramUnsubscribeDTO): Promise<void> {
@@ -41,7 +47,7 @@ export class TelegramBotService {
 
     await this.entityManager.getRepository(Renter).save({
       id: telegramUser.renter.id,
-      archivedAt: Date.now(),
+      archivedAt: new Date(),
     });
     await this.renterMatchesService.stopMatchingRenter(telegramUser.renter.id);
   }
