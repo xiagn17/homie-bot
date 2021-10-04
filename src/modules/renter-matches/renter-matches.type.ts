@@ -3,7 +3,6 @@ import { ApiRenterResponseType } from '../renters/renters.type';
 export enum MatchStatusEnumType {
   resolved = 'resolved',
   rejected = 'rejected',
-  able = 'able',
   processing = 'processing',
 }
 

@@ -54,7 +54,12 @@ export class RentersSerializer {
   }
 
   toResponseRenterExists(
-    fullRenter: { renter: Renter; matchesInfo: MatchesInfo } | undefined,
+    fullRenter:
+      | {
+          renter: Renter;
+          matchesInfo: MatchesInfo | undefined;
+        }
+      | undefined,
   ): ApiRenterFullType {
     if (!fullRenter) {
       return { result: 'no', renter: undefined, ableMatches: 0 };
@@ -62,7 +67,7 @@ export class RentersSerializer {
     return {
       result: 'yes',
       renter: this.toResponse(fullRenter.renter),
-      ableMatches: fullRenter.matchesInfo.ableMatches,
+      ableMatches: fullRenter.matchesInfo?.ableMatches,
     };
   }
 }

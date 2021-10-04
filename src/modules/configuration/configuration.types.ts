@@ -28,10 +28,16 @@ export interface SendpulseConfigType {
   clientSecret: string;
 }
 
+export interface RenterMatchesConfigType {
+  trialMatchesCount: number;
+  paidMatchesCount: number;
+}
+
 export interface ConfigurationType {
   port: number;
   google_sheets: GoogleSheetsConfigType;
   database: DatabaseConfigType;
   telegramToken: string;
   sendpulse: SendpulseConfigType;
+  renterMatches: RenterMatchesConfigType;
 }

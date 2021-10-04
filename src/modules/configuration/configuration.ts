@@ -33,5 +33,9 @@ export default (): ConfigurationType => {
       clientId: process.env.SENDPULSE_CLIENT_ID,
       clientSecret: process.env.SENDPULSE_CLIENT_SECRET,
     },
+    renterMatches: {
+      trialMatchesCount: Number(process.env.TRIAL_FREE_MATCHES_COUNT),
+      paidMatchesCount: Number(process.env.PAID_MATCHES_COUNT),
+    },
   };
 };

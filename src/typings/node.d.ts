@@ -16,5 +16,8 @@ declare namespace NodeJS {
 
     SENDPULSE_CLIENT_ID: string;
     SENDPULSE_CLIENT_SECRET: string;
+
+    TRIAL_FREE_MATCHES_COUNT: string;
+    PAID_MATCHES_COUNT: string;
   }
 }

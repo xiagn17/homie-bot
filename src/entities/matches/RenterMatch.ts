@@ -27,7 +27,6 @@ export class RenterMatch {
     name: 'status',
     nullable: false,
     enum: MatchStatusEnumType,
-    default: MatchStatusEnumType.able,
   })
   status: MatchStatusEnumType;
 }

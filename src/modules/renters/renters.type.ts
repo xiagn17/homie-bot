@@ -95,7 +95,7 @@ export enum InterestEnumType {
 export interface ApiRenterFullType {
   result: 'yes' | 'no';
   renter: ApiRenterResponseType | undefined;
-  ableMatches: number;
+  ableMatches: number | undefined;
 }
 
 export interface ApiRenterResponseType extends ApiTelegramUserResponseType {

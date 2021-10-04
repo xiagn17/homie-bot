@@ -49,7 +49,6 @@ export class Initializing1629241839172 implements MigrationInterface {
       CREATE TYPE match_status AS ENUM (
         'resolved',
         'rejected',
-        'able',
         'processing'
       );
     `);
@@ -175,7 +174,7 @@ export class Initializing1629241839172 implements MigrationInterface {
         renter_match_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         first_id uuid NOT NULL REFERENCES renters (renter_id),
         second_id uuid NOT NULL REFERENCES renters (renter_id),
-        status match_status NOT NULL DEFAULT 'able',
+        status match_status NOT NULL,
         UNIQUE(first_id, second_id)
       );
     `);

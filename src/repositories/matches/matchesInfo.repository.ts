@@ -3,14 +3,6 @@ import { MatchesInfo } from '../../entities/matches/MatchesInfo';
 
 @EntityRepository(MatchesInfo)
 export class MatchesInfoRepository extends Repository<MatchesInfo> {
-  async getOrCreateMatchesInfo(renterId: string): Promise<MatchesInfo> {
-    const info = await this.getMatchesInfoByRenterId(renterId);
-    if (!info) {
-      return this.createInfo(renterId);
-    }
-    return info;
-  }
-
   stopSearching(renterId: string): Promise<UpdateResult> {
     return this.createQueryBuilder()
       .update(MatchesInfo)
@@ -45,20 +37,19 @@ export class MatchesInfoRepository extends Repository<MatchesInfo> {
     return this.findOneOrFail(matchesInfo.id);
   }
 
-  async addAbleMatches(matchesInfo: MatchesInfo): Promise<MatchesInfo> {
+  async addAbleMatches(matchesInfo: MatchesInfo, matchesCount: number): Promise<MatchesInfo> {
     await this.save({
       id: matchesInfo.id,
-      ableMatches: matchesInfo.ableMatches + 2,
+      ableMatches: matchesInfo.ableMatches + matchesCount,
     });
     return this.findOneOrFail(matchesInfo.id);
   }
 
-  // todo ableMatches вынести в окружение и брать из конфига
-  createInfo(renterId: string, ableMatches: number = 2): Promise<MatchesInfo> {
+  createInfo(renterId: string, defaultAbleMatches: number): Promise<MatchesInfo> {
     return this.save(
       this.create({
         renterId: renterId,
-        ableMatches: ableMatches,
+        ableMatches: defaultAbleMatches,
         inSearch: false,
       }),
     );

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 import { Logger } from '../logger/logger.service';
 import { Renter } from '../../entities/users/Renter';
 import { RenterMatch } from '../../entities/matches/RenterMatch';
@@ -23,6 +24,7 @@ export class RenterMatchesService {
     private entityManager: EntityManager,
     private sendpulseService: SendpulseService,
     private renterMatchesSerializer: RenterMatchesSerializer,
+    private configService: ConfigService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -50,9 +52,15 @@ export class RenterMatchesService {
       return { success: false, error: 'already match exists' };
     }
 
-    const matchesInfo = await this.entityManager
-      .getCustomRepository(MatchesInfoRepository)
-      .getOrCreateMatchesInfo(renter.id);
+    const trialMatchesCount = this.configService.get('renterMatches.trialMatchesCount') as number;
+    const matchesInfo =
+      (await this.entityManager
+        .getCustomRepository(MatchesInfoRepository)
+        .getMatchesInfoByRenterId(renter.id)) ??
+      (await this.entityManager
+        .getCustomRepository(MatchesInfoRepository)
+        .createInfo(renter.id, trialMatchesCount));
+
     if (matchesInfo.ableMatches === 0) {
       await this.sendpulseService.sendRenterToMatchPayment(chatId);
       return { success: false, error: 'need payment' };
@@ -83,14 +91,14 @@ export class RenterMatchesService {
     const matchesInfo = await this.entityManager.getCustomRepository(MatchesInfoRepository).findOneOrFail({
       renterId: renter.id,
     });
-    return this.entityManager.getCustomRepository(MatchesInfoRepository).addAbleMatches(matchesInfo);
+    const matchesCountToAdd = this.configService.get('renterMatches.paidMatchesCount') as number;
+    return this.entityManager
+      .getCustomRepository(MatchesInfoRepository)
+      .addAbleMatches(matchesInfo, matchesCountToAdd);
   }
 
   public async stopMatchingRenter(renterId: string): Promise<void> {
-    await Promise.all([
-      this.entityManager.getCustomRepository(RenterMatchesRepository).deleteAbleMatches(renterId),
-      this.entityManager.getCustomRepository(MatchesInfoRepository).stopSearching(renterId),
-    ]);
+    await this.entityManager.getCustomRepository(MatchesInfoRepository).stopSearching(renterId);
   }
 
   private async findMatchesForRenter(
@@ -128,6 +136,7 @@ export class RenterMatchesService {
   }
 
   private async processMatch(renter: Renter, matchedRenter: Renter): Promise<RenterMatch> {
+    // todo zdes' nado srazu 'processing' delat'
     const createdMatch = await this.entityManager
       .getCustomRepository(RenterMatchesRepository)
       .createMatch(renter, matchedRenter);

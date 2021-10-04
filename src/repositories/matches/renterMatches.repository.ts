@@ -1,4 +1,4 @@
-import { DeleteResult, EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import { RenterMatch } from '../../entities/matches/RenterMatch';
 import { Renter } from '../../entities/users/Renter';
 import { MatchStatusEnumType } from '../../modules/renter-matches/renter-matches.type';
@@ -24,13 +24,6 @@ export class RenterMatchesRepository extends Repository<RenterMatch> {
       .getMany();
   }
 
-  getAbleMatch(renterId: string): Promise<RenterMatch | undefined> {
-    return this.createQueryBuilder('match')
-      .where('(match.firstId = :renterId OR match.secondId = :renterId)', { renterId })
-      .andWhere('match.status = :ableStatus', { ableStatus: MatchStatusEnumType.able })
-      .getOne();
-  }
-
   async changeMatchStatus(matchId: string, status: MatchStatusEnumType): Promise<RenterMatch> {
     await this.save({
       id: matchId,
@@ -48,15 +41,5 @@ export class RenterMatchesRepository extends Repository<RenterMatch> {
       .where('(match.firstId = :renterId OR match.secondId = :renterId)', { renterId })
       .andWhere('match.status = :processingStatus', { processingStatus: MatchStatusEnumType.processing })
       .getOne();
-  }
-
-  deleteAbleMatches(renterId: string): Promise<DeleteResult> {
-    return this.createQueryBuilder('renterMatches')
-      .delete()
-      .where('(firstId = :id OR secondId = :id) AND status = :ableStatus', {
-        id: renterId,
-        ableStatus: MatchStatusEnumType.able,
-      })
-      .execute();
   }
 }

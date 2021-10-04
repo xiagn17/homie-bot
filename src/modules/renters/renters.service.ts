@@ -29,7 +29,9 @@ export class RentersService {
     return this.connection.getRepository(Renter).find();
   }
 
-  async getRenterByChatId(chatId: string): Promise<{ renter: Renter; matchesInfo: MatchesInfo } | undefined> {
+  async getRenterByChatId(
+    chatId: string,
+  ): Promise<{ renter: Renter; matchesInfo: MatchesInfo | undefined } | undefined> {
     const renter = await this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
     if (!renter) {
       return undefined;
@@ -37,9 +39,6 @@ export class RentersService {
     const matchesInfo = await this.connection
       .getCustomRepository(MatchesInfoRepository)
       .getMatchesInfoByRenterId(renter.id);
-    if (!matchesInfo) {
-      return undefined;
-    }
     return { renter, matchesInfo };
   }
 
