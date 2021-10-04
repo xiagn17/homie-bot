@@ -24,5 +24,3 @@ export interface TelegramContactType {
 export interface TelegramUserType {
   chatId: string; // user's telegram id
 }
-
-export type ApiTelegramUnsubscribeType = TelegramUserType;

@@ -13,7 +13,7 @@ import { TelegramUsersRepository } from '../../repositories/users/telegramUsers.
 import { SendpulseService } from '../sendpulse/sendpulse.service';
 import { MatchesInfoRepository } from '../../repositories/matches/matchesInfo.repository';
 import { MatchesInfo } from '../../entities/matches/MatchesInfo';
-import { ApiRenterStartMatchesResponse } from './renter-matches.type';
+import { ApiRenterStartMatchesResponse, MatchStatusEnumType } from './renter-matches.type';
 import { RenterMatchesSerializer } from './renter-matches.serializer';
 import { RenterMatchesChangeStatusDTO } from './renter-matches.dto';
 
@@ -30,7 +30,6 @@ export class RenterMatchesService {
   }
 
   // todo на эксепшены перехватывать в интерсепторе и делать обобщенную ошибку на сендпульс
-  // todo а если что-то просто по бизнес-логике то пускать отдельную цепочку прям отсюда
   async startMatchingRenter(chatId: string): Promise<ApiRenterStartMatchesResponse> {
     const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
     if (!renter) {
@@ -136,13 +135,9 @@ export class RenterMatchesService {
   }
 
   private async processMatch(renter: Renter, matchedRenter: Renter): Promise<RenterMatch> {
-    // todo zdes' nado srazu 'processing' delat'
-    const createdMatch = await this.entityManager
-      .getCustomRepository(RenterMatchesRepository)
-      .createMatch(renter, matchedRenter);
     const processingMatch = await this.entityManager
       .getCustomRepository(RenterMatchesRepository)
-      .startProcessingMatch(createdMatch);
+      .createMatch(renter, matchedRenter, MatchStatusEnumType.processing);
 
     const matchedRenters = await Promise.all([
       this.entityManager.getCustomRepository(RentersRepository).getFullRenter(processingMatch.firstId),

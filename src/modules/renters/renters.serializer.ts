@@ -53,6 +53,7 @@ export class RentersSerializer {
     };
   }
 
+  // todo сделать интерфейс
   toResponseRenterExists(
     fullRenter:
       | {

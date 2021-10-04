@@ -5,7 +5,7 @@ import { TelegramUsersRepository } from '../../repositories/users/telegramUsers.
 import { RenterMatchesService } from '../renter-matches/renter-matches.service';
 import { Renter } from '../../entities/users/Renter';
 import { TelegramBotSerializer } from './telegram-bot.serializer';
-import { TelegramUnsubscribeDTO, TelegramWebhookDTO } from './telegram-bot.dto';
+import { TelegramWebhookDTO } from './telegram-bot.dto';
 
 @Injectable()
 export class TelegramBotService {
@@ -40,10 +40,10 @@ export class TelegramBotService {
     });
   }
 
-  async unsubscribeUser(unsubscribeDTO: TelegramUnsubscribeDTO): Promise<void> {
+  async unsubscribeUser(chatId: string): Promise<void> {
     const telegramUser = await this.entityManager
       .getCustomRepository(TelegramUsersRepository)
-      .getUserByChatId(unsubscribeDTO.chatId);
+      .getUserByChatId(chatId);
 
     await this.entityManager.getRepository(Renter).save({
       id: telegramUser.renter.id,

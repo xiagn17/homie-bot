@@ -5,11 +5,12 @@ import { MatchStatusEnumType } from '../../modules/renter-matches/renter-matches
 
 @EntityRepository(RenterMatch)
 export class RenterMatchesRepository extends Repository<RenterMatch> {
-  createMatch(renter: Renter, matchedRenter: Renter): Promise<RenterMatch> {
+  createMatch(renter: Renter, matchedRenter: Renter, status: MatchStatusEnumType): Promise<RenterMatch> {
     return this.save(
       this.create({
         firstId: renter.id,
         secondId: matchedRenter.id,
+        status: status,
       }),
     );
   }
@@ -30,10 +31,6 @@ export class RenterMatchesRepository extends Repository<RenterMatch> {
       status: status,
     });
     return this.findOneOrFail(matchId);
-  }
-
-  startProcessingMatch(renterMatch: RenterMatch): Promise<RenterMatch> {
-    return this.changeMatchStatus(renterMatch.id, MatchStatusEnumType.processing);
   }
 
   getProcessingMatch(renterId: string): Promise<RenterMatch | undefined> {
