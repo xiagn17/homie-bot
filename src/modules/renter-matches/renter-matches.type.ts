@@ -1,4 +1,9 @@
-import { ApiRenterResponseType } from '../renters/renters.type';
+import {
+  ApiTelegramUserResponseType,
+  GenderEnumType,
+  LocationEnumType,
+  MoneyRangeEnumType,
+} from '../renters/renters.type';
 
 export enum MatchStatusEnumType {
   resolved = 'resolved',
@@ -22,6 +27,22 @@ export interface ApiRenterChangeStatusRequest {
 
 export interface MatchDataType {
   targetChatId: string;
-  matchedRenter: ApiRenterResponseType;
+  matchedRenter: ApiRenterMatchResponseType;
   matchId: string;
+}
+
+export interface ApiRenterMatchResponseType extends ApiTelegramUserResponseType {
+  name: string;
+  gender: GenderEnumType;
+  age: number;
+  phone: string;
+  moneyRange: MoneyRangeEnumType;
+  plannedArrivalDate: string;
+  location: LocationEnumType;
+  subwayStations: string;
+  zodiacSign: string;
+  university: string;
+  interests: string;
+  preferences: string;
+  socials: string;
 }

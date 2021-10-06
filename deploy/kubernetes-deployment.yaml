@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: container-backend
-          image: eu.gcr.io/homie-bot/homie-bot:latest
+          image: eu.gcr.io/homie-bot-328217/homie-bot:latest
           ports:
             - containerPort: 3000
           env:
