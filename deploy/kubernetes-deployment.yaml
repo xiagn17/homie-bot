@@ -45,6 +45,10 @@ spec:
               value: "a067f09218be3a67a082a89412489667"
             - name: SENDPULSE_CLIENT_SECRET
               value: "5a87878e3ca511c655e3656e77eaf9c0"
+            - name: TRIAL_FREE_MATCHES_COUNT
+              value: "3"
+            - name: PAID_MATCHES_COUNT
+              value: "2"
           resources:
             requests:
               memory: "240Mi"
