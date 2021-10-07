@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: homie-service
   labels:
-    name: homie-service
+    name: homie-api
     env: prod
 spec:
   type: NodePort

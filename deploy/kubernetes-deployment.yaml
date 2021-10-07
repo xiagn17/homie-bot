@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: container-backend
-          image: eu.gcr.io/homie-bot-328217/homie-bot:latest
+          image: eu.gcr.io/homie-cloud-app/homie-bot-backend:latest
           ports:
             - containerPort: 3000
           env:
@@ -30,7 +30,7 @@ spec:
             - name: POSTGRES_DATABASE
               value: "homie_db"
             - name: POSTGRES_HOST
-              value: "10.76.10.43"
+              value: "10.76.4.242"
             - name: POSTGRES_PORT
               value: "5432"
             - name: TYPEORM_SYNCHRONIZE
