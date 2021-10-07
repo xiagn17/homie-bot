@@ -26,4 +26,9 @@ export class RenterMatchesController {
       ableMatches: matchesInfo.ableMatches,
     };
   }
+
+  @Post('/stop-matching')
+  async stopMatching(@Body() { chatId }: TelegramChatIdDTO): Promise<void> {
+    await this.renterMatchesService.stopMatchingRenter(chatId);
+  }
 }

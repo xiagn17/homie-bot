@@ -96,8 +96,11 @@ export class RenterMatchesService {
       .addAbleMatches(matchesInfo, matchesCountToAdd);
   }
 
-  public async stopMatchingRenter(renterId: string): Promise<void> {
-    await this.entityManager.getCustomRepository(MatchesInfoRepository).stopSearching(renterId);
+  public async stopMatchingRenter(chatId: string): Promise<void> {
+    const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
+    if (renter) {
+      await this.entityManager.getCustomRepository(MatchesInfoRepository).stopSearching(renter.id);
+    }
   }
 
   private async findMatchesForRenter(
@@ -158,7 +161,7 @@ export class RenterMatchesService {
 
     await Promise.all(
       renterMatchesInfo.reduce<Promise<any>[]>((acc, info) => {
-        acc.push(this.stopMatchingRenter(info.renterId));
+        acc.push(this.entityManager.getCustomRepository(MatchesInfoRepository).stopSearching(info.renterId));
         acc.push(this.entityManager.getCustomRepository(MatchesInfoRepository).decreaseAbleMatches(info));
         return acc;
       }, []),

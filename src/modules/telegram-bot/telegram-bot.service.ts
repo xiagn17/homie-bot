@@ -49,6 +49,6 @@ export class TelegramBotService {
       id: telegramUser.renter.id,
       archivedAt: new Date(),
     });
-    await this.renterMatchesService.stopMatchingRenter(telegramUser.renter.id);
+    await this.renterMatchesService.stopMatchingRenter(chatId);
   }
 }
