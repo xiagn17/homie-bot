@@ -10,17 +10,20 @@ import { Renter } from '../../entities/users/Renter';
 import { TelegramUser } from '../../entities/users/TelegramUser';
 import { MatchesInfoRepository } from '../../repositories/matches/matchesInfo.repository';
 import { MatchesInfo } from '../../entities/matches/MatchesInfo';
+import { RenterMatchesService } from '../renter-matches/renter-matches.service';
 import { RentersSerializer } from './renters.serializer';
 import { CreateRenterDTO } from './renters.dto';
 
 @Injectable()
 export class RentersService {
   constructor(
+    private connection: Connection,
+
     private logger: Logger,
 
     private rentersSerializer: RentersSerializer,
 
-    private connection: Connection,
+    private renterMatchesService: RenterMatchesService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -73,5 +76,20 @@ export class RentersService {
     });
 
     return renter;
+  }
+
+  async archiveRenter(chatId: string, renterId: string): Promise<void> {
+    await this.connection.getRepository(Renter).save({
+      id: renterId,
+      archivedAt: new Date(),
+    });
+    await this.renterMatchesService.stopMatchingRenter(chatId);
+  }
+
+  async unArchiveRenter(renterId: string): Promise<void> {
+    await this.connection.getRepository(Renter).save({
+      id: renterId,
+      archivedAt: null,
+    });
   }
 }

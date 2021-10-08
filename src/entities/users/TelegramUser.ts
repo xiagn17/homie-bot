@@ -13,5 +13,5 @@ export class TelegramUser {
   readonly chatId: string;
 
   @OneToOne(() => Renter, renter => renter.telegramUser)
-  readonly renter: Renter;
+  readonly renter: Renter | null;
 }

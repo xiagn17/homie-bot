@@ -68,9 +68,11 @@ export class RenterMatchesService {
     }
 
     const matchedRenters = await this.findMatchesForRenter(renter);
-    this.logger.log('success create matches', matchedRenters);
     if (matchedRenters[0]) {
       await this.processMatch(renter, matchedRenters[0]);
+      this.logger.log(
+        `Match between renter (ids) ${matchedRenters[0].id} and ${matchedRenters[1].id} is created!`,
+      );
       return { success: true, error: 'match_has_found' };
     }
 
@@ -86,7 +88,10 @@ export class RenterMatchesService {
   public async addPaidMatches(chatId: string): Promise<MatchesInfo> {
     const { renter } = await this.entityManager
       .getCustomRepository(TelegramUsersRepository)
-      .getUserByChatId(chatId);
+      .findByChatIdWithRenter(chatId);
+    if (!renter) {
+      throw new Error(`Add Paid matches failed at user with chatId = ${chatId}. He has not Renter`);
+    }
     const matchesInfo = await this.entityManager.getCustomRepository(MatchesInfoRepository).findOneOrFail({
       renterId: renter.id,
     });

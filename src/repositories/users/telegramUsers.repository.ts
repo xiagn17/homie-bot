@@ -7,7 +7,10 @@ export class TelegramUsersRepository extends Repository<TelegramUser> {
     return this.save(this.create(telegramUser));
   }
 
-  getUserByChatId(chatId: string): Promise<TelegramUser> {
-    return this.findOneOrFail({ chatId: chatId }, { relations: ['renter'] });
+  findByChatIdWithRenter(chatId: string): Promise<TelegramUser> {
+    return this.createQueryBuilder('telegramUser')
+      .where('telegramUser.chatId = :chatId', { chatId })
+      .leftJoinAndSelect('telegramUser.renter', 'renter')
+      .getOneOrFail();
   }
 }
