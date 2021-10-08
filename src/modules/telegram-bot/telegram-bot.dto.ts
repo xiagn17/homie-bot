@@ -6,8 +6,7 @@ export class TelegramContactDTO implements TelegramContactType {
   @IsString()
   id: string;
 
-  @IsString()
-  username: string;
+  username: string | null;
 
   variables: any;
 

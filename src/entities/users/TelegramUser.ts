@@ -6,12 +6,12 @@ export class TelegramUser {
   @PrimaryGeneratedColumn('uuid', { name: 'telegram_user_id' })
   readonly id: string;
 
-  @Column({ type: 'varchar', name: 'username', nullable: false, unique: true })
-  username: string;
+  @Column({ type: 'varchar', name: 'username', nullable: true, unique: true })
+  readonly username: string | null;
 
   @Column({ type: 'varchar', name: 'chat_id', nullable: false, unique: true })
-  chatId: string;
+  readonly chatId: string;
 
   @OneToOne(() => Renter, renter => renter.telegramUser)
-  renter: Renter;
+  readonly renter: Renter;
 }

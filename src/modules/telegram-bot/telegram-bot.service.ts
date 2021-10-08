@@ -18,7 +18,6 @@ export class TelegramBotService {
     this.logger.setContext(this.constructor.name);
   }
 
-  // todo учесть что username-а может и не быть! (очень редкий кейс)
   async subscribeUser(newWebhookRenter: TelegramWebhookDTO): Promise<void> {
     const telegramUserDbData = this.telegramBotSerializer.mapToDbData(newWebhookRenter);
     const isUserExists = await this.entityManager

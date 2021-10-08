@@ -8,7 +8,7 @@ export class RenterMatchesSerializer {
   toMatchedRenter(fullRenter: Renter): ApiRenterMatchResponseType {
     const age = new Date().getFullYear() - Number(fullRenter.birthdayYear);
     return {
-      username: fullRenter.telegramUser.username,
+      username: fullRenter.telegramUser.username ?? fullRenter.phoneNumber,
       name: fullRenter.name,
       gender: fullRenter.gender,
       age: age,

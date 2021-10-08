@@ -36,7 +36,7 @@ export class RentersSerializer {
 
   toResponse(fullRenter: Renter): ApiRenterResponseType {
     return {
-      username: fullRenter.telegramUser.username,
+      username: fullRenter.telegramUser.username ?? fullRenter.phoneNumber,
       name: fullRenter.name,
       gender: fullRenter.gender,
       birthdayYear: fullRenter.birthdayYear,

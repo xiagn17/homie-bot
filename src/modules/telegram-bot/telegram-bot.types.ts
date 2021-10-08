@@ -12,7 +12,7 @@ export interface TelegramWebhookType {
   date: number; // timestamp
 }
 export interface TelegramContactType {
-  username: string; // tg username
+  username: string | null; // tg username
   name: string; // tg name
   tags: string[]; // sendpulse tags
   last_message: string;
