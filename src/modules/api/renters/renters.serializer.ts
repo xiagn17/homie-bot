@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Renter } from '../../entities/users/Renter';
-import { Location } from '../../entities/directories/Location';
-import { TelegramUser } from '../../entities/users/TelegramUser';
-import { MoneyRange } from '../../entities/directories/MoneyRange';
-import { MatchesInfo } from '../../entities/matches/MatchesInfo';
+import { Renter } from '../../../entities/users/Renter';
+import { Location } from '../../../entities/directories/Location';
+import { TelegramUser } from '../../../entities/users/TelegramUser';
+import { MoneyRange } from '../../../entities/directories/MoneyRange';
+import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
 import { CreateRenterDTO } from './renters.dto';
 import { ApiRenterFullType, ApiRenterResponseType } from './renters.type';
 

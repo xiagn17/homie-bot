@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
-import { Logger } from '../logger/logger.service';
-import { TelegramUsersRepository } from '../../repositories/users/telegramUsers.repository';
+import { Logger } from '../../logger/logger.service';
+import { TelegramUsersRepository } from '../../../repositories/users/telegramUsers.repository';
 import { RentersService } from '../renters/renters.service';
 import { TelegramBotSerializer } from './telegram-bot.serializer';
 import { TelegramWebhookDTO } from './telegram-bot.dto';
@@ -17,7 +17,7 @@ export class TelegramBotService {
     this.logger.setContext(this.constructor.name);
   }
 
-  async subscribeUser(newWebhookRenter: TelegramWebhookDTO): Promise<void> {
+  public async subscribeUser(newWebhookRenter: TelegramWebhookDTO): Promise<void> {
     const telegramUserDbData = this.telegramBotSerializer.mapToDbData(newWebhookRenter);
     const chatId = telegramUserDbData.chatId as string;
     const isUserExists = await this.entityManager
@@ -40,7 +40,7 @@ export class TelegramBotService {
     await this.rentersService.unArchiveRenter(telegramUser.renter.id);
   }
 
-  async unsubscribeUser(chatId: string): Promise<void> {
+  public async unsubscribeUser(chatId: string): Promise<void> {
     const telegramUser = await this.entityManager
       .getCustomRepository(TelegramUsersRepository)
       .findByChatIdWithRenter(chatId);

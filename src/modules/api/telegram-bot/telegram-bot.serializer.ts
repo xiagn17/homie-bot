@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TelegramUser } from '../../entities/users/TelegramUser';
+import { TelegramUser } from '../../../entities/users/TelegramUser';
 import { TelegramWebhookDTO } from './telegram-bot.dto';
 
 @Injectable()

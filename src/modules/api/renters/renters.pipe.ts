@@ -1,5 +1,5 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
-import { INTERESTS_DATA, SUBWAY_STATIONS_DATA } from '../../migrations/1629241839172-Initializing';
+import { INTERESTS_DATA, SUBWAY_STATIONS_DATA } from '../../../migrations/1629241839172-Initializing';
 import { InterestEnumType, LocationEnumType, RenterDraftType, SubwayStationEnumType } from './renters.type';
 import { CreateRenterDTO } from './renters.dto';
 

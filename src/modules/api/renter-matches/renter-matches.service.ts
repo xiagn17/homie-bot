@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '../logger/logger.service';
-import { Renter } from '../../entities/users/Renter';
-import { RenterMatch } from '../../entities/matches/RenterMatch';
-import { RenterMatchesRepository } from '../../repositories/matches/renterMatches.repository';
-import { RentersRepository } from '../../repositories/users/renters.repository';
-import { SubwayStationsRepository } from '../../repositories/directories/subwayStations.repository';
-import { MoneyRangesRepository } from '../../repositories/directories/moneyRanges.repository';
-import { LocationsRepository } from '../../repositories/directories/locations.repository';
-import { TelegramUsersRepository } from '../../repositories/users/telegramUsers.repository';
-import { SendpulseService } from '../sendpulse/sendpulse.service';
-import { MatchesInfoRepository } from '../../repositories/matches/matchesInfo.repository';
-import { MatchesInfo } from '../../entities/matches/MatchesInfo';
+import { Logger } from '../../logger/logger.service';
+import { Renter } from '../../../entities/users/Renter';
+import { RenterMatch } from '../../../entities/matches/RenterMatch';
+import { RenterMatchesRepository } from '../../../repositories/matches/renterMatches.repository';
+import { RentersRepository } from '../../../repositories/users/renters.repository';
+import { SubwayStationsRepository } from '../../../repositories/directories/subwayStations.repository';
+import { MoneyRangesRepository } from '../../../repositories/directories/moneyRanges.repository';
+import { LocationsRepository } from '../../../repositories/directories/locations.repository';
+import { TelegramUsersRepository } from '../../../repositories/users/telegramUsers.repository';
+import { SendpulseService } from '../../sendpulse/sendpulse.service';
+import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo.repository';
+import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
 import { ApiRenterStartMatchesResponse, MatchStatusEnumType } from './renter-matches.type';
 import { RenterMatchesSerializer } from './renter-matches.serializer';
 import { RenterMatchesChangeStatusDTO } from './renter-matches.dto';
@@ -30,7 +30,7 @@ export class RenterMatchesService {
   }
 
   // todo на эксепшены перехватывать в интерсепторе и делать обобщенную ошибку на сендпульс
-  async startMatchingRenter(chatId: string): Promise<ApiRenterStartMatchesResponse> {
+  public async startMatchingRenter(chatId: string): Promise<ApiRenterStartMatchesResponse> {
     const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
     if (!renter) {
       throw new Error(`No renter by chatId = ${chatId}`);

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Renter } from '../../entities/users/Renter';
-import { RenterMatch } from '../../entities/matches/RenterMatch';
+import { Renter } from '../../../entities/users/Renter';
+import { RenterMatch } from '../../../entities/matches/RenterMatch';
 import { ApiRenterMatchResponseType, MatchDataType } from './renter-matches.type';
 
 @Injectable()

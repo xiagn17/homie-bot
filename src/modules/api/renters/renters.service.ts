@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Any, Connection } from 'typeorm';
-import { Logger } from '../logger/logger.service';
-import { MoneyRange } from '../../entities/directories/MoneyRange';
-import { Location } from '../../entities/directories/Location';
-import { SubwayStation } from '../../entities/directories/SubwayStation';
-import { Interest } from '../../entities/directories/Interest';
-import { RentersRepository } from '../../repositories/users/renters.repository';
-import { Renter } from '../../entities/users/Renter';
-import { TelegramUser } from '../../entities/users/TelegramUser';
-import { MatchesInfoRepository } from '../../repositories/matches/matchesInfo.repository';
-import { MatchesInfo } from '../../entities/matches/MatchesInfo';
+import { Logger } from '../../logger/logger.service';
+import { MoneyRange } from '../../../entities/directories/MoneyRange';
+import { Location } from '../../../entities/directories/Location';
+import { SubwayStation } from '../../../entities/directories/SubwayStation';
+import { Interest } from '../../../entities/directories/Interest';
+import { RentersRepository } from '../../../repositories/users/renters.repository';
+import { Renter } from '../../../entities/users/Renter';
+import { TelegramUser } from '../../../entities/users/TelegramUser';
+import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo.repository';
+import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
 import { RenterMatchesService } from '../renter-matches/renter-matches.service';
 import { RentersSerializer } from './renters.serializer';
 import { CreateRenterDTO } from './renters.dto';
@@ -28,11 +28,7 @@ export class RentersService {
     this.logger.setContext(this.constructor.name);
   }
 
-  getRenters(): Promise<Renter[]> {
-    return this.connection.getRepository(Renter).find();
-  }
-
-  async getRenterByChatId(
+  public async getRenterByChatId(
     chatId: string,
   ): Promise<{ renter: Renter; matchesInfo: MatchesInfo | undefined } | undefined> {
     const renter = await this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
@@ -45,7 +41,7 @@ export class RentersService {
     return { renter, matchesInfo };
   }
 
-  async createRenter(renterDto: CreateRenterDTO): Promise<Renter> {
+  public async createRenter(renterDto: CreateRenterDTO): Promise<Renter> {
     const renter = await this.connection.transaction<Renter>(async manager => {
       const telegramUser = await manager
         .getRepository(TelegramUser)
@@ -78,7 +74,7 @@ export class RentersService {
     return renter;
   }
 
-  async archiveRenter(chatId: string, renterId: string): Promise<void> {
+  public async archiveRenter(chatId: string, renterId: string): Promise<void> {
     await this.connection.getRepository(Renter).save({
       id: renterId,
       archivedAt: new Date(),
@@ -86,7 +82,7 @@ export class RentersService {
     await this.renterMatchesService.stopMatchingRenter(chatId);
   }
 
-  async unArchiveRenter(renterId: string): Promise<void> {
+  public async unArchiveRenter(renterId: string): Promise<void> {
     await this.connection.getRepository(Renter).save({
       id: renterId,
       archivedAt: null,

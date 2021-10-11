@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '../logger/logger.service';
-import { MatchDataType } from '../renter-matches/renter-matches.type';
+import { MatchDataType } from '../api/renter-matches/renter-matches.type';
 import { SendpulseRequests } from './sendpulse.requests';
 import { SendpulseSerializer } from './sendpulse.serializer';
 
@@ -23,7 +23,7 @@ export class SendpulseService {
     this.logger.setContext(this.constructor.name);
   }
 
-  async sendMessageWithMatch(matchData: MatchDataType, isExistingMatch: boolean): Promise<void> {
+  public async sendMessageWithMatch(matchData: MatchDataType, isExistingMatch: boolean): Promise<void> {
     const chainId = isExistingMatch ? CHAIN_IDS.sendExistingMatch : CHAIN_IDS.sendMatch;
     const serializedMatchData = this.sendpulseSerializer.prepareMatchData(matchData, chainId);
     const serializedVariableData = this.sendpulseSerializer.prepareSetVariableData(
@@ -34,7 +34,7 @@ export class SendpulseService {
     await this.sendpulseRequests.setVariableAtUser(serializedVariableData);
   }
 
-  async sendRenterToMatchPayment(chatId: string): Promise<void> {
+  public async sendRenterToMatchPayment(chatId: string): Promise<void> {
     const serializedMatchData = this.sendpulseSerializer.prepareRunFlowData(chatId, CHAIN_IDS.buyMatches);
     await this.sendpulseRequests.runFlowAtUser(serializedMatchData);
   }

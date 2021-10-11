@@ -6,9 +6,9 @@ import 'reflect-metadata';
 import { Logger } from './modules/logger/logger.service';
 import configuration from './modules/configuration/configuration';
 import { DatabaseModule } from './modules/database/database.module';
-import { TelegramBotModule } from './modules/telegram-bot/telegram-bot.module';
-import { RentersModule } from './modules/renters/renters.module';
-import { RenterMatchesModule } from './modules/renter-matches/renter-matches.module';
+import { TelegramBotModule } from './modules/api/telegram-bot/telegram-bot.module';
+import { RentersModule } from './modules/api/renters/renters.module';
+import { RenterMatchesModule } from './modules/api/renter-matches/renter-matches.module';
 
 @Module({
   imports: [

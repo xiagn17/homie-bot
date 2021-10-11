@@ -2,7 +2,7 @@ import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import { Renter } from '../../entities/users/Renter';
 import { SubwayStation } from '../../entities/directories/SubwayStation';
 import { Interest } from '../../entities/directories/Interest';
-import { WithAnotherGenderEnumType } from '../../modules/renters/renters.type';
+import { WithAnotherGenderEnumType } from '../../modules/api/renters/renters.type';
 
 interface RelationDataType {
   subwayStations: SubwayStation[];

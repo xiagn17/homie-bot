@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MatchDataType } from '../renter-matches/renter-matches.type';
+import { MatchDataType } from '../api/renter-matches/renter-matches.type';
 import { SendpulseFlowRunDataType, SendpulseSetVariableDataType } from './sendpulse.type';
 
 @Injectable()

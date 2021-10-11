@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Renter } from '../users/Renter';
-import { SubwayStationEnumType } from '../../modules/renters/renters.type';
+import { SubwayStationEnumType } from '../../modules/api/renters/renters.type';
 
 @Entity({ name: 'directory_subway_stations' })
 export class SubwayStation {

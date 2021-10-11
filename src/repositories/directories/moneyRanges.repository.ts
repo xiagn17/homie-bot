@@ -1,6 +1,6 @@
 import { EntityRepository, In, Repository } from 'typeorm';
 import { MoneyRange } from '../../entities/directories/MoneyRange';
-import { MoneyRangeEnumType } from '../../modules/renters/renters.type';
+import { MoneyRangeEnumType } from '../../modules/api/renters/renters.type';
 
 @EntityRepository(MoneyRange)
 export class MoneyRangesRepository extends Repository<MoneyRange> {

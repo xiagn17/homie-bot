@@ -1,6 +1,6 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { Location } from '../../entities/directories/Location';
-import { LocationEnumType } from '../../modules/renters/renters.type';
+import { LocationEnumType } from '../../modules/api/renters/renters.type';
 
 @EntityRepository(Location)
 export class LocationsRepository extends Repository<Location> {

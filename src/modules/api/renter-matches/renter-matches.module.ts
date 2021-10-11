@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '../logger/logger.module';
-import { SendpulseModule } from '../sendpulse/sendpulse.module';
+import { LoggerModule } from '../../logger/logger.module';
+import { SendpulseModule } from '../../sendpulse/sendpulse.module';
 import { RenterMatchesService } from './renter-matches.service';
 import { RenterMatchesController } from './renter-matches.controller';
 import { RenterMatchesSerializer } from './renter-matches.serializer';

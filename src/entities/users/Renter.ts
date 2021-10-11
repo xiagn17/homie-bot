@@ -13,7 +13,7 @@ import { MoneyRange } from '../directories/MoneyRange';
 import { SubwayStation } from '../directories/SubwayStation';
 import { Interest } from '../directories/Interest';
 import { Location } from '../directories/Location';
-import { GenderEnumType, WithAnotherGenderEnumType } from '../../modules/renters/renters.type';
+import { GenderEnumType, WithAnotherGenderEnumType } from '../../modules/api/renters/renters.type';
 import { MatchesInfo } from '../matches/MatchesInfo';
 import { TelegramUser } from './TelegramUser';
 

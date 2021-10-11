@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { RenterMatch } from '../../entities/matches/RenterMatch';
 import { Renter } from '../../entities/users/Renter';
-import { MatchStatusEnumType } from '../../modules/renter-matches/renter-matches.type';
+import { MatchStatusEnumType } from '../../modules/api/renter-matches/renter-matches.type';
 
 @EntityRepository(RenterMatch)
 export class RenterMatchesRepository extends Repository<RenterMatch> {
