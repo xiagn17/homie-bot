@@ -23,11 +23,20 @@ spec:
               mountPath: /var/lib/postgresql/data
           env:
             - name: POSTGRES_PASSWORD
-              value: xiagn17homie
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: homie-secret
             - name: POSTGRES_USER
-              value: xiagn17
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_USERNAME
+                  name: homie-secret
             - name: POSTGRES_DB
-              value: homie_db
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_DATABASE
+                  name: homie-secret
             - name: PGDATA
               value: /var/lib/postgresql/data
           resources:

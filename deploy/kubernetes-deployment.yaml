@@ -30,11 +30,20 @@ spec:
             - name: PORT
               value: "3000"
             - name: POSTGRES_USERNAME
-              value: "xiagn17"
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_USERNAME
+                  name: homie-secret
             - name: POSTGRES_PASSWORD
-              value: "xiagn17homie"
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: homie-secret
             - name: POSTGRES_DATABASE
-              value: "homie_db"
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_DATABASE
+                  name: homie-secret
             - name: POSTGRES_HOST
               value: "10.76.4.242"
             - name: POSTGRES_PORT
@@ -46,11 +55,20 @@ spec:
             - name: TYPEORM_MIGRATIONS_RUN
               value: "true"
             - name: TELEGRAM_TOKEN
-              value: "1996984517:AAFavrE0pzX5TCdUsx1gmkIsg-8QEy9TNKM"
+              valueFrom:
+                secretKeyRef:
+                  key: TELEGRAM_TOKEN
+                  name: homie-secret
             - name: SENDPULSE_CLIENT_ID
-              value: "a067f09218be3a67a082a89412489667"
+              valueFrom:
+                secretKeyRef:
+                  key: SENDPULSE_CLIENT_ID
+                  name: homie-secret
             - name: SENDPULSE_CLIENT_SECRET
-              value: "5a87878e3ca511c655e3656e77eaf9c0"
+              valueFrom:
+                secretKeyRef:
+                  key: SENDPULSE_CLIENT_SECRET
+                  name: homie-secret
             - name: TRIAL_FREE_MATCHES_COUNT
               value: "3"
             - name: PAID_MATCHES_COUNT
