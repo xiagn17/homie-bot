@@ -8,22 +8,22 @@ export class TelegramUsersRepository extends Repository<TelegramUser> {
   }
 
   async archiveUser(chatId: string): Promise<void> {
-    await this.createQueryBuilder('telegramUser')
+    await this.createQueryBuilder()
       .update()
       .set({
         archivedAt: new Date(),
       })
-      .where('telegramUser.chatId = :chatId', { chatId })
+      .where('chatId = :chatId', { chatId })
       .execute();
   }
 
   async unArchiveUser(chatId: string): Promise<void> {
-    await this.createQueryBuilder('telegramUser')
+    await this.createQueryBuilder()
       .update()
       .set({
         archivedAt: null,
       })
-      .where('telegramUser.chatId = :chatId', { chatId })
+      .where('chatId = :chatId', { chatId })
       .execute();
   }
 }
