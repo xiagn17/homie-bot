@@ -73,7 +73,7 @@ export class AddAnalyticsTable1634492912265 implements MigrationInterface {
       `)
     ).map((telegramUser: { telegram_user_id: string }) => telegramUser.telegram_user_id);
 
-    if (!telegramUserIds.lenth) {
+    if (!telegramUserIds.length) {
       return;
     }
 
