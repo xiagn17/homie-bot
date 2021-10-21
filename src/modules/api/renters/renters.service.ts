@@ -42,6 +42,10 @@ export class RentersService {
     return { renter, matchesInfo };
   }
 
+  public getRenterByPhone(phoneNumber: string): Promise<Renter> {
+    return this.connection.getCustomRepository(RentersRepository).getByPhone(phoneNumber);
+  }
+
   public async createRenter(renterDto: CreateRenterDTO): Promise<Renter> {
     const renter = await this.connection.transaction<Renter>(async manager => {
       const telegramUser = await manager

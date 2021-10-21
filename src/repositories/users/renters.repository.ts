@@ -36,6 +36,12 @@ export class RentersRepository extends Repository<Renter> {
     return this.getWithRelationsQb(renterQb).getOne();
   }
 
+  getByPhone(phoneNumber: string): Promise<Renter> {
+    return this.getWithRelationsQb(
+      this.createQueryBuilder('renter').where('renter.phoneNumber = :phoneNumber', { phoneNumber })
+    ).getOneOrFail();
+  }
+
   getWithRelationsQb(renterQb: SelectQueryBuilder<Renter>): SelectQueryBuilder<Renter> {
     return renterQb
       .innerJoinAndSelect('renter.subwayStations', 'subwayStation')
