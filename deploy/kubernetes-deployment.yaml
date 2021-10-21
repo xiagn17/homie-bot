@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: container-backend
-          image: eu.gcr.io/homie-cloud-app/homie-bot-backend:0.12
+          image: eu.gcr.io/homie-cloud-app/homie-bot-backend:0.13
           imagePullPolicy: "Always"
           ports:
             - containerPort: 3000
