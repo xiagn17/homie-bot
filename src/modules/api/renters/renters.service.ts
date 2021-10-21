@@ -42,7 +42,7 @@ export class RentersService {
     return { renter, matchesInfo };
   }
 
-  public getRenterByPhone(phoneNumber: string): Promise<Renter> {
+  public getRenterByPhone(phoneNumber: string): Promise<Renter | undefined> {
     return this.connection.getCustomRepository(RentersRepository).getByPhone(phoneNumber);
   }
 
