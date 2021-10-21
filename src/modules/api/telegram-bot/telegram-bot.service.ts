@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { Logger } from '../../logger/logger.service';
 import { TelegramUsersRepository } from '../../../repositories/users/telegramUsers.repository';
-import { RentersService } from '../renters/renters.service';
+import { AnalyticsService } from '../analytics/analytics.service';
+import { RenterMatchesService } from '../renter-matches/renter-matches.service';
 import { TelegramBotSerializer } from './telegram-bot.serializer';
 import { TelegramWebhookDTO } from './telegram-bot.dto';
 
@@ -12,7 +13,8 @@ export class TelegramBotService {
     private logger: Logger,
     private entityManager: EntityManager,
     private telegramBotSerializer: TelegramBotSerializer,
-    private rentersService: RentersService,
+    private renterMatchesService: RenterMatchesService,
+    private analyticsService: AnalyticsService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -24,30 +26,19 @@ export class TelegramBotService {
       .getCustomRepository(TelegramUsersRepository)
       .findOne({ chatId: chatId });
     if (!isUserExists) {
-      await this.entityManager.getCustomRepository(TelegramUsersRepository).createUser(telegramUserDbData);
+      const telegramUser = await this.entityManager
+        .getCustomRepository(TelegramUsersRepository)
+        .createUser(telegramUserDbData);
+      await this.analyticsService.createForUser(telegramUser.id);
       return;
     }
 
     this.logger.warn(`User with chatId = ${chatId} exists, undo archiving.`);
-
-    const telegramUser = await this.entityManager
-      .getCustomRepository(TelegramUsersRepository)
-      .findByChatIdWithRenter(chatId);
-    if (!telegramUser.renter) {
-      return;
-    }
-
-    await this.rentersService.unArchiveRenter(telegramUser.renter.id);
+    await this.entityManager.getCustomRepository(TelegramUsersRepository).unArchiveUser(chatId);
   }
 
   public async unsubscribeUser(chatId: string): Promise<void> {
-    const telegramUser = await this.entityManager
-      .getCustomRepository(TelegramUsersRepository)
-      .findByChatIdWithRenter(chatId);
-    if (!telegramUser.renter) {
-      return;
-    }
-
-    await this.rentersService.archiveRenter(chatId, telegramUser.renter.id);
+    await this.entityManager.getCustomRepository(TelegramUsersRepository).archiveUser(chatId);
+    await this.renterMatchesService.stopMatchingRenter(chatId);
   }
 }

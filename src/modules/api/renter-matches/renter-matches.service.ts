@@ -9,7 +9,6 @@ import { RentersRepository } from '../../../repositories/users/renters.repositor
 import { SubwayStationsRepository } from '../../../repositories/directories/subwayStations.repository';
 import { MoneyRangesRepository } from '../../../repositories/directories/moneyRanges.repository';
 import { LocationsRepository } from '../../../repositories/directories/locations.repository';
-import { TelegramUsersRepository } from '../../../repositories/users/telegramUsers.repository';
 import { SendpulseService } from '../../sendpulse/sendpulse.service';
 import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo.repository';
 import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
@@ -86,9 +85,7 @@ export class RenterMatchesService {
   }
 
   public async addPaidMatches(chatId: string): Promise<MatchesInfo> {
-    const { renter } = await this.entityManager
-      .getCustomRepository(TelegramUsersRepository)
-      .findByChatIdWithRenter(chatId);
+    const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
     if (!renter) {
       throw new Error(`Add Paid matches failed at user with chatId = ${chatId}. He has not Renter`);
     }

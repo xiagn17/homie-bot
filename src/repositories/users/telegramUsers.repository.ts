@@ -7,10 +7,23 @@ export class TelegramUsersRepository extends Repository<TelegramUser> {
     return this.save(this.create(telegramUser));
   }
 
-  findByChatIdWithRenter(chatId: string): Promise<TelegramUser> {
-    return this.createQueryBuilder('telegramUser')
+  async archiveUser(chatId: string): Promise<void> {
+    await this.createQueryBuilder('telegramUser')
+      .update()
+      .set({
+        archivedAt: new Date(),
+      })
       .where('telegramUser.chatId = :chatId', { chatId })
-      .leftJoinAndSelect('telegramUser.renter', 'renter')
-      .getOneOrFail();
+      .execute();
+  }
+
+  async unArchiveUser(chatId: string): Promise<void> {
+    await this.createQueryBuilder('telegramUser')
+      .update()
+      .set({
+        archivedAt: null,
+      })
+      .where('telegramUser.chatId = :chatId', { chatId })
+      .execute();
   }
 }

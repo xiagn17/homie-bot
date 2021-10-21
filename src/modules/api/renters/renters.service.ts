@@ -10,7 +10,8 @@ import { Renter } from '../../../entities/users/Renter';
 import { TelegramUser } from '../../../entities/users/TelegramUser';
 import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo.repository';
 import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
-import { RenterMatchesService } from '../renter-matches/renter-matches.service';
+import { AnalyticsService } from '../analytics/analytics.service';
+import { BusinessAnalyticsFieldsEnumType } from '../analytics/analytics.type';
 import { RentersSerializer } from './renters.serializer';
 import { CreateRenterDTO } from './renters.dto';
 
@@ -23,7 +24,7 @@ export class RentersService {
 
     private rentersSerializer: RentersSerializer,
 
-    private renterMatchesService: RenterMatchesService,
+    private analyticsService: AnalyticsService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -71,21 +72,10 @@ export class RentersService {
       return renter;
     });
 
+    await this.analyticsService.changeStatus({
+      chatId: renterDto.chatId,
+      field: BusinessAnalyticsFieldsEnumType.end_fill_renter_info,
+    });
     return renter;
-  }
-
-  public async archiveRenter(chatId: string, renterId: string): Promise<void> {
-    await this.connection.getRepository(Renter).save({
-      id: renterId,
-      archivedAt: new Date(),
-    });
-    await this.renterMatchesService.stopMatchingRenter(chatId);
-  }
-
-  public async unArchiveRenter(renterId: string): Promise<void> {
-    await this.connection.getRepository(Renter).save({
-      id: renterId,
-      archivedAt: null,
-    });
   }
 }

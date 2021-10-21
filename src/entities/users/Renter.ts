@@ -109,10 +109,4 @@ export class Renter {
 
   @OneToOne(() => MatchesInfo, info => info.renter)
   matchesInfo: MatchesInfo;
-
-  @Column({ name: 'created_at', type: 'timestamptz', default: 'now()' })
-  createdAt: Date;
-
-  @Column({ name: 'archived_at', type: 'timestamptz' })
-  archivedAt: Date | null;
 }

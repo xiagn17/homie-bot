@@ -14,4 +14,10 @@ export class TelegramUser {
 
   @OneToOne(() => Renter, renter => renter.telegramUser)
   readonly renter: Renter | null;
+
+  @Column({ name: 'created_at', type: 'timestamptz', default: 'now()' })
+  readonly createdAt: Date;
+
+  @Column({ name: 'archived_at', type: 'timestamptz' })
+  readonly archivedAt: Date | null;
 }
