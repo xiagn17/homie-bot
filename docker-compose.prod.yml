@@ -8,4 +8,4 @@ services:
       target: production
       dockerfile: ./Dockerfile
     command: npm run start:prod
-    restart: unless-stopped
+    restart: always
