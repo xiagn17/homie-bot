@@ -45,7 +45,7 @@ spec:
                   key: POSTGRES_DATABASE
                   name: homie-secret
             - name: POSTGRES_HOST
-              value: "10.76.4.242"
+              value: "34.116.135.35"
             - name: POSTGRES_PORT
               value: "5432"
             - name: TYPEORM_SYNCHRONIZE
@@ -75,8 +75,8 @@ spec:
               value: "2"
           resources:
             requests:
-              memory: "240Mi"
-              cpu: "90m"
+              memory: "304Mi"
+              cpu: "140m"
             limits:
-              memory: "384Mi"
-              cpu: "256m"
+              memory: "576Mi"
+              cpu: "381m"
