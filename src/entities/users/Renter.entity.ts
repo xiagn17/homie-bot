@@ -100,6 +100,14 @@ export class RenterEntity {
   })
   liveWithAnotherGender: WithAnotherGenderEnumType;
 
+  @Column({
+    type: 'boolean',
+    name: 'with_animals',
+    nullable: false,
+    default: false,
+  })
+  withAnimals: boolean;
+
   @Column({ name: 'telegram_user_id', type: 'uuid', nullable: false, unique: true })
   telegramUserId: string;
 

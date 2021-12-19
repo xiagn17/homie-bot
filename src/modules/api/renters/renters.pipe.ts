@@ -43,6 +43,7 @@ export class RentersPipe implements PipeTransform<RenterDraftType, CreateRenterD
       preferences: value.preferences,
       socials: value.socials,
       liveWithAnotherGender: value.liveWithAnotherGender,
+      withAnimals: value.withAnimals === 'true',
     };
     if (value.subwayStations?.length) {
       const separated = stringSeparator(value.subwayStations);

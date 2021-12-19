@@ -19,6 +19,7 @@ export interface RenterType extends TelegramUserType {
   preferences?: string;
   socials: string;
   liveWithAnotherGender: WithAnotherGenderEnumType;
+  withAnimals: boolean;
 }
 
 export interface RenterDraftType extends TelegramUserType {
@@ -36,6 +37,7 @@ export interface RenterDraftType extends TelegramUserType {
   preferences?: string;
   socials: string;
   liveWithAnotherGender: WithAnotherGenderEnumType;
+  withAnimals: 'true' | 'false';
 }
 
 export enum GenderEnumType {
@@ -112,4 +114,5 @@ export interface ApiRenterResponseType extends ApiTelegramUserResponseType {
   interests: string;
   preferences: string;
   socials: string;
+  withAnimals: boolean;
 }

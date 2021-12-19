@@ -31,6 +31,7 @@ export class RentersSerializer {
       locationId: location.id,
       telegramUserId: telegramUser.id,
       liveWithAnotherGender: renterDto.liveWithAnotherGender,
+      withAnimals: renterDto.withAnimals,
     };
   }
 
@@ -50,6 +51,7 @@ export class RentersSerializer {
       interests: fullRenter.interests.map(interest => interest.interest).join(', '),
       preferences: fullRenter.preferences ?? '-',
       socials: fullRenter.socials,
+      withAnimals: fullRenter.withAnimals,
     };
   }
 

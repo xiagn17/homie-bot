@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import {
   RenterType,
   GenderEnumType,
@@ -56,4 +56,7 @@ export class CreateRenterDTO implements RenterType {
 
   @IsEnum(WithAnotherGenderEnumType)
   liveWithAnotherGender: WithAnotherGenderEnumType;
+
+  @IsBoolean()
+  withAnimals: boolean;
 }
