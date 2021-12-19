@@ -1,12 +1,21 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { TelegramChatIdDTO } from '../telegram-bot/telegram-bot.dto';
+import { AnalyticsService } from '../analytics/analytics.service';
+import { BusinessAnalyticsFieldsEnumType } from '../analytics/analytics.type';
 import { RenterMatchesService } from './renter-matches.service';
-import { ApiAddPaidMatchesResponse, ApiRenterStartMatchesResponse } from './renter-matches.type';
-import { RenterMatchesChangeStatusDTO } from './renter-matches.dto';
+import {
+  ApiAddPaidMatchesResponse,
+  ApiRenterStartMatchesResponse,
+  RenterStartMatchesStatus,
+} from './renter-matches.type';
+import { RenterMatchesChangeStatusDTO, RenterMatchesPaidDTO } from './renter-matches.dto';
 
 @Controller('renter-matches')
 export class RenterMatchesController {
-  constructor(private renterMatchesService: RenterMatchesService) {}
+  constructor(
+    private renterMatchesService: RenterMatchesService,
+    private analyticsService: AnalyticsService,
+  ) {}
 
   @Post('/create')
   async startMatchingRenter(@Body() { chatId }: TelegramChatIdDTO): Promise<ApiRenterStartMatchesResponse> {
@@ -19,10 +28,14 @@ export class RenterMatchesController {
   }
 
   @Post('/add-paid-matches')
-  async addPaidMatches(@Body() { chatId }: TelegramChatIdDTO): Promise<ApiAddPaidMatchesResponse> {
-    const matchesInfo = await this.renterMatchesService.addPaidMatches(chatId);
+  async addPaidMatches(@Body() data: RenterMatchesPaidDTO): Promise<ApiAddPaidMatchesResponse> {
+    const matchesInfo = await this.renterMatchesService.addPaidMatches(data.chatId);
+    await this.analyticsService.changeStatus({
+      chatId: data.chatId,
+      field: BusinessAnalyticsFieldsEnumType.pay_match,
+    });
     return {
-      success: true,
+      status: RenterStartMatchesStatus.ok,
       ableMatches: matchesInfo.ableMatches,
     };
   }

@@ -4,6 +4,7 @@ import {
   LocationEnumType,
   MoneyRangeEnumType,
 } from '../renters/renters.type';
+import { TelegramUserType } from '../telegram-bot/telegram-bot.types';
 
 export enum MatchStatusEnumType {
   resolved = 'resolved',
@@ -12,21 +13,45 @@ export enum MatchStatusEnumType {
 }
 
 export interface ApiAddPaidMatchesResponse {
-  success: true;
+  status: RenterStartMatchesStatus.ok;
   ableMatches: number;
 }
+
+export enum RenterStartMatchesStatus {
+  ok = 'ok',
+  fail = 'fail',
+  redirected = 'redirected',
+}
 export interface ApiRenterStartMatchesResponse {
-  success: boolean;
-  error: 'need payment' | '' | string;
+  status: RenterStartMatchesStatus;
 }
 
-export interface ApiRenterChangeStatusRequest {
+export interface ApiRenterChangeStatusRequest extends TelegramUserType {
   matchId: string;
   status: MatchStatusEnumType.rejected | MatchStatusEnumType.resolved;
 }
 
+export interface TelegramPaidDataType {
+  message_id: string;
+  chat_type: string;
+  chat_id: string;
+  currency: 'RUB';
+  total_amount: 19900;
+  invoice_payload: 'buy-2-matches-payload';
+  order_info: {
+    name: string;
+    phone_number: string;
+  };
+  telegram_payment_charge_id: string;
+  provider_payment_charge_id: string;
+}
+export interface ApiRenterMatchesPaidRequest extends TelegramUserType {
+  data: TelegramPaidDataType;
+}
+
 export interface MatchDataType {
   targetChatId: string;
+  botId: string;
   matchedRenter: ApiRenterMatchResponseType;
   matchId: string;
 }

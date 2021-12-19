@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { TelegramUser } from '../../../entities/users/TelegramUser';
-import { TelegramWebhookDTO } from './telegram-bot.dto';
+import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
+import { TelegramUserCreateDto } from './telegram-bot.dto';
 
 @Injectable()
 export class TelegramBotSerializer {
-  mapToDbData(newWebhookRenter: TelegramWebhookDTO): Partial<TelegramUser> {
+  mapToDbData(telegramUserCreateDto: TelegramUserCreateDto): Partial<TelegramUserEntity> {
     return {
-      username: newWebhookRenter.contact.username,
-      chatId: newWebhookRenter.contact.id,
+      username: telegramUserCreateDto.username,
+      chatId: telegramUserCreateDto.channel_id,
+      botId: telegramUserCreateDto.bot_id,
     };
   }
 }

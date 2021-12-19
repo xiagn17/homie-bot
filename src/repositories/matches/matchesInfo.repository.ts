@@ -23,10 +23,10 @@ export class MatchesInfoRepository extends Repository<MatchesInfo> {
       .execute();
   }
 
-  getMatchesInfoByRenterId(renterId: string): Promise<MatchesInfo | undefined> {
+  getMatchesInfoByRenterId(renterId: string): Promise<MatchesInfo> {
     return this.createQueryBuilder('matchesInfo')
       .where('matchesInfo.renterId = :renterId', { renterId: renterId })
-      .getOne();
+      .getOneOrFail();
   }
 
   async decreaseAbleMatches(matchesInfo: MatchesInfo): Promise<MatchesInfo> {

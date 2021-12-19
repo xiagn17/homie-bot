@@ -1,5 +1,5 @@
 import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
-import { Renter } from '../../entities/users/Renter';
+import { RenterEntity } from '../../entities/users/Renter.entity';
 import { SubwayStation } from '../../entities/directories/SubwayStation';
 import { Interest } from '../../entities/directories/Interest';
 import { WithAnotherGenderEnumType } from '../../modules/api/renters/renters.type';
@@ -8,12 +8,12 @@ interface RelationDataType {
   subwayStations: SubwayStation[];
   interests: Interest[];
 }
-@EntityRepository(Renter)
-export class RentersRepository extends Repository<Renter> {
+@EntityRepository(RenterEntity)
+export class RentersRepository extends Repository<RenterEntity> {
   async createWithRelations(
-    renterData: Partial<Renter>,
+    renterData: Partial<RenterEntity>,
     { subwayStations, interests }: RelationDataType,
-  ): Promise<Renter> {
+  ): Promise<RenterEntity> {
     const renter = await this.save(this.create(renterData));
 
     await this.createQueryBuilder('renter').relation('subwayStations').of(renter.id).add(subwayStations);
@@ -22,27 +22,27 @@ export class RentersRepository extends Repository<Renter> {
     return this.getFullRenter(renter.id);
   }
 
-  getFullRenter(renterId: string): Promise<Renter> {
+  getFullRenter(renterId: string): Promise<RenterEntity> {
     const renterQb = this.createQueryBuilder('renter').where('renter.id = :renterId', {
       renterId: renterId,
     });
     return this.getWithRelationsQb(renterQb).getOneOrFail();
   }
 
-  getByChatId(chatId: string): Promise<Renter | undefined> {
+  getByChatId(chatId: string): Promise<RenterEntity | undefined> {
     const renterQb = this.createQueryBuilder('renter').where('telegramUser.chatId = :chatId', {
       chatId: chatId,
     });
     return this.getWithRelationsQb(renterQb).getOne();
   }
 
-  getByPhone(phoneNumber: string): Promise<Renter | undefined> {
+  getByPhone(phoneNumber: string): Promise<RenterEntity | undefined> {
     return this.getWithRelationsQb(
       this.createQueryBuilder('renter').where('renter.phoneNumber = :phoneNumber', { phoneNumber }),
     ).getOne();
   }
 
-  getWithRelationsQb(renterQb: SelectQueryBuilder<Renter>): SelectQueryBuilder<Renter> {
+  getWithRelationsQb(renterQb: SelectQueryBuilder<RenterEntity>): SelectQueryBuilder<RenterEntity> {
     return renterQb
       .innerJoinAndSelect('renter.subwayStations', 'subwayStation')
       .innerJoinAndSelect('renter.location', 'location')
@@ -63,14 +63,14 @@ export class RentersRepository extends Repository<Renter> {
   }
 
   findMatchesForRenter(
-    renter: Renter,
+    renter: RenterEntity,
     matchOptions: {
       moneyRangeIds: string[];
       locationIds: string[];
       subwayStationIds: string[];
       renterIdsToExclude: string[];
     },
-  ): Promise<Renter[]> {
+  ): Promise<RenterEntity[]> {
     const rentersQuery = this.createQueryBuilder('renter')
       .where('renter.id NOT IN (:...renterIds)', {
         renterIds: matchOptions.renterIdsToExclude,

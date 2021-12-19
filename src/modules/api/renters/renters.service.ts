@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Any, Connection } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 import { Logger } from '../../logger/logger.service';
 import { MoneyRange } from '../../../entities/directories/MoneyRange';
 import { Location } from '../../../entities/directories/Location';
 import { SubwayStation } from '../../../entities/directories/SubwayStation';
 import { Interest } from '../../../entities/directories/Interest';
 import { RentersRepository } from '../../../repositories/users/renters.repository';
-import { Renter } from '../../../entities/users/Renter';
-import { TelegramUser } from '../../../entities/users/TelegramUser';
+import { RenterEntity } from '../../../entities/users/Renter.entity';
+import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
 import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo.repository';
 import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
 import { AnalyticsService } from '../analytics/analytics.service';
@@ -25,13 +26,15 @@ export class RentersService {
     private rentersSerializer: RentersSerializer,
 
     private analyticsService: AnalyticsService,
+
+    private configService: ConfigService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
 
   public async getRenterByChatId(
     chatId: string,
-  ): Promise<{ renter: Renter; matchesInfo: MatchesInfo | undefined } | undefined> {
+  ): Promise<{ renter: RenterEntity; matchesInfo: MatchesInfo } | undefined> {
     const renter = await this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
     if (!renter) {
       return undefined;
@@ -42,14 +45,14 @@ export class RentersService {
     return { renter, matchesInfo };
   }
 
-  public getRenterByPhone(phoneNumber: string): Promise<Renter | undefined> {
+  public getRenterByPhone(phoneNumber: string): Promise<RenterEntity | undefined> {
     return this.connection.getCustomRepository(RentersRepository).getByPhone(phoneNumber);
   }
 
-  public async createRenter(renterDto: CreateRenterDTO): Promise<Renter> {
-    const renter = await this.connection.transaction<Renter>(async manager => {
+  public async createRenter(renterDto: CreateRenterDTO): Promise<RenterEntity> {
+    const renter = await this.connection.transaction<RenterEntity>(async manager => {
       const telegramUser = await manager
-        .getRepository(TelegramUser)
+        .getRepository(TelegramUserEntity)
         .findOneOrFail({ chatId: renterDto.chatId });
       const location = await manager.getRepository(Location).findOneOrFail({ area: renterDto.location });
       const moneyRange = await manager
@@ -72,6 +75,9 @@ export class RentersService {
       const renter = await manager
         .getCustomRepository(RentersRepository)
         .createWithRelations(renterDbData, { subwayStations, interests });
+
+      const trialMatchesCount = this.configService.get('renterMatches.trialMatchesCount') as number;
+      await manager.getCustomRepository(MatchesInfoRepository).createInfo(renter.id, trialMatchesCount);
 
       return renter;
     });

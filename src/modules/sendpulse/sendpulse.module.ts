@@ -5,6 +5,7 @@ import { SendpulseStore } from './sendpulse.store';
 import { SendpulseRequests } from './sendpulse.requests';
 import { SendpulseSerializer } from './sendpulse.serializer';
 
+// @deprecated - moved to FlowXo
 @Module({
   imports: [LoggerModule],
   providers: [SendpulseService, SendpulseStore, SendpulseRequests, SendpulseSerializer],

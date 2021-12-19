@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Renter } from '../../../entities/users/Renter';
+import { RenterEntity } from '../../../entities/users/Renter.entity';
 import { RenterMatch } from '../../../entities/matches/RenterMatch';
 import { ApiRenterMatchResponseType, MatchDataType } from './renter-matches.type';
 
 @Injectable()
 export class RenterMatchesSerializer {
-  toMatchedRenter(fullRenter: Renter): ApiRenterMatchResponseType {
+  toMatchedRenter(fullRenter: RenterEntity): ApiRenterMatchResponseType {
     const age = new Date().getFullYear() - Number(fullRenter.birthdayYear);
     return {
       username: fullRenter.telegramUser.username ?? fullRenter.phoneNumber,
@@ -25,10 +25,11 @@ export class RenterMatchesSerializer {
     };
   }
 
-  prepareMatchData(matchedRenters: [Renter, Renter], match: RenterMatch): MatchDataType[] {
+  prepareMatchData(matchedRenters: [RenterEntity, RenterEntity], match: RenterMatch): MatchDataType[] {
     return matchedRenters.map((renter, i, renters) => {
       return {
         targetChatId: renter.telegramUser.chatId,
+        botId: renter.telegramUser.botId,
         matchedRenter: this.toMatchedRenter(renters[i + 1] ?? renters[i - 1]),
         matchId: match.id,
       };

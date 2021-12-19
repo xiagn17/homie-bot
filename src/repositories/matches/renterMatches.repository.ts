@@ -1,11 +1,15 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { RenterMatch } from '../../entities/matches/RenterMatch';
-import { Renter } from '../../entities/users/Renter';
+import { RenterEntity } from '../../entities/users/Renter.entity';
 import { MatchStatusEnumType } from '../../modules/api/renter-matches/renter-matches.type';
 
 @EntityRepository(RenterMatch)
 export class RenterMatchesRepository extends Repository<RenterMatch> {
-  createMatch(renter: Renter, matchedRenter: Renter, status: MatchStatusEnumType): Promise<RenterMatch> {
+  createMatch(
+    renter: RenterEntity,
+    matchedRenter: RenterEntity,
+    status: MatchStatusEnumType,
+  ): Promise<RenterMatch> {
     return this.save(
       this.create({
         firstId: renter.id,

@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Renter } from '../users/Renter';
+import { RenterEntity } from '../users/Renter.entity';
 import { LocationEnumType } from '../../modules/api/renters/renters.type';
 
 @Entity({ name: 'directory_locations' })
@@ -15,6 +15,6 @@ export class Location {
   })
   area: LocationEnumType;
 
-  @OneToMany(() => Renter, renter => renter.location)
-  renters: Renter[];
+  @OneToMany(() => RenterEntity, renter => renter.location)
+  renters: RenterEntity[];
 }

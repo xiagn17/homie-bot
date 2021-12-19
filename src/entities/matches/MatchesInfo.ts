@@ -1,7 +1,6 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Renter } from '../users/Renter';
+import { RenterEntity } from '../users/Renter.entity';
 
-// Создаётся 1 раз - когда "найти соседа" в первый раз клацает
 @Entity({ name: 'matches_info' })
 export class MatchesInfo {
   @PrimaryGeneratedColumn('uuid', { name: 'matches_info_id' })
@@ -11,8 +10,8 @@ export class MatchesInfo {
   renterId: string;
 
   @JoinColumn({ name: 'renter_id' })
-  @OneToOne(() => Renter)
-  renter: Renter;
+  @OneToOne(() => RenterEntity)
+  renter: RenterEntity;
 
   @Column({ type: 'smallint', name: 'able_matches', nullable: false, default: 0 })
   ableMatches: number;

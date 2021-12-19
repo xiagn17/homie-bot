@@ -6,9 +6,9 @@ import { CreateRenterDTO } from './renters.dto';
 const stringSeparator = (splattedString: string, separator: string = ','): string[] =>
   splattedString.split(separator).map(m => m.trim());
 
-// date example - '20/08/2021' dd-mm-yyyy
+// date example - '22.12.2021' dd-mm-yyyy
 const dateTransformer = (date: string): Date => {
-  const splattedDate: number[] = date.split('/').map(d => Number(d));
+  const splattedDate: number[] = date.split('.').map(d => Number(d));
   return new Date(splattedDate[2], splattedDate[1] - 1, splattedDate[0]);
 };
 

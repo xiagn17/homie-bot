@@ -1,24 +1,7 @@
-export interface TelegramWebhookType {
-  info: any;
-  service: 'telegram';
-  title: 'renter_form' | 'unsubscribe';
-  bot: {
-    url: string;
-    external_id: number;
-    id: string;
-    name: string;
-  };
-  contact: TelegramContactType;
-  date: number; // timestamp
-}
-export interface TelegramContactType {
-  username: string | null; // tg username
-  name: string; // tg name
-  tags: string[]; // sendpulse tags
-  last_message: string;
-  photo: any;
-  variables: any; // variables from sendpulse
-  id: string; // sendpulse id or chatId
+export interface ApiTelegramUserCreateType {
+  bot_id: string;
+  channel_id: string;
+  username: string;
 }
 
 export interface TelegramUserType {

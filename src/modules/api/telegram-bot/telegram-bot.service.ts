@@ -5,7 +5,7 @@ import { TelegramUsersRepository } from '../../../repositories/users/telegramUse
 import { AnalyticsService } from '../analytics/analytics.service';
 import { RenterMatchesService } from '../renter-matches/renter-matches.service';
 import { TelegramBotSerializer } from './telegram-bot.serializer';
-import { TelegramWebhookDTO } from './telegram-bot.dto';
+import { TelegramUserCreateDto } from './telegram-bot.dto';
 
 @Injectable()
 export class TelegramBotService {
@@ -19,7 +19,7 @@ export class TelegramBotService {
     this.logger.setContext(this.constructor.name);
   }
 
-  public async subscribeUser(newWebhookRenter: TelegramWebhookDTO): Promise<void> {
+  public async subscribeUser(newWebhookRenter: TelegramUserCreateDto): Promise<void> {
     const telegramUserDbData = this.telegramBotSerializer.mapToDbData(newWebhookRenter);
     const chatId = telegramUserDbData.chatId as string;
     const isUserExists = await this.entityManager

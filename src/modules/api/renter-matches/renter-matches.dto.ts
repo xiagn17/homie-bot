@@ -1,5 +1,11 @@
 import { IsString } from 'class-validator';
-import { ApiRenterChangeStatusRequest, MatchStatusEnumType } from './renter-matches.type';
+import { TelegramChatIdDTO } from '../telegram-bot/telegram-bot.dto';
+import {
+  ApiRenterChangeStatusRequest,
+  ApiRenterMatchesPaidRequest,
+  MatchStatusEnumType,
+  TelegramPaidDataType,
+} from './renter-matches.type';
 
 export class RenterMatchesChangeStatusDTO implements ApiRenterChangeStatusRequest {
   @IsString()
@@ -7,4 +13,11 @@ export class RenterMatchesChangeStatusDTO implements ApiRenterChangeStatusReques
 
   @IsString()
   status: MatchStatusEnumType.rejected | MatchStatusEnumType.resolved;
+
+  @IsString()
+  chatId: string;
+}
+
+export class RenterMatchesPaidDTO extends TelegramChatIdDTO implements ApiRenterMatchesPaidRequest {
+  data: TelegramPaidDataType;
 }

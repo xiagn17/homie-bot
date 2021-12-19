@@ -93,7 +93,7 @@ export enum InterestEnumType {
 }
 
 export interface ApiRenterFullType {
-  result: 'yes' | 'no';
+  isRenter: 'yes' | 'no';
   renter: ApiRenterResponseType | undefined;
   ableMatches: number | undefined;
 }

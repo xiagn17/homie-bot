@@ -46,7 +46,7 @@ export class RentersController {
 
   @Post()
   @UsePipes(new RentersPipe())
-  async createRenter(@Body() renter: CreateRenterDTO): Promise<ApiRenterResponseType> {
+  async createRenter(@Body() renter: CreateRenterDTO): Promise<ApiRenterResponseType | any> {
     const fullCreatedRenter = await this.rentersService.createRenter(renter);
     return this.rentersSerializer.toResponse(fullCreatedRenter);
   }

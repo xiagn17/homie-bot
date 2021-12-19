@@ -2,17 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '../../logger/logger.service';
-import { Renter } from '../../../entities/users/Renter';
-import { RenterMatch } from '../../../entities/matches/RenterMatch';
+import { RenterEntity } from '../../../entities/users/Renter.entity';
 import { RenterMatchesRepository } from '../../../repositories/matches/renterMatches.repository';
 import { RentersRepository } from '../../../repositories/users/renters.repository';
 import { SubwayStationsRepository } from '../../../repositories/directories/subwayStations.repository';
 import { MoneyRangesRepository } from '../../../repositories/directories/moneyRanges.repository';
 import { LocationsRepository } from '../../../repositories/directories/locations.repository';
-import { SendpulseService } from '../../sendpulse/sendpulse.service';
 import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo.repository';
 import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
-import { ApiRenterStartMatchesResponse, MatchStatusEnumType } from './renter-matches.type';
+import { FlowXoService } from '../../flow-xo/flow-xo.service';
+import { RenterMatch } from '../../../entities/matches/RenterMatch';
+import { AnalyticsService } from '../analytics/analytics.service';
+import { BusinessAnalyticsFieldsEnumType } from '../analytics/analytics.type';
+import {
+  ApiRenterStartMatchesResponse,
+  MatchStatusEnumType,
+  RenterStartMatchesStatus,
+} from './renter-matches.type';
 import { RenterMatchesSerializer } from './renter-matches.serializer';
 import { RenterMatchesChangeStatusDTO } from './renter-matches.dto';
 
@@ -21,8 +27,9 @@ export class RenterMatchesService {
   constructor(
     private logger: Logger,
     private entityManager: EntityManager,
-    private sendpulseService: SendpulseService,
+    private flowXoService: FlowXoService,
     private renterMatchesSerializer: RenterMatchesSerializer,
+    private analyticsService: AnalyticsService,
     private configService: ConfigService,
   ) {
     this.logger.setContext(this.constructor.name);
@@ -46,22 +53,19 @@ export class RenterMatchesService {
       const matchData = this.renterMatchesSerializer.prepareMatchData(matchedRenters, processingMatch);
       const dataForOutRenter = matchData.filter(d => d.targetChatId === chatId)[0];
 
-      await this.sendpulseService.sendMessageWithMatch(dataForOutRenter, true);
-      return { success: false, error: 'already match exists' };
+      await this.flowXoService.sendMessageWithMatch(dataForOutRenter, true);
+      return {
+        status: RenterStartMatchesStatus.fail,
+      };
     }
 
-    const trialMatchesCount = this.configService.get('renterMatches.trialMatchesCount') as number;
-    const matchesInfo =
-      (await this.entityManager
-        .getCustomRepository(MatchesInfoRepository)
-        .getMatchesInfoByRenterId(renter.id)) ??
-      (await this.entityManager
-        .getCustomRepository(MatchesInfoRepository)
-        .createInfo(renter.id, trialMatchesCount));
+    const matchesInfo = await this.entityManager
+      .getCustomRepository(MatchesInfoRepository)
+      .getMatchesInfoByRenterId(renter.id);
 
     if (matchesInfo.ableMatches === 0) {
-      await this.sendpulseService.sendRenterToMatchPayment(chatId);
-      return { success: false, error: 'need payment' };
+      await this.flowXoService.sendRenterToMatchPayment(chatId, renter.telegramUser.botId);
+      return { status: RenterStartMatchesStatus.fail };
     } else {
       await this.entityManager.getCustomRepository(MatchesInfoRepository).startSearching(renter.id);
     }
@@ -72,16 +76,24 @@ export class RenterMatchesService {
       this.logger.log(
         `Match between renter (ids) ${matchedRenters[0].id} and ${matchedRenters[1].id} is created!`,
       );
-      return { success: true, error: 'match_has_found' };
+      return {
+        status: RenterStartMatchesStatus.redirected,
+      };
     }
 
-    return { success: true, error: 'good' };
+    return { status: RenterStartMatchesStatus.ok };
   }
 
   public async changeMatchStatus(data: RenterMatchesChangeStatusDTO): Promise<void> {
     await this.entityManager
       .getCustomRepository(RenterMatchesRepository)
       .changeMatchStatus(data.matchId, data.status);
+    if (data.status === MatchStatusEnumType.resolved) {
+      await this.analyticsService.changeStatus({
+        chatId: data.chatId,
+        field: BusinessAnalyticsFieldsEnumType.success_match,
+      });
+    }
   }
 
   public async addPaidMatches(chatId: string): Promise<MatchesInfo> {
@@ -106,9 +118,9 @@ export class RenterMatchesService {
   }
 
   private async findMatchesForRenter(
-    renter: Renter,
+    renter: RenterEntity,
     entityManager: EntityManager = this.entityManager,
-  ): Promise<Renter[]> {
+  ): Promise<RenterEntity[]> {
     const subwayStationIdsForMatch = await entityManager
       .getCustomRepository(SubwayStationsRepository)
       .getRenterStationIdsForMatch(renter.subwayStations);
@@ -139,7 +151,7 @@ export class RenterMatchesService {
     return matchedRenters;
   }
 
-  private async processMatch(renter: Renter, matchedRenter: Renter): Promise<RenterMatch> {
+  private async processMatch(renter: RenterEntity, matchedRenter: RenterEntity): Promise<RenterMatch> {
     const processingMatch = await this.entityManager
       .getCustomRepository(RenterMatchesRepository)
       .createMatch(renter, matchedRenter, MatchStatusEnumType.processing);
@@ -150,7 +162,7 @@ export class RenterMatchesService {
     ]);
     const matchData = this.renterMatchesSerializer.prepareMatchData(matchedRenters, processingMatch);
 
-    await Promise.all(matchData.map(data => this.sendpulseService.sendMessageWithMatch(data, false)));
+    await Promise.all(matchData.map(data => this.flowXoService.sendMessageWithMatch(data, false)));
 
     const renterMatchesInfo = await Promise.all([
       this.entityManager.getCustomRepository(MatchesInfoRepository).findOneOrFail({
@@ -161,6 +173,14 @@ export class RenterMatchesService {
       }),
     ]);
 
+    await Promise.all(
+      matchedRenters.map(r =>
+        this.analyticsService.changeStatus({
+          chatId: r.telegramUser.chatId,
+          field: BusinessAnalyticsFieldsEnumType.created_match,
+        }),
+      ),
+    );
     await Promise.all(
       renterMatchesInfo.reduce<Promise<any>[]>((acc, info) => {
         acc.push(this.entityManager.getCustomRepository(MatchesInfoRepository).stopSearching(info.renterId));

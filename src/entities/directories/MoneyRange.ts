@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Renter } from '../users/Renter';
+import { RenterEntity } from '../users/Renter.entity';
 import { MoneyRangeEnumType } from '../../modules/api/renters/renters.type';
 
 @Entity({ name: 'directory_money_ranges' })
@@ -15,6 +15,6 @@ export class MoneyRange {
   })
   range: MoneyRangeEnumType;
 
-  @OneToMany(() => Renter, renter => renter.moneyRange)
-  renters: Renter[];
+  @OneToMany(() => RenterEntity, renter => renter.moneyRange)
+  renters: RenterEntity[];
 }

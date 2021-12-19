@@ -1,9 +1,9 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { TelegramUser } from '../../entities/users/TelegramUser';
+import { TelegramUserEntity } from '../../entities/users/TelegramUser.entity';
 
-@EntityRepository(TelegramUser)
-export class TelegramUsersRepository extends Repository<TelegramUser> {
-  createUser(telegramUser: Partial<TelegramUser>): Promise<TelegramUser> {
+@EntityRepository(TelegramUserEntity)
+export class TelegramUsersRepository extends Repository<TelegramUserEntity> {
+  createUser(telegramUser: Partial<TelegramUserEntity>): Promise<TelegramUserEntity> {
     return this.save(this.create(telegramUser));
   }
 

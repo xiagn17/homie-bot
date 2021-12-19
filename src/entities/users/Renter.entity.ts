@@ -15,10 +15,10 @@ import { Interest } from '../directories/Interest';
 import { Location } from '../directories/Location';
 import { GenderEnumType, WithAnotherGenderEnumType } from '../../modules/api/renters/renters.type';
 import { MatchesInfo } from '../matches/MatchesInfo';
-import { TelegramUser } from './TelegramUser';
+import { TelegramUserEntity } from './TelegramUser.entity';
 
 @Entity({ name: 'renters' })
-export class Renter {
+export class RenterEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'renter_id' })
   readonly id: string;
 
@@ -104,8 +104,8 @@ export class Renter {
   telegramUserId: string;
 
   @JoinColumn({ name: 'telegram_user_id' })
-  @OneToOne(() => TelegramUser)
-  telegramUser: TelegramUser;
+  @OneToOne(() => TelegramUserEntity)
+  telegramUser: TelegramUserEntity;
 
   @OneToOne(() => MatchesInfo, info => info.renter)
   matchesInfo: MatchesInfo;

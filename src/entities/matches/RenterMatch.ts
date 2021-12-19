@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { Renter } from '../users/Renter';
+import { RenterEntity } from '../users/Renter.entity';
 import { MatchStatusEnumType } from '../../modules/api/renter-matches/renter-matches.type';
 
 @Entity({ name: 'renter_matches' })
@@ -8,16 +8,16 @@ export class RenterMatch {
   @PrimaryGeneratedColumn('uuid', { name: 'renter_match_id' })
   readonly id: string;
 
-  @ManyToOne(() => Renter)
+  @ManyToOne(() => RenterEntity)
   @JoinColumn({ name: 'first_id' })
-  first: Renter;
+  first: RenterEntity;
 
   @Column('uuid', { name: 'first_id', nullable: false })
   firstId: string;
 
-  @ManyToOne(() => Renter)
+  @ManyToOne(() => RenterEntity)
   @JoinColumn({ name: 'second_id' })
-  second: Renter;
+  second: RenterEntity;
 
   @Column('uuid', { name: 'second_id', nullable: false })
   secondId: string;

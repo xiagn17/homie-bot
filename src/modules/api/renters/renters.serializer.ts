@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Renter } from '../../../entities/users/Renter';
+import { RenterEntity } from '../../../entities/users/Renter.entity';
 import { Location } from '../../../entities/directories/Location';
-import { TelegramUser } from '../../../entities/users/TelegramUser';
+import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
 import { MoneyRange } from '../../../entities/directories/MoneyRange';
 import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
 import { CreateRenterDTO } from './renters.dto';
@@ -11,11 +11,11 @@ interface RenterData {
   renterDto: CreateRenterDTO;
   location: Location;
   moneyRange: MoneyRange;
-  telegramUser: TelegramUser;
+  telegramUser: TelegramUserEntity;
 }
 @Injectable()
 export class RentersSerializer {
-  mapToDbData(renterData: RenterData): Partial<Renter> {
+  mapToDbData(renterData: RenterData): Partial<RenterEntity> {
     const { renterDto, location, moneyRange, telegramUser } = renterData;
     return {
       name: renterDto.name,
@@ -34,7 +34,7 @@ export class RentersSerializer {
     };
   }
 
-  toResponse(fullRenter: Renter): ApiRenterResponseType {
+  toResponse(fullRenter: RenterEntity): ApiRenterResponseType {
     return {
       username: fullRenter.telegramUser.username ?? fullRenter.phoneNumber,
       name: fullRenter.name,
@@ -57,18 +57,18 @@ export class RentersSerializer {
   toResponseRenterExists(
     fullRenter:
       | {
-          renter: Renter;
-          matchesInfo: MatchesInfo | undefined;
+          renter: RenterEntity;
+          matchesInfo: MatchesInfo;
         }
       | undefined,
   ): ApiRenterFullType {
     if (!fullRenter) {
-      return { result: 'no', renter: undefined, ableMatches: 0 };
+      return { isRenter: 'no', renter: undefined, ableMatches: 0 };
     }
     return {
-      result: 'yes',
+      isRenter: 'yes',
       renter: this.toResponse(fullRenter.renter),
-      ableMatches: fullRenter.matchesInfo?.ableMatches,
+      ableMatches: fullRenter.matchesInfo.ableMatches,
     };
   }
 }

@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '../../logger/logger.module';
-import { SendpulseModule } from '../../sendpulse/sendpulse.module';
+import { FlowXoModule } from '../../flow-xo/flow-xo.module';
+import { AnalyticsModule } from '../analytics/analytics.module';
 import { RenterMatchesService } from './renter-matches.service';
 import { RenterMatchesController } from './renter-matches.controller';
 import { RenterMatchesSerializer } from './renter-matches.serializer';
 
 @Module({
-  imports: [LoggerModule, SendpulseModule],
+  imports: [LoggerModule, FlowXoModule, AnalyticsModule],
   controllers: [RenterMatchesController],
   providers: [RenterMatchesService, RenterMatchesSerializer],
   exports: [RenterMatchesService],

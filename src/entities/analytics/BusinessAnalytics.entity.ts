@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { TelegramUser } from '../users/TelegramUser';
+import { TelegramUserEntity } from '../users/TelegramUser.entity';
 
 @Entity({ name: 'business_analytics' })
 export class BusinessAnalyticsEntity {
@@ -10,8 +10,8 @@ export class BusinessAnalyticsEntity {
   readonly telegramUserId: string;
 
   @JoinColumn({ name: 'telegram_user_id' })
-  @OneToOne(() => TelegramUser)
-  readonly telegramUser: TelegramUser;
+  @OneToOne(() => TelegramUserEntity)
+  readonly telegramUser: TelegramUserEntity;
 
   @Column({ type: 'boolean', name: 'entered', nullable: false, default: true })
   readonly entered: boolean;

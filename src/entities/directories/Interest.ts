@@ -1,5 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Renter } from '../users/Renter';
+import { RenterEntity } from '../users/Renter.entity';
 import { InterestEnumType } from '../../modules/api/renters/renters.type';
 
 @Entity({ name: 'directory_interests' })
@@ -15,11 +15,11 @@ export class Interest {
   })
   interest: InterestEnumType;
 
-  @ManyToMany(() => Renter)
+  @ManyToMany(() => RenterEntity)
   @JoinTable({
     name: 'renters_j_directory_interests',
     joinColumn: { name: 'interest_id' },
     inverseJoinColumn: { name: 'renter_id' },
   })
-  renters: Renter[];
+  renters: RenterEntity[];
 }
