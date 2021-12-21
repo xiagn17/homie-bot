@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { Any, Connection } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '../../logger/logger.service';
-import { MoneyRange } from '../../../entities/directories/MoneyRange';
-import { Location } from '../../../entities/directories/Location';
-import { SubwayStation } from '../../../entities/directories/SubwayStation';
-import { Interest } from '../../../entities/directories/Interest';
+import { MoneyRangeEntity } from '../../../entities/directories/MoneyRange.entity';
+import { LocationEntity } from '../../../entities/directories/Location.entity';
+import { SubwayStationEntity } from '../../../entities/directories/SubwayStation.entity';
+import { InterestEntity } from '../../../entities/directories/Interest.entity';
 import { RentersRepository } from '../../../repositories/users/renters.repository';
-import { RenterEntity } from '../../../entities/users/Renter.entity';
+import { RenterEntity } from '../../../entities/renters/Renter.entity';
 import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
 import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo.repository';
-import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
+import { MatchesInfoEntity } from '../../../entities/renters/MatchesInfo.entity';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { BusinessAnalyticsFieldsEnumType } from '../analytics/analytics.type';
 import { RentersSerializer } from './renters.serializer';
@@ -34,7 +34,7 @@ export class RentersService {
 
   public async getRenterByChatId(
     chatId: string,
-  ): Promise<{ renter: RenterEntity; matchesInfo: MatchesInfo } | undefined> {
+  ): Promise<{ renter: RenterEntity; matchesInfo: MatchesInfoEntity } | undefined> {
     const renter = await this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
     if (!renter) {
       return undefined;
@@ -54,15 +54,17 @@ export class RentersService {
       const telegramUser = await manager
         .getRepository(TelegramUserEntity)
         .findOneOrFail({ chatId: renterDto.chatId });
-      const location = await manager.getRepository(Location).findOneOrFail({ area: renterDto.location });
+      const location = await manager
+        .getRepository(LocationEntity)
+        .findOneOrFail({ area: renterDto.location });
       const moneyRange = await manager
-        .getRepository(MoneyRange)
+        .getRepository(MoneyRangeEntity)
         .findOneOrFail({ range: renterDto.moneyRange });
       const interests = await manager
-        .getRepository(Interest)
+        .getRepository(InterestEntity)
         .find({ interest: Any(renterDto.interests ?? []) });
       const subwayStations = await manager
-        .getRepository(SubwayStation)
+        .getRepository(SubwayStationEntity)
         .find({ station: Any(renterDto.subwayStations) });
 
       const renterDbData = this.rentersSerializer.mapToDbData({

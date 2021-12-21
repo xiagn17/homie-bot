@@ -1,9 +1,9 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { RenterEntity } from '../users/Renter.entity';
+import { RenterEntity } from '../renters/Renter.entity';
 import { MoneyRangeEnumType } from '../../modules/api/renters/renters.type';
 
 @Entity({ name: 'directory_money_ranges' })
-export class MoneyRange {
+export class MoneyRangeEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'money_range_id' })
   readonly id: string;
 

@@ -2,16 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '../../logger/logger.service';
-import { RenterEntity } from '../../../entities/users/Renter.entity';
+import { RenterEntity } from '../../../entities/renters/Renter.entity';
 import { RenterMatchesRepository } from '../../../repositories/matches/renterMatches.repository';
 import { RentersRepository } from '../../../repositories/users/renters.repository';
 import { SubwayStationsRepository } from '../../../repositories/directories/subwayStations.repository';
 import { MoneyRangesRepository } from '../../../repositories/directories/moneyRanges.repository';
 import { LocationsRepository } from '../../../repositories/directories/locations.repository';
 import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo.repository';
-import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
+import { MatchesInfoEntity } from '../../../entities/renters/MatchesInfo.entity';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
-import { RenterMatch } from '../../../entities/matches/RenterMatch';
+import { RenterMatchEntity } from '../../../entities/matches/RenterMatch.entity';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { BusinessAnalyticsFieldsEnumType } from '../analytics/analytics.type';
 import {
@@ -96,7 +96,7 @@ export class RenterMatchesService {
     }
   }
 
-  public async addPaidMatches(chatId: string): Promise<MatchesInfo> {
+  public async addPaidMatches(chatId: string): Promise<MatchesInfoEntity> {
     const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
     if (!renter) {
       throw new Error(`Add Paid matches failed at user with chatId = ${chatId}. He has not Renter`);
@@ -151,7 +151,7 @@ export class RenterMatchesService {
     return matchedRenters;
   }
 
-  private async processMatch(renter: RenterEntity, matchedRenter: RenterEntity): Promise<RenterMatch> {
+  private async processMatch(renter: RenterEntity, matchedRenter: RenterEntity): Promise<RenterMatchEntity> {
     const processingMatch = await this.entityManager
       .getCustomRepository(RenterMatchesRepository)
       .createMatch(renter, matchedRenter, MatchStatusEnumType.processing);

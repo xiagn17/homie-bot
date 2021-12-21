@@ -1,10 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { RenterEntity } from '../users/Renter.entity';
 import { MatchStatusEnumType } from '../../modules/api/renter-matches/renter-matches.type';
+import { RenterEntity } from '../renters/Renter.entity';
 
 @Entity({ name: 'renter_matches' })
 @Unique(['firstId', 'secondId'])
-export class RenterMatch {
+export class RenterMatchEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'renter_match_id' })
   readonly id: string;
 

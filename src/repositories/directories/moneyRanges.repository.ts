@@ -1,11 +1,11 @@
 import { EntityRepository, In, Repository } from 'typeorm';
-import { MoneyRange } from '../../entities/directories/MoneyRange';
+import { MoneyRangeEntity } from '../../entities/directories/MoneyRange.entity';
 import { MoneyRangeEnumType } from '../../modules/api/renters/renters.type';
 
-@EntityRepository(MoneyRange)
-export class MoneyRangesRepository extends Repository<MoneyRange> {
-  async getMoneyRangeIdsForMatch(renterMoneyRange: MoneyRange): Promise<string[]> {
-    const getMoneyRanges = async (): Promise<MoneyRange[]> => {
+@EntityRepository(MoneyRangeEntity)
+export class MoneyRangesRepository extends Repository<MoneyRangeEntity> {
+  async getMoneyRangeIdsForMatch(renterMoneyRange: MoneyRangeEntity): Promise<string[]> {
+    const getMoneyRanges = async (): Promise<MoneyRangeEntity[]> => {
       if (renterMoneyRange.range === MoneyRangeEnumType.prelow) {
         return this.find({ range: In([MoneyRangeEnumType.prelow, MoneyRangeEnumType.low]) });
       } else if (renterMoneyRange.range === MoneyRangeEnumType.low) {

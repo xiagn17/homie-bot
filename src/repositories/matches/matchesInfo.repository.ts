@@ -1,13 +1,13 @@
 import { EntityRepository, Repository, UpdateResult } from 'typeorm';
-import { MatchesInfo } from '../../entities/matches/MatchesInfo';
+import { MatchesInfoEntity } from '../../entities/renters/MatchesInfo.entity';
 
-@EntityRepository(MatchesInfo)
-export class MatchesInfoRepository extends Repository<MatchesInfo> {
+@EntityRepository(MatchesInfoEntity)
+export class MatchesInfoRepository extends Repository<MatchesInfoEntity> {
   stopSearching(renterId: string): Promise<UpdateResult> {
     return this.createQueryBuilder()
-      .update(MatchesInfo)
+      .update(MatchesInfoEntity)
       .set({
-        inSearch: false,
+        inSearchMate: false,
       })
       .where('renterId = :renterId', { renterId: renterId })
       .execute();
@@ -15,21 +15,21 @@ export class MatchesInfoRepository extends Repository<MatchesInfo> {
 
   startSearching(renterId: string): Promise<UpdateResult> {
     return this.createQueryBuilder()
-      .update(MatchesInfo)
+      .update(MatchesInfoEntity)
       .set({
-        inSearch: true,
+        inSearchMate: true,
       })
       .where('renterId = :renterId', { renterId: renterId })
       .execute();
   }
 
-  getMatchesInfoByRenterId(renterId: string): Promise<MatchesInfo> {
+  getMatchesInfoByRenterId(renterId: string): Promise<MatchesInfoEntity> {
     return this.createQueryBuilder('matchesInfo')
       .where('matchesInfo.renterId = :renterId', { renterId: renterId })
       .getOneOrFail();
   }
 
-  async decreaseAbleMatches(matchesInfo: MatchesInfo): Promise<MatchesInfo> {
+  async decreaseAbleMatches(matchesInfo: MatchesInfoEntity): Promise<MatchesInfoEntity> {
     await this.save({
       id: matchesInfo.id,
       ableMatches: matchesInfo.ableMatches - 1,
@@ -37,7 +37,7 @@ export class MatchesInfoRepository extends Repository<MatchesInfo> {
     return this.findOneOrFail(matchesInfo.id);
   }
 
-  async addAbleMatches(matchesInfo: MatchesInfo, matchesCount: number): Promise<MatchesInfo> {
+  async addAbleMatches(matchesInfo: MatchesInfoEntity, matchesCount: number): Promise<MatchesInfoEntity> {
     await this.save({
       id: matchesInfo.id,
       ableMatches: matchesInfo.ableMatches + matchesCount,
@@ -45,12 +45,12 @@ export class MatchesInfoRepository extends Repository<MatchesInfo> {
     return this.findOneOrFail(matchesInfo.id);
   }
 
-  createInfo(renterId: string, defaultAbleMatches: number): Promise<MatchesInfo> {
+  createInfo(renterId: string, defaultAbleMatches: number): Promise<MatchesInfoEntity> {
     return this.save(
       this.create({
         renterId: renterId,
         ableMatches: defaultAbleMatches,
-        inSearch: false,
+        inSearchMate: false,
       }),
     );
   }

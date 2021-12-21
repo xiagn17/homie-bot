@@ -9,13 +9,13 @@ import {
   OneToOne,
 } from 'typeorm';
 
-import { MoneyRange } from '../directories/MoneyRange';
-import { SubwayStation } from '../directories/SubwayStation';
-import { Interest } from '../directories/Interest';
-import { Location } from '../directories/Location';
+import { MoneyRangeEntity } from '../directories/MoneyRange.entity';
+import { SubwayStationEntity } from '../directories/SubwayStation.entity';
+import { InterestEntity } from '../directories/Interest.entity';
+import { LocationEntity } from '../directories/Location.entity';
 import { GenderEnumType, WithAnotherGenderEnumType } from '../../modules/api/renters/renters.type';
-import { MatchesInfo } from '../matches/MatchesInfo';
-import { TelegramUserEntity } from './TelegramUser.entity';
+import { TelegramUserEntity } from '../users/TelegramUser.entity';
+import { MatchesInfoEntity } from './MatchesInfo.entity';
 
 @Entity({ name: 'renters' })
 export class RenterEntity {
@@ -47,9 +47,9 @@ export class RenterEntity {
   })
   phoneNumber: string;
 
-  @ManyToOne(() => MoneyRange)
+  @ManyToOne(() => MoneyRangeEntity)
   @JoinColumn({ name: 'money_range_id' })
-  moneyRange: MoneyRange;
+  moneyRange: MoneyRangeEntity;
 
   @Column('uuid', { name: 'money_range_id' })
   moneyRangeId: string;
@@ -57,31 +57,31 @@ export class RenterEntity {
   @Column({ name: 'planned_arrival', type: 'date', nullable: false })
   plannedArrival: string;
 
-  @ManyToOne(() => Location)
+  @ManyToOne(() => LocationEntity)
   @JoinColumn({ name: 'location_id' })
-  location: Location;
+  location: LocationEntity;
 
   @Column('uuid', { name: 'location_id' })
   locationId: string;
 
-  @ManyToMany(() => SubwayStation)
+  @ManyToMany(() => SubwayStationEntity)
   @JoinTable({
     name: 'renters_j_directory_subway_stations',
     joinColumn: { name: 'renter_id' },
     inverseJoinColumn: { name: 'subway_station_id' },
   })
-  subwayStations: SubwayStation[];
+  subwayStations: SubwayStationEntity[];
 
   @Column({ type: 'varchar', name: 'university', nullable: true })
   university: string | null;
 
-  @ManyToMany(() => Interest)
+  @ManyToMany(() => InterestEntity)
   @JoinTable({
     name: 'renters_j_directory_interests',
     joinColumn: { name: 'renter_id' },
     inverseJoinColumn: { name: 'interest_id' },
   })
-  interests: Interest[];
+  interests: InterestEntity[];
 
   @Column({ type: 'text', name: 'preferences', nullable: true })
   preferences: string | null;
@@ -115,6 +115,6 @@ export class RenterEntity {
   @OneToOne(() => TelegramUserEntity)
   telegramUser: TelegramUserEntity;
 
-  @OneToOne(() => MatchesInfo, info => info.renter)
-  matchesInfo: MatchesInfo;
+  @OneToOne(() => MatchesInfoEntity, info => info.renter)
+  matchesInfo: MatchesInfoEntity;
 }

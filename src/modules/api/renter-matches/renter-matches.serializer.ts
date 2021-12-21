@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { RenterEntity } from '../../../entities/users/Renter.entity';
-import { RenterMatch } from '../../../entities/matches/RenterMatch';
+import { RenterEntity } from '../../../entities/renters/Renter.entity';
+import { RenterMatchEntity } from '../../../entities/matches/RenterMatch.entity';
 import { ApiRenterMatchResponseType, MatchDataType } from './renter-matches.type';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class RenterMatchesSerializer {
     };
   }
 
-  prepareMatchData(matchedRenters: [RenterEntity, RenterEntity], match: RenterMatch): MatchDataType[] {
+  prepareMatchData(matchedRenters: [RenterEntity, RenterEntity], match: RenterMatchEntity): MatchDataType[] {
     return matchedRenters.map((renter, i, renters) => {
       return {
         targetChatId: renter.telegramUser.chatId,

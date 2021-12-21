@@ -1,9 +1,9 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { RenterEntity } from '../users/Renter.entity';
+import { RenterEntity } from '../renters/Renter.entity';
 import { SubwayStationEnumType } from '../../modules/api/renters/renters.type';
 
 @Entity({ name: 'directory_subway_stations' })
-export class SubwayStation {
+export class SubwayStationEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'subway_station_id' })
   readonly id: string;
 

@@ -1,10 +1,10 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { SubwayStation } from '../../entities/directories/SubwayStation';
+import { SubwayStationEntity } from '../../entities/directories/SubwayStation.entity';
 import { SubwayStationEnumType } from '../../modules/api/renters/renters.type';
 
-@EntityRepository(SubwayStation)
-export class SubwayStationsRepository extends Repository<SubwayStation> {
-  async getRenterStationIdsForMatch(renterSubwayStations: SubwayStation[]): Promise<string[]> {
+@EntityRepository(SubwayStationEntity)
+export class SubwayStationsRepository extends Repository<SubwayStationEntity> {
+  async getRenterStationIdsForMatch(renterSubwayStations: SubwayStationEntity[]): Promise<string[]> {
     if (renterSubwayStations.find(station => station.station === SubwayStationEnumType.nevermind)) {
       const nevermindStation = await this.findOneOrFail({ station: SubwayStationEnumType.nevermind });
       return renterSubwayStations.map(station => station.id).concat([nevermindStation.id]);

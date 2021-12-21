@@ -1,5 +1,5 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { RenterEntity } from './Renter.entity';
+import { RenterEntity } from '../renters/Renter.entity';
 
 @Entity({ name: 'telegram_users' })
 @Unique(['username', 'botId', 'chatId'])

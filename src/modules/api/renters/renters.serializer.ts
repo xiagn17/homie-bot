@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { RenterEntity } from '../../../entities/users/Renter.entity';
-import { Location } from '../../../entities/directories/Location';
+import { RenterEntity } from '../../../entities/renters/Renter.entity';
+import { LocationEntity } from '../../../entities/directories/Location.entity';
 import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
-import { MoneyRange } from '../../../entities/directories/MoneyRange';
-import { MatchesInfo } from '../../../entities/matches/MatchesInfo';
+import { MoneyRangeEntity } from '../../../entities/directories/MoneyRange.entity';
+import { MatchesInfoEntity } from '../../../entities/renters/MatchesInfo.entity';
 import { CreateRenterDTO } from './renters.dto';
 import { ApiRenterFullType, ApiRenterResponseType } from './renters.type';
 
 interface RenterData {
   renterDto: CreateRenterDTO;
-  location: Location;
-  moneyRange: MoneyRange;
+  location: LocationEntity;
+  moneyRange: MoneyRangeEntity;
   telegramUser: TelegramUserEntity;
 }
 @Injectable()
@@ -60,7 +60,7 @@ export class RentersSerializer {
     fullRenter:
       | {
           renter: RenterEntity;
-          matchesInfo: MatchesInfo;
+          matchesInfo: MatchesInfoEntity;
         }
       | undefined,
   ): ApiRenterFullType {

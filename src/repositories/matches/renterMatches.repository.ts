@@ -1,15 +1,15 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { RenterMatch } from '../../entities/matches/RenterMatch';
-import { RenterEntity } from '../../entities/users/Renter.entity';
+import { RenterMatchEntity } from '../../entities/matches/RenterMatch.entity';
+import { RenterEntity } from '../../entities/renters/Renter.entity';
 import { MatchStatusEnumType } from '../../modules/api/renter-matches/renter-matches.type';
 
-@EntityRepository(RenterMatch)
-export class RenterMatchesRepository extends Repository<RenterMatch> {
+@EntityRepository(RenterMatchEntity)
+export class RenterMatchesRepository extends Repository<RenterMatchEntity> {
   createMatch(
     renter: RenterEntity,
     matchedRenter: RenterEntity,
     status: MatchStatusEnumType,
-  ): Promise<RenterMatch> {
+  ): Promise<RenterMatchEntity> {
     return this.save(
       this.create({
         firstId: renter.id,
@@ -19,7 +19,7 @@ export class RenterMatchesRepository extends Repository<RenterMatch> {
     );
   }
 
-  findResolvedRejectedMatches(renterId: string): Promise<RenterMatch[]> {
+  findResolvedRejectedMatches(renterId: string): Promise<RenterMatchEntity[]> {
     return this.createQueryBuilder('match')
       .where('(match.firstId = :renterId OR match.secondId = :renterId)', { renterId })
       .andWhere('(match.status = :rejected OR match.status = :resolved)', {
@@ -29,7 +29,7 @@ export class RenterMatchesRepository extends Repository<RenterMatch> {
       .getMany();
   }
 
-  async changeMatchStatus(matchId: string, status: MatchStatusEnumType): Promise<RenterMatch> {
+  async changeMatchStatus(matchId: string, status: MatchStatusEnumType): Promise<RenterMatchEntity> {
     await this.save({
       id: matchId,
       status: status,
@@ -37,7 +37,7 @@ export class RenterMatchesRepository extends Repository<RenterMatch> {
     return this.findOneOrFail(matchId);
   }
 
-  getProcessingMatch(renterId: string): Promise<RenterMatch | undefined> {
+  getProcessingMatch(renterId: string): Promise<RenterMatchEntity | undefined> {
     return this.createQueryBuilder('match')
       .where('(match.firstId = :renterId OR match.secondId = :renterId)', { renterId })
       .andWhere('match.status = :processingStatus', { processingStatus: MatchStatusEnumType.processing })

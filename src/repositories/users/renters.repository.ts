@@ -1,12 +1,12 @@
 import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
-import { RenterEntity } from '../../entities/users/Renter.entity';
-import { SubwayStation } from '../../entities/directories/SubwayStation';
-import { Interest } from '../../entities/directories/Interest';
+import { RenterEntity } from '../../entities/renters/Renter.entity';
+import { SubwayStationEntity } from '../../entities/directories/SubwayStation.entity';
+import { InterestEntity } from '../../entities/directories/Interest.entity';
 import { WithAnotherGenderEnumType } from '../../modules/api/renters/renters.type';
 
 interface RelationDataType {
-  subwayStations: SubwayStation[];
-  interests: Interest[];
+  subwayStations: SubwayStationEntity[];
+  interests: InterestEntity[];
 }
 @EntityRepository(RenterEntity)
 export class RentersRepository extends Repository<RenterEntity> {
@@ -75,7 +75,7 @@ export class RentersRepository extends Repository<RenterEntity> {
       .where('renter.id NOT IN (:...renterIds)', {
         renterIds: matchOptions.renterIdsToExclude,
       })
-      .innerJoin('renter.matchesInfo', 'matchesInfo', 'matchesInfo.inSearch = true');
+      .innerJoin('renter.matchesInfo', 'matchesInfo', 'matchesInfo.inSearchMate = true');
 
     if (renter.liveWithAnotherGender === WithAnotherGenderEnumType.not) {
       rentersQuery.andWhere('renter.gender = :gender', {
