@@ -1,4 +1,8 @@
 import { TelegramUserType } from '../telegram-bot/telegram-bot.types';
+import { LocationEnumType } from '../../../entities/directories/Location.entity';
+import { SubwayStationEnumType } from '../../../entities/directories/SubwayStation.entity';
+import { InterestEnumType } from '../../../entities/directories/Interest.entity';
+import { MoneyRangeEnumType } from '../../../entities/directories/MoneyRange.entity';
 
 export interface ApiTelegramUserResponseType {
   username: string;
@@ -48,50 +52,6 @@ export enum GenderEnumType {
 export enum WithAnotherGenderEnumType {
   yes = 'yes',
   not = 'not',
-}
-
-export enum MoneyRangeEnumType {
-  prelow = '15000-20000',
-  low = '20000-25000',
-  middle = '25000-30000',
-  high = '30000-40000',
-}
-
-export enum LocationEnumType {
-  center = 'Центр (любая ветка)',
-  north = 'Север',
-  south = 'Юг',
-  west = 'Запад',
-  east = 'Восток',
-  nevermind = 'Не имеет значения',
-}
-
-export enum SubwayStationEnumType {
-  nevermind = 'Любая',
-  red = 'Красная',
-  green = 'Зеленая',
-  blue = 'Синяя',
-  lightBlue = 'Голубая',
-  ring = 'Кольцевая',
-  orange = 'Оранжевая',
-  purple = 'Фиолетовая',
-  yellow = 'Желтая',
-  grey = 'Серая',
-  lightGreen = 'Салатовая',
-  lightPurple = 'Бирюзовая',
-  greyBlue = 'Серо-голубая',
-}
-
-export enum InterestEnumType {
-  clubs = 'Бары и клубы',
-  sport = 'Спорт, йога',
-  art = 'Литература, живопись',
-  cinema = 'Кинематограф',
-  music = 'Музыка',
-  events = 'Техно вечеринки, фестивали',
-  politics = 'Политика, финансы',
-  fashion = 'Мода',
-  cooking = 'Кулинария',
 }
 
 export interface ApiRenterFullType {

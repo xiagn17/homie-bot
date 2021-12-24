@@ -1,6 +1,17 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { RenterEntity } from '../renters/Renter.entity';
-import { InterestEnumType } from '../../modules/api/renters/renters.type';
+
+export enum InterestEnumType {
+  clubs = 'Бары и клубы',
+  sport = 'Спорт, йога',
+  art = 'Литература, живопись',
+  cinema = 'Кинематограф',
+  music = 'Музыка',
+  events = 'Техно вечеринки, фестивали',
+  politics = 'Политика, финансы',
+  fashion = 'Мода',
+  cooking = 'Кулинария',
+}
 
 @Entity({ name: 'directory_interests' })
 export class InterestEntity {

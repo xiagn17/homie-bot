@@ -46,6 +46,7 @@ export class AddLandlords1639942047558 implements MigrationInterface {
             comment text NOT NULL,
             telegram_user_id uuid NOT NULL REFERENCES telegram_users (telegram_user_id),
             created_at timestamptz NOT NULL DEFAULT now(),
+            updated_at timestamptz NOT NULL DEFAULT now(),
             archived_at timestamptz NULL,
             is_approved boolean NOT NULL DEFAULT FALSE
         );

@@ -1,20 +1,25 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
-  PrimaryGeneratedColumn,
-  JoinColumn,
-  OneToOne,
   OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { SubwayStationEntity } from '../directories/SubwayStation.entity';
 import { LocationEntity } from '../directories/Location.entity';
 import { TelegramUserEntity } from '../users/TelegramUser.entity';
-import { PreferredGenderEnumType } from '../../modules/api/landlord-objects/landlord-objects.type';
 import { LandlordObjectPhotoEntity } from './LandlordObjectPhoto.entity';
+
+export enum PreferredGenderEnumType {
+  MALE = 'male',
+  FEMALE = 'female',
+  NO_DIFFERENCE = 'no_difference',
+}
 
 @Entity({ name: 'landlord_objects' })
 export class LandlordObjectEntity {
@@ -51,10 +56,10 @@ export class LandlordObjectEntity {
   @Column({ type: 'enum', name: 'preferred_gender', nullable: false, enum: PreferredGenderEnumType })
   preferredGender: PreferredGenderEnumType;
 
-  @Column({ type: 'boolean', nullable: false })
+  @Column({ name: 'show_couples', type: 'boolean', nullable: false })
   showCouples: boolean;
 
-  @Column({ type: 'boolean', nullable: false })
+  @Column({ name: 'show_with_animals', type: 'boolean', nullable: false })
   showWithAnimals: boolean;
 
   @Column({ name: 'start_arrival_date', type: 'date', nullable: false })
@@ -73,7 +78,7 @@ export class LandlordObjectEntity {
   @OneToOne(() => TelegramUserEntity)
   telegramUser: TelegramUserEntity;
 
-  @Column({ type: 'boolean', nullable: false, default: false })
+  @Column({ name: 'is_approved', type: 'boolean', nullable: false, default: false })
   isApproved: boolean;
 
   @ManyToMany(() => SubwayStationEntity)
@@ -89,6 +94,9 @@ export class LandlordObjectEntity {
 
   @Column({ name: 'created_at', type: 'timestamptz', default: 'now()' })
   readonly createdAt: Date;
+
+  @Column({ name: 'updated_at', type: 'timestamptz', default: 'now()' })
+  readonly updatedAt: Date;
 
   @Column({ name: 'archived_at', type: 'timestamptz' })
   readonly archivedAt: Date | null;

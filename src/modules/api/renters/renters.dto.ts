@@ -1,13 +1,9 @@
 import { IsBoolean, IsDate, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import {
-  RenterType,
-  GenderEnumType,
-  InterestEnumType,
-  WithAnotherGenderEnumType,
-  LocationEnumType,
-  MoneyRangeEnumType,
-  SubwayStationEnumType,
-} from './renters.type';
+import { LocationEnumType } from '../../../entities/directories/Location.entity';
+import { SubwayStationEnumType } from '../../../entities/directories/SubwayStation.entity';
+import { InterestEnumType } from '../../../entities/directories/Interest.entity';
+import { MoneyRangeEnumType } from '../../../entities/directories/MoneyRange.entity';
+import { RenterType, GenderEnumType, WithAnotherGenderEnumType } from './renters.type';
 
 export class CreateRenterDTO implements RenterType {
   @IsString()

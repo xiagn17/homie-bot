@@ -1,6 +1,21 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { RenterEntity } from '../renters/Renter.entity';
-import { SubwayStationEnumType } from '../../modules/api/renters/renters.type';
+
+export enum SubwayStationEnumType {
+  nevermind = 'Любая',
+  red = 'Красная',
+  green = 'Зеленая',
+  blue = 'Синяя',
+  lightBlue = 'Голубая',
+  ring = 'Кольцевая',
+  orange = 'Оранжевая',
+  purple = 'Фиолетовая',
+  yellow = 'Желтая',
+  grey = 'Серая',
+  lightGreen = 'Салатовая',
+  lightPurple = 'Бирюзовая',
+  greyBlue = 'Серо-голубая',
+}
 
 @Entity({ name: 'directory_subway_stations' })
 export class SubwayStationEntity {

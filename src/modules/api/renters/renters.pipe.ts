@@ -1,7 +1,10 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { INTERESTS_DATA, SUBWAY_STATIONS_DATA } from '../../../migrations/1629241839172-Initializing';
-import { InterestEnumType, LocationEnumType, RenterDraftType, SubwayStationEnumType } from './renters.type';
+import { LocationEnumType } from '../../../entities/directories/Location.entity';
+import { SubwayStationEnumType } from '../../../entities/directories/SubwayStation.entity';
+import { InterestEnumType } from '../../../entities/directories/Interest.entity';
 import { CreateRenterDTO } from './renters.dto';
+import { RenterDraftType } from './renters.type';
 
 const stringSeparator = (splattedString: string, separator: string = ','): string[] =>
   splattedString.split(separator).map(m => m.trim());

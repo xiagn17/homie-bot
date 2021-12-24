@@ -1,6 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { SubwayStationEntity } from '../../entities/directories/SubwayStation.entity';
-import { SubwayStationEnumType } from '../../modules/api/renters/renters.type';
+import { SubwayStationEntity, SubwayStationEnumType } from '../../entities/directories/SubwayStation.entity';
 
 @EntityRepository(SubwayStationEntity)
 export class SubwayStationsRepository extends Repository<SubwayStationEntity> {

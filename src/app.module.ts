@@ -9,6 +9,7 @@ import { DatabaseModule } from './modules/database/database.module';
 import { TelegramBotModule } from './modules/api/telegram-bot/telegram-bot.module';
 import { RentersModule } from './modules/api/renters/renters.module';
 import { RenterMatchesModule } from './modules/api/renter-matches/renter-matches.module';
+import { LandlordObjectsModule } from './modules/api/landlord-objects/landlord-objects.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RenterMatchesModule } from './modules/api/renter-matches/renter-matches
     TelegramBotModule,
     RentersModule,
     RenterMatchesModule,
+    LandlordObjectsModule,
   ],
 })
 export class AppModule {}

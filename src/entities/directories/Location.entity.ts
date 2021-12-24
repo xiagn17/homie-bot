@@ -1,6 +1,14 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { RenterEntity } from '../renters/Renter.entity';
-import { LocationEnumType } from '../../modules/api/renters/renters.type';
+
+export enum LocationEnumType {
+  center = 'Центр (любая ветка)',
+  north = 'Север',
+  south = 'Юг',
+  west = 'Запад',
+  east = 'Восток',
+  nevermind = 'Не имеет значения',
+}
 
 @Entity({ name: 'directory_locations' })
 export class LocationEntity {

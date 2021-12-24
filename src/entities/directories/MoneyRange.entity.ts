@@ -1,6 +1,12 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { RenterEntity } from '../renters/Renter.entity';
-import { MoneyRangeEnumType } from '../../modules/api/renters/renters.type';
+
+export enum MoneyRangeEnumType {
+  prelow = '15000-20000',
+  low = '20000-25000',
+  middle = '25000-30000',
+  high = '30000-40000',
+}
 
 @Entity({ name: 'directory_money_ranges' })
 export class MoneyRangeEntity {

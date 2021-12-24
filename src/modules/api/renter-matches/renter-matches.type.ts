@@ -1,10 +1,7 @@
-import {
-  ApiTelegramUserResponseType,
-  GenderEnumType,
-  LocationEnumType,
-  MoneyRangeEnumType,
-} from '../renters/renters.type';
+import { ApiTelegramUserResponseType, GenderEnumType } from '../renters/renters.type';
 import { TelegramUserType } from '../telegram-bot/telegram-bot.types';
+import { LocationEnumType } from '../../../entities/directories/Location.entity';
+import { MoneyRangeEnumType } from '../../../entities/directories/MoneyRange.entity';
 
 export enum MatchStatusEnumType {
   resolved = 'resolved',
