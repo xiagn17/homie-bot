@@ -67,10 +67,10 @@ export class LandlordObjectsService {
         .getCustomRepository(LandlordObjectsRepository)
         .createWithRelations(landlordObjectDbData, relationEntities);
 
-      const photoEntitiesCreatePromise = landlordObjectDto.photoUrls.map(photoUrl =>
+      const photoEntitiesCreatePromise = landlordObjectDto.photoIds.map(photoId =>
         manager.save(
           manager.getRepository(LandlordObjectPhotoEntity).create({
-            photoUrl,
+            photoId,
             landlordObjectId: landlordObjectEntity.id,
           }),
         ),

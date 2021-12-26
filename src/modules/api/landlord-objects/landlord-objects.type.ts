@@ -16,7 +16,7 @@ export interface ApiLandlordObjectType extends TelegramUserType {
   startArrivalDate: Date;
   price: string;
   comment: string;
-  photoUrls: string[];
+  photoIds: string[];
 }
 
 export interface ApiLandlordObjectDraftType extends TelegramUserType {
@@ -31,8 +31,8 @@ export interface ApiLandlordObjectDraftType extends TelegramUserType {
   showWithAnimals: 'true' | 'false';
   startArrivalDate: string;
   price: string;
+  photoIds: string;
   comment: string;
-  photoUrls: string[];
 }
 
 // export interface ApiLandlordObjectResponseType {

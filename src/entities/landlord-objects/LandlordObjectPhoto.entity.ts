@@ -2,13 +2,13 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique }
 import { LandlordObjectEntity } from './LandlordObject.entity';
 
 @Entity({ name: 'landlord_object_photos' })
-@Unique(['photoUrl'])
+@Unique(['photoId'])
 export class LandlordObjectPhotoEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'photo_id' })
   id: string;
 
-  @Column({ type: 'varchar', name: 'photo_url', nullable: false })
-  photoUrl: string;
+  @Column({ type: 'varchar', name: 'external_photo_id', nullable: false })
+  photoId: string;
 
   @Column('uuid', { name: 'landlord_object_id', nullable: false })
   landlordObjectId: string;

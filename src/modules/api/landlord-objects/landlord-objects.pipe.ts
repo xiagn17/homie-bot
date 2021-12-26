@@ -32,6 +32,7 @@ export class LandlordObjectsPipe
       averageAge: Number(value.averageAge),
       showCouples: value.showCouples === 'true',
       showWithAnimals: value.showWithAnimals === 'true',
+      photoIds: JSON.parse(value.photoIds),
     };
   }
 

@@ -9,9 +9,6 @@ export class LandlordObjectRenterMatchEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'match_id' })
   id: string;
 
-  @Column({ type: 'varchar', name: 'photo_url', nullable: false })
-  photoUrl: string;
-
   @Column('uuid', { name: 'renter_id', nullable: false })
   renterId: string;
 

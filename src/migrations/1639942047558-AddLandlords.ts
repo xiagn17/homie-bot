@@ -63,9 +63,9 @@ export class AddLandlords1639942047558 implements MigrationInterface {
     await queryRunner.query(`
         CREATE TABLE landlord_object_photos (
             photo_id uuid PRIMARY KEY default uuid_generate_v4(),
-            photo_url varchar NOT NULL,
+            external_photo_id varchar NOT NULL,
             landlord_object_id uuid NOT NULL REFERENCES landlord_objects (landlord_object_id),
-            UNIQUE(photo_url)
+            UNIQUE(external_photo_id)
         );
     `);
 

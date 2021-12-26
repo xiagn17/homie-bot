@@ -24,10 +24,9 @@ export class CreateLandlordObjectDto extends TelegramChatIdDTO implements ApiLan
   @IsString()
   phoneNumber: string;
 
-  @IsString()
   @ArrayMinSize(1)
   @ArrayUnique()
-  photoUrls: string[];
+  photoIds: string[];
 
   @IsEnum(PreferredGenderEnumType)
   preferredGender: PreferredGenderEnumType;
