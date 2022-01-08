@@ -33,10 +33,6 @@ export default (): ConfigurationType => {
       port: Number(process.env.REDIS_PORT),
     },
     telegramToken: String(process.env.TELEGRAM_TOKEN),
-    sendpulse: {
-      clientId: String(process.env.SENDPULSE_CLIENT_ID),
-      clientSecret: String(process.env.SENDPULSE_CLIENT_SECRET),
-    },
     renterMatches: {
       trialMatchesCount: Number(process.env.TRIAL_FREE_MATCHES_COUNT),
       paidMatchesCount: Number(process.env.PAID_MATCHES_COUNT),

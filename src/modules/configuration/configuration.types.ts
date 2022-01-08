@@ -23,11 +23,6 @@ export interface DatabaseConfigType {
   };
 }
 
-export interface SendpulseConfigType {
-  clientId: string;
-  clientSecret: string;
-}
-
 export interface RenterMatchesConfigType {
   trialMatchesCount: number;
   paidMatchesCount: number;
@@ -44,7 +39,6 @@ export interface ConfigurationType {
   database: DatabaseConfigType;
   redis: RedisConfigType;
   telegramToken: string;
-  sendpulse: SendpulseConfigType;
   renterMatches: RenterMatchesConfigType;
   adminUsername: string;
 }
