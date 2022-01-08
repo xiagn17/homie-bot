@@ -4,6 +4,6 @@
   "entryFile": "app.module",
   "root": ".",
   "compilerOptions": {
-    "tsConfigPath": "./tsconfig.build.json",
+    "tsConfigPath": "./tsconfig.build.json"
   }
 }
