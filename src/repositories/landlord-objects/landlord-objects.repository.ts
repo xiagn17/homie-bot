@@ -1,6 +1,10 @@
-import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
+import { EntityNotFoundError, EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import { SubwayStationEntity } from '../../entities/directories/SubwayStation.entity';
-import { LandlordObjectEntity } from '../../entities/landlord-objects/LandlordObject.entity';
+import {
+  LandlordObjectEntity,
+  PreferredGenderEnumType,
+} from '../../entities/landlord-objects/LandlordObject.entity';
+import { RenterEntity } from '../../entities/renters/Renter.entity';
 
 interface RelationDataType {
   subwayStations: SubwayStationEntity[];
@@ -21,6 +25,41 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     return landlordObjectEntity;
   }
 
+  async getNextObjectIdToApprove(): Promise<string | undefined> {
+    const result: [{ landlordObjectId: string }] | [] = await this.query(`
+        SELECT
+            landlord_object_id as "landlordObjectId"
+        FROM landlord_objects
+        WHERE archived_at IS NULL
+          AND is_approved = false
+        ORDER BY created_at
+        LIMIT 1
+    `);
+
+    return result[0]?.landlordObjectId;
+  }
+
+  async approveObject(id: string): Promise<void> {
+    await this.createQueryBuilder()
+      .update()
+      .set({
+        isApproved: true,
+        updatedAt: new Date(),
+      })
+      .where('id = :id', { id })
+      .execute();
+  }
+
+  async archiveObject(id: string): Promise<void> {
+    await this.createQueryBuilder()
+      .update()
+      .set({
+        archivedAt: new Date(),
+      })
+      .where('id = :id', { id })
+      .execute();
+  }
+
   getFullObject(landlordObjectId: string): Promise<LandlordObjectEntity> {
     const landlordObjectQb = this.createQueryBuilder('landlordObject').where(
       'landlordObject.id = :landlordObjectId',
@@ -30,13 +69,29 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     );
     return this.getWithRelationsQb(landlordObjectQb).getOneOrFail();
   }
-  //
-  // getByChatId(chatId: string): Promise<RenterEntity | undefined> {
-  //   const renterQb = this.createQueryBuilder('renter').where('telegramUser.chatId = :chatId', {
-  //     chatId: chatId,
-  //   });
-  //   return this.getWithRelationsQb(renterQb).getOne();
-  // }
+
+  async getByChatId(chatId: string): Promise<LandlordObjectEntity[]> {
+    const renterQb = this.createQueryBuilder('landlordObject')
+      .where('telegramUser.chatId = :chatId', {
+        chatId: chatId,
+      })
+      .andWhere('landlordObject.archivedAt IS NULL');
+    const landlordObjectEntities = await this.getWithRelationsQb(renterQb).getMany();
+    if (!landlordObjectEntities[0]) {
+      throw new EntityNotFoundError(LandlordObjectEntity, { chatId });
+    }
+    return landlordObjectEntities;
+  }
+
+  async renewObject(id: string): Promise<void> {
+    await this.createQueryBuilder()
+      .update()
+      .set({
+        updatedAt: new Date(),
+      })
+      .where('id = :id', { id })
+      .execute();
+  }
 
   getWithRelationsQb(
     landlordObjectQb: SelectQueryBuilder<LandlordObjectEntity>,
@@ -48,83 +103,50 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       .innerJoinAndSelect('landlordObject.photos', 'photos');
   }
 
-  // async getChatId(renterId: string): Promise<string> {
-  //   return (
-  //     await this.createQueryBuilder('renter')
-  //       .where('renter.id = :renterId', {
-  //         renterId: renterId,
-  //       })
-  //       .innerJoinAndSelect('renter.telegramUser', 'telegramUser')
-  //       .getOneOrFail()
-  //   ).telegramUser.chatId;
-  // }
-  //
-  // findMatchesForRenter(
-  //   renter: RenterEntity,
-  //   matchOptions: {
-  //     moneyRangeIds: string[];
-  //     locationIds: string[];
-  //     subwayStationIds: string[];
-  //     renterIdsToExclude: string[];
-  //   },
-  // ): Promise<RenterEntity[]> {
-  //   const rentersQuery = this.createQueryBuilder('renter')
-  //     .where('renter.id NOT IN (:...renterIds)', {
-  //       renterIds: matchOptions.renterIdsToExclude,
-  //     })
-  //     .innerJoin('renter.matchesInfo', 'matchesInfo', 'matchesInfo.inSearchMate = true');
-  //
-  //   if (renter.liveWithAnotherGender === WithAnotherGenderEnumType.not) {
-  //     rentersQuery.andWhere('renter.gender = :gender', {
-  //       gender: renter.gender,
-  //     });
-  //   } else if (renter.liveWithAnotherGender === WithAnotherGenderEnumType.yes) {
-  //     rentersQuery.andWhere(
-  //       '(renter.gender != :gender AND renter.liveWithAnotherGender = :anotherGender OR renter.gender = :gender)',
-  //       {
-  //         gender: renter.gender,
-  //         anotherGender: WithAnotherGenderEnumType.yes,
-  //       },
-  //     );
-  //   }
-  //
-  //   const age = new Date().getFullYear() - Number(renter.birthdayYear);
-  //   const birthdayYearOfThirtyYearsOld = new Date().getFullYear() - 30;
-  //   if (age < 30) {
-  //     rentersQuery.andWhere('renter.birthdayYear > :thirtyYear', {
-  //       thirtyYear: birthdayYearOfThirtyYearsOld,
-  //     });
-  //   } else {
-  //     rentersQuery.andWhere('renter.birthdayYear <= :thirtyYear', {
-  //       thirtyYear: birthdayYearOfThirtyYearsOld,
-  //     });
-  //   }
-  //
-  //   const weekBefore = new Date(
-  //     new Date(renter.plannedArrival).setDate(new Date(renter.plannedArrival).getDate() - 7),
-  //   );
-  //   const weekAfter = new Date(
-  //     new Date(renter.plannedArrival).setDate(new Date(renter.plannedArrival).getDate() + 7),
-  //   );
-  //   rentersQuery.andWhere('renter.plannedArrival >= :weekBefore AND renter.plannedArrival <= :weekAfter', {
-  //     weekBefore: weekBefore.toISOString(),
-  //     weekAfter: weekAfter.toISOString(),
-  //   });
-  //
-  //   if (matchOptions.locationIds.length !== 0) {
-  //     rentersQuery.andWhere('renter.locationId = ANY (:locationIds)', {
-  //       locationIds: matchOptions.locationIds,
-  //     });
-  //   }
-  //   rentersQuery.innerJoin('renter.moneyRange', 'moneyRange', `moneyRange.id = ANY (:moneyRangeIds)`, {
-  //     moneyRangeIds: matchOptions.moneyRangeIds,
-  //   });
-  //   if (matchOptions.subwayStationIds.length !== 0) {
-  //     rentersQuery.leftJoin('renter.subwayStations', 'subway', `subway.id = ANY (:subwayStationIds)`, {
-  //       subwayStationIds: matchOptions.subwayStationIds,
-  //     });
-  //   }
-  //
-  //   return rentersQuery.getMany();
-  // }
+  findMatchesForRenterToObjects(
+    renter: RenterEntity,
+    matchOptions: {
+      priceRange: [number, number];
+      locationIds: string[];
+      subwayStationIds: string[];
+      preferredGender: PreferredGenderEnumType[];
+    },
+  ): Promise<LandlordObjectEntity[]> {
+    const objectsQuery = this.createQueryBuilder('object');
+
+    const renterAge = new Date().getFullYear() - renter.birthdayYear;
+    const ageRangeStart = renterAge - 10;
+    const ageRangeEnd = renterAge + 10;
+    objectsQuery.where('(object.averageAge >= :ageRangeStart AND object.averageAge <= :ageRangeEnd)', {
+      ageRangeStart: ageRangeStart,
+      ageRangeEnd: ageRangeEnd,
+    });
+    objectsQuery.andWhere('(object.isApproved = true AND object.archivedAt IS NULL)');
+
+    if (renter.withAnimals) {
+      objectsQuery.andWhere('object.showWithAnimals = :showWithAnimals', { showWithAnimals: true });
+    }
+
+    objectsQuery.andWhere('object.preferredGender = ANY (:preferredGender)', {
+      preferredGender: matchOptions.preferredGender,
+    });
+
+    objectsQuery.andWhere('(object.price >= :priceRangeStart AND object.price <= :priceRangeEnd)', {
+      priceRangeStart: matchOptions.priceRange[0],
+      priceRangeEnd: matchOptions.priceRange[1],
+    });
+
+    if (matchOptions.locationIds.length) {
+      objectsQuery.andWhere('object.locationId = ANY (:locationIds)', {
+        locationIds: matchOptions.locationIds,
+      });
+    }
+    if (matchOptions.subwayStationIds.length) {
+      objectsQuery.leftJoin('object.subwayStations', 'subway', `subway.id = ANY (:subwayStationIds)`, {
+        subwayStationIds: matchOptions.subwayStationIds,
+      });
+    }
+
+    return objectsQuery.getMany();
+  }
 }

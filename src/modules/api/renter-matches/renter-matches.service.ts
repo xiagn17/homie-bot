@@ -35,7 +35,6 @@ export class RenterMatchesService {
     this.logger.setContext(this.constructor.name);
   }
 
-  // todo на эксепшены перехватывать в интерсепторе и делать обобщенную ошибку на сендпульс
   public async startMatchingRenter(chatId: string): Promise<ApiRenterStartMatchesResponse> {
     const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
     if (!renter) {
@@ -123,13 +122,13 @@ export class RenterMatchesService {
   ): Promise<RenterEntity[]> {
     const subwayStationIdsForMatch = await entityManager
       .getCustomRepository(SubwayStationsRepository)
-      .getRenterStationIdsForMatch(renter.subwayStations);
+      .getStationIdsForMatch(renter.subwayStations);
     const moneyRangeIdsForMatch = await entityManager
       .getCustomRepository(MoneyRangesRepository)
-      .getMoneyRangeIdsForMatch(renter.moneyRange);
+      .getMoneyRangeIdsForRenterMatch(renter.moneyRange);
     const locationIdsForMatch = await entityManager
       .getCustomRepository(LocationsRepository)
-      .getRenterLocationIdsForMatch(renter.location);
+      .getLocationIdsForMatch(renter.location);
     const renterMatchesToExclude = await entityManager
       .getCustomRepository(RenterMatchesRepository)
       .findResolvedRejectedMatches(renter.id);
@@ -146,7 +145,7 @@ export class RenterMatchesService {
 
     const matchedRenters = await entityManager
       .getCustomRepository(RentersRepository)
-      .findMatchesForRenter(renter, matchOptions);
+      .findMatchesRenterToRenter(renter, matchOptions);
 
     return matchedRenters;
   }

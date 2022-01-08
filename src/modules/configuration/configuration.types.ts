@@ -33,11 +33,18 @@ export interface RenterMatchesConfigType {
   paidMatchesCount: number;
 }
 
+export interface RedisConfigType {
+  host: string;
+  port: number;
+}
+
 export interface ConfigurationType {
   port: number;
   google_sheets: GoogleSheetsConfigType;
   database: DatabaseConfigType;
+  redis: RedisConfigType;
   telegramToken: string;
   sendpulse: SendpulseConfigType;
   renterMatches: RenterMatchesConfigType;
+  adminUsername: string;
 }

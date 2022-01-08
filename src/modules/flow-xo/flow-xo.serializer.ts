@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MatchDataType } from '../api/renter-matches/renter-matches.type';
-import { FlowXoFlowRunDataType } from './flow-xo.type';
+import { FlowXoFlowRunDataType, FlowXoRouteType } from './flow-xo.type';
 
 @Injectable()
 export class FlowXoSerializer {
@@ -17,6 +17,26 @@ export class FlowXoSerializer {
 
   preparePayMatchData(chatId: string, botId: string): FlowXoFlowRunDataType {
     return this.prepareRunFlowData(chatId, botId);
+  }
+
+  prepareNotificationFlowData(
+    { chatId, botId }: FlowXoRouteType,
+    method:
+      | 'admin_next_approve'
+      | 'rent_next_object'
+      | 'landlord_next_renter'
+      | 'rent_landlord_contacts'
+      | 'landlord_renew_object'
+      | 'landlord_got_approve',
+    message: string,
+  ): FlowXoFlowRunDataType {
+    return {
+      ...this.prepareRunFlowData(chatId, botId),
+      data: {
+        method: method,
+        message: message,
+      },
+    };
   }
 
   private prepareRunFlowData(chatId: string, botId: string): FlowXoFlowRunDataType {

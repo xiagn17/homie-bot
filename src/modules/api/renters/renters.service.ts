@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Any, Connection } from 'typeorm';
+import { Any, Connection, EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '../../logger/logger.service';
 import { MoneyRangeEntity } from '../../../entities/directories/MoneyRange.entity';
@@ -13,23 +13,27 @@ import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo
 import { MatchesInfoEntity } from '../../../entities/renters/MatchesInfo.entity';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { BusinessAnalyticsFieldsEnumType } from '../analytics/analytics.type';
+import { QueueObjectRenterMatchesProducerService } from '../../queues/object-renter-matches/producers/queue-object-renter-matches.producer.service';
 import { RentersSerializer } from './renters.serializer';
 import { CreateRenterDTO } from './renters.dto';
 
 @Injectable()
 export class RentersService {
   constructor(
-    private connection: Connection,
-
     private logger: Logger,
+    private connection: Connection,
 
     private rentersSerializer: RentersSerializer,
 
+    private queueObjectRenterMatchesService: QueueObjectRenterMatchesProducerService,
     private analyticsService: AnalyticsService,
-
     private configService: ConfigService,
   ) {
     this.logger.setContext(this.constructor.name);
+  }
+
+  getRenter(id: string, entityManager: EntityManager = this.connection.manager): Promise<RenterEntity> {
+    return entityManager.getCustomRepository(RentersRepository).getFullRenter(id);
   }
 
   public async getRenterByChatId(
@@ -47,6 +51,11 @@ export class RentersService {
 
   public getRenterByPhone(phoneNumber: string): Promise<RenterEntity | undefined> {
     return this.connection.getCustomRepository(RentersRepository).getByPhone(phoneNumber);
+  }
+
+  public async isUserRenter(chatId: string): Promise<boolean> {
+    const renter = await this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
+    return !!renter;
   }
 
   public async createRenter(renterDto: CreateRenterDTO): Promise<RenterEntity> {
@@ -88,6 +97,8 @@ export class RentersService {
       chatId: renterDto.chatId,
       field: BusinessAnalyticsFieldsEnumType.end_fill_renter_info,
     });
+    await this.queueObjectRenterMatchesService.pushJobCreateMatchesForRenter(renter.id);
+
     return renter;
   }
 }

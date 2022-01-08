@@ -20,5 +20,14 @@ services:
       - backend
     restart: always
 
+  redis:
+    image: redis:6.2.6-alpine
+    networks:
+      - web
+    volumes:
+      - redis_data:/data
+
 networks:
   web:
+volumes:
+  redis_data:

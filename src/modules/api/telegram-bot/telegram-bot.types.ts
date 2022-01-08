@@ -7,3 +7,7 @@ export interface ApiTelegramUserCreateType {
 export interface TelegramUserType {
   chatId: string; // user's telegram id
 }
+
+export interface TelegramUserResposeType {
+  username: string;
+}

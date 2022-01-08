@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { LocationEntity } from '../../../entities/directories/Location.entity';
 import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
 import { LandlordObjectEntity } from '../../../entities/landlord-objects/LandlordObject.entity';
-import { CreateLandlordObjectDto } from './landlord-objects.dto';
+import { CreateLandlordObjectDto } from './dto/landlord-objects.dto';
+import { ApiLandlordObjectFullResponseType } from './landlord-objects.type';
 
 interface LandlordObjectData {
   landlordObjectDto: CreateLandlordObjectDto;
@@ -11,8 +12,8 @@ interface LandlordObjectData {
 }
 @Injectable()
 export class LandlordObjectsSerializer {
-  mapToDbData(renterData: LandlordObjectData): Partial<LandlordObjectEntity> {
-    const { landlordObjectDto, location, telegramUser } = renterData;
+  mapToDbData(landlordObjectData: LandlordObjectData): Partial<LandlordObjectEntity> {
+    const { landlordObjectDto, location, telegramUser } = landlordObjectData;
     return {
       name: landlordObjectDto.name,
       address: landlordObjectDto.address,
@@ -30,23 +31,24 @@ export class LandlordObjectsSerializer {
     };
   }
 
-  // toResponse(fullRenter: RenterEntity): ApiRenterResponseType {
-  //   return {
-  //     username: fullRenter.telegramUser.username ?? fullRenter.phoneNumber,
-  //     name: fullRenter.name,
-  //     gender: fullRenter.gender,
-  //     birthdayYear: fullRenter.birthdayYear,
-  //     phone: fullRenter.phoneNumber,
-  //     moneyRange: fullRenter.moneyRange.range,
-  //     plannedArrivalDate: fullRenter.plannedArrival,
-  //     location: fullRenter.location.area,
-  //     subwayStations: fullRenter.subwayStations.map(station => station.station).join(', '),
-  //     zodiacSign: fullRenter.zodiacSign ?? '-',
-  //     university: fullRenter.university ?? '-',
-  //     interests: fullRenter.interests.map(interest => interest.interest).join(', '),
-  //     preferences: fullRenter.preferences ?? '-',
-  //     socials: fullRenter.socials,
-  //     withAnimals: fullRenter.withAnimals,
-  //   };
-  // }
+  toFullResponse(landlordObject: LandlordObjectEntity): ApiLandlordObjectFullResponseType {
+    return {
+      id: landlordObject.id,
+      number: landlordObject.number,
+      username: landlordObject.telegramUser.username ?? '',
+      name: landlordObject.name,
+      phoneNumber: landlordObject.phoneNumber,
+      location: landlordObject.location.area,
+      address: landlordObject.address,
+      subwayStations: landlordObject.subwayStations.map(station => station.station).join(', '),
+      preferredGender: landlordObject.preferredGender,
+      showCouples: landlordObject.showCouples,
+      showWithAnimals: landlordObject.showWithAnimals,
+      averageAge: landlordObject.averageAge,
+      startArrivalDate: landlordObject.startArrivalDate,
+      price: landlordObject.price,
+      photoIds: JSON.stringify(landlordObject.photos.map(p => p.photoId)),
+      comment: landlordObject.comment,
+    };
+  }
 }

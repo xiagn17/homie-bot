@@ -28,6 +28,10 @@ export default (): ConfigurationType => {
         migrationsRun: process.env.TYPEORM_MIGRATIONS_RUN === 'true',
       },
     },
+    redis: {
+      host: String(process.env.REDIS_HOST),
+      port: Number(process.env.REDIS_PORT),
+    },
     telegramToken: String(process.env.TELEGRAM_TOKEN),
     sendpulse: {
       clientId: String(process.env.SENDPULSE_CLIENT_ID),
@@ -37,5 +41,6 @@ export default (): ConfigurationType => {
       trialMatchesCount: Number(process.env.TRIAL_FREE_MATCHES_COUNT),
       paidMatchesCount: Number(process.env.PAID_MATCHES_COUNT),
     },
+    adminUsername: String(process.env.ADMIN_USERNAME),
   };
 };

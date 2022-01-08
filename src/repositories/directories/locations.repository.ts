@@ -3,11 +3,11 @@ import { LocationEntity, LocationEnumType } from '../../entities/directories/Loc
 
 @EntityRepository(LocationEntity)
 export class LocationsRepository extends Repository<LocationEntity> {
-  async getRenterLocationIdsForMatch(renterLocation: LocationEntity): Promise<string[]> {
-    if (renterLocation.area !== LocationEnumType.nevermind) {
-      const nevermindLocation = await this.findOneOrFail({ area: LocationEnumType.nevermind });
-      return [renterLocation.id, nevermindLocation.id];
+  async getLocationIdsForMatch(location: LocationEntity): Promise<string[]> {
+    if (location.area === LocationEnumType.nevermind) {
+      return [];
     }
-    return [];
+    const nevermindLocation = await this.findOneOrFail({ area: LocationEnumType.nevermind });
+    return [location.id, nevermindLocation.id];
   }
 }

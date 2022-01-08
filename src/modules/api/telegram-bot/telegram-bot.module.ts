@@ -10,6 +10,6 @@ import { TelegramBotSerializer } from './telegram-bot.serializer';
   imports: [LoggerModule, RenterMatchesModule, AnalyticsModule],
   controllers: [TelegramBotController],
   providers: [TelegramBotService, TelegramBotSerializer],
-  exports: [],
+  exports: [TelegramBotService],
 })
 export class TelegramBotModule {}

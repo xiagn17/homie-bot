@@ -37,10 +37,12 @@ export class RentersSerializer {
 
   toResponse(fullRenter: RenterEntity): ApiRenterResponseType {
     return {
-      username: fullRenter.telegramUser.username ?? fullRenter.phoneNumber,
+      id: fullRenter.id,
+      username: fullRenter.telegramUser.username ?? '',
       name: fullRenter.name,
       gender: fullRenter.gender,
       birthdayYear: fullRenter.birthdayYear,
+      age: new Date().getFullYear() - Number(fullRenter.birthdayYear),
       phone: fullRenter.phoneNumber,
       moneyRange: fullRenter.moneyRange.range,
       plannedArrivalDate: fullRenter.plannedArrival,
@@ -52,10 +54,10 @@ export class RentersSerializer {
       preferences: fullRenter.preferences ?? '-',
       socials: fullRenter.socials,
       withAnimals: fullRenter.withAnimals,
+      liveWithAnotherGender: fullRenter.liveWithAnotherGender,
     };
   }
 
-  // todo сделать интерфейс
   toResponseRenterExists(
     fullRenter:
       | {

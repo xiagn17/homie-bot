@@ -32,7 +32,6 @@ export class AnalyticsService {
       .updateField(analytics, analyticsChangeStatusDTO.field);
   }
 
-  // todo export to google sheets
   public async export(): Promise<void> {
     await new Promise(res => res(true));
     return;

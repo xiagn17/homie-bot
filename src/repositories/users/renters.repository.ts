@@ -2,8 +2,14 @@ import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import { RenterEntity } from '../../entities/renters/Renter.entity';
 import { SubwayStationEntity } from '../../entities/directories/SubwayStation.entity';
 import { InterestEntity } from '../../entities/directories/Interest.entity';
-import { WithAnotherGenderEnumType } from '../../modules/api/renters/renters.type';
+import { GenderEnumType, WithAnotherGenderEnumType } from '../../modules/api/renters/renters.type';
+import { LandlordObjectEntity } from '../../entities/landlord-objects/LandlordObject.entity';
 
+interface RenterChatIdDataRaw {
+  renterId: string;
+  chatId: string;
+  botId: string;
+}
 interface RelationDataType {
   subwayStations: SubwayStationEntity[];
   interests: InterestEntity[];
@@ -51,6 +57,20 @@ export class RentersRepository extends Repository<RenterEntity> {
       .leftJoinAndSelect('renter.interests', 'interest');
   }
 
+  getRentersChatId(renterIds: string[]): Promise<RenterChatIdDataRaw[]> {
+    const renterIdsString: string = renterIds.join("', '");
+    return this.query(`
+        SELECT
+               t_renters.renter_id as "renterId",
+               t_telegramUsers.chat_id AS "chatId",
+               t_telegramUsers.bot_id AS "botId"
+        FROM renters t_renters
+        INNER JOIN telegram_users t_telegramUsers
+            ON t_renters.telegram_user_id = t_telegramUsers.telegram_user_id
+        WHERE renter_id IN ('${renterIdsString}')
+    `);
+  }
+
   async getChatId(renterId: string): Promise<string> {
     return (
       await this.createQueryBuilder('renter')
@@ -62,7 +82,7 @@ export class RentersRepository extends Repository<RenterEntity> {
     ).telegramUser.chatId;
   }
 
-  findMatchesForRenter(
+  findMatchesRenterToRenter(
     renter: RenterEntity,
     matchOptions: {
       moneyRangeIds: string[];
@@ -123,6 +143,53 @@ export class RentersRepository extends Repository<RenterEntity> {
       moneyRangeIds: matchOptions.moneyRangeIds,
     });
     if (matchOptions.subwayStationIds.length !== 0) {
+      rentersQuery.leftJoin('renter.subwayStations', 'subway', `subway.id = ANY (:subwayStationIds)`, {
+        subwayStationIds: matchOptions.subwayStationIds,
+      });
+    }
+
+    return rentersQuery.getMany();
+  }
+
+  findMatchesForObjectToRenters(
+    landlordObject: LandlordObjectEntity,
+    matchOptions: {
+      gender: GenderEnumType | null;
+      moneyRangeIds: string[];
+      locationIds: string[];
+      subwayStationIds: string[];
+    },
+  ): Promise<RenterEntity[]> {
+    const rentersQuery = this.createQueryBuilder('renter');
+
+    const birthdayYearAverageAge = new Date().getFullYear() - landlordObject.averageAge;
+    const birthdayYearRangeStart = birthdayYearAverageAge - 10;
+    const birthdayYearRangeEnd = birthdayYearAverageAge + 10;
+    rentersQuery.where('(renter.birthdayYear >= :rangeStart AND renter.birthdayYear <= :rangeEnd)', {
+      rangeStart: birthdayYearRangeStart,
+      rangeEnd: birthdayYearRangeEnd,
+    });
+
+    if (!landlordObject.showWithAnimals) {
+      rentersQuery.andWhere('renter.withAnimals = :withAnimals', { withAnimals: false });
+    }
+
+    if (matchOptions.gender) {
+      rentersQuery.andWhere('renter.gender = :gender', {
+        gender: matchOptions.gender,
+      });
+    }
+
+    rentersQuery.innerJoin('renter.moneyRange', 'moneyRange', `moneyRange.id = ANY (:moneyRangeIds)`, {
+      moneyRangeIds: matchOptions.moneyRangeIds,
+    });
+
+    if (matchOptions.locationIds.length) {
+      rentersQuery.andWhere('renter.locationId = ANY (:locationIds)', {
+        locationIds: matchOptions.locationIds,
+      });
+    }
+    if (matchOptions.subwayStationIds.length) {
       rentersQuery.leftJoin('renter.subwayStations', 'subway', `subway.id = ANY (:subwayStationIds)`, {
         subwayStationIds: matchOptions.subwayStationIds,
       });

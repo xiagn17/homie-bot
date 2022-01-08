@@ -26,4 +26,8 @@ export class TelegramUsersRepository extends Repository<TelegramUserEntity> {
       .where('chatId = :chatId', { chatId })
       .execute();
   }
+
+  findByUsername(username: string): Promise<TelegramUserEntity> {
+    return this.findOneOrFail({ username });
+  }
 }

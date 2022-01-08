@@ -3,11 +3,11 @@ import { SubwayStationEntity, SubwayStationEnumType } from '../../entities/direc
 
 @EntityRepository(SubwayStationEntity)
 export class SubwayStationsRepository extends Repository<SubwayStationEntity> {
-  async getRenterStationIdsForMatch(renterSubwayStations: SubwayStationEntity[]): Promise<string[]> {
-    if (renterSubwayStations.find(station => station.station === SubwayStationEnumType.nevermind)) {
-      const nevermindStation = await this.findOneOrFail({ station: SubwayStationEnumType.nevermind });
-      return renterSubwayStations.map(station => station.id).concat([nevermindStation.id]);
+  async getStationIdsForMatch(subwayStations: SubwayStationEntity[]): Promise<string[]> {
+    if (subwayStations.find(station => station.station === SubwayStationEnumType.nevermind)) {
+      return [];
     }
-    return [];
+    const nevermindStation = await this.findOneOrFail({ station: SubwayStationEnumType.nevermind });
+    return subwayStations.map(station => station.id).concat([nevermindStation.id]);
   }
 }

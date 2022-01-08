@@ -8,3 +8,8 @@ export interface FlowXoFlowRunDataType {
 export interface FlowXoDefaultResponseType {
   msg: 'success';
 }
+
+export interface FlowXoRouteType {
+  botId: string;
+  chatId: string;
+}

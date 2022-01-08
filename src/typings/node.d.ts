@@ -12,6 +12,9 @@ declare namespace NodeJS {
     TYPEORM_LOGGING: string;
     TYPEORM_MIGRATIONS_RUN: string;
 
+    REDIS_HOST: string;
+    REDIS_PORT: string;
+
     TELEGRAM_TOKEN: string;
 
     SENDPULSE_CLIENT_ID: string;
@@ -19,5 +22,7 @@ declare namespace NodeJS {
 
     TRIAL_FREE_MATCHES_COUNT: string;
     PAID_MATCHES_COUNT: string;
+
+    ADMIN_USERNAME: string;
   }
 }

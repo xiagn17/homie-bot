@@ -61,9 +61,11 @@ export interface ApiRenterFullType {
 }
 
 export interface ApiRenterResponseType extends ApiTelegramUserResponseType {
+  id: string;
   name: string;
   gender: GenderEnumType;
   birthdayYear: number;
+  age: number;
   phone: string;
   moneyRange: MoneyRangeEnumType;
   plannedArrivalDate: string;
@@ -75,4 +77,5 @@ export interface ApiRenterResponseType extends ApiTelegramUserResponseType {
   preferences: string;
   socials: string;
   withAnimals: boolean;
+  liveWithAnotherGender: WithAnotherGenderEnumType;
 }

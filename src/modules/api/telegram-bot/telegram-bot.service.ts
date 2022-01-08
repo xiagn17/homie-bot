@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 import { Logger } from '../../logger/logger.service';
 import { TelegramUsersRepository } from '../../../repositories/users/telegramUsers.repository';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { RenterMatchesService } from '../renter-matches/renter-matches.service';
+import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
 import { TelegramBotSerializer } from './telegram-bot.serializer';
 import { TelegramUserCreateDto } from './telegram-bot.dto';
 
@@ -15,6 +17,7 @@ export class TelegramBotService {
     private telegramBotSerializer: TelegramBotSerializer,
     private renterMatchesService: RenterMatchesService,
     private analyticsService: AnalyticsService,
+    private configService: ConfigService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -40,5 +43,10 @@ export class TelegramBotService {
   public async unsubscribeUser(chatId: string): Promise<void> {
     await this.entityManager.getCustomRepository(TelegramUsersRepository).archiveUser(chatId);
     await this.renterMatchesService.stopMatchingRenter(chatId);
+  }
+
+  public getAdmin(): Promise<TelegramUserEntity> {
+    const adminUsername = this.configService.get('adminUsername');
+    return this.entityManager.getCustomRepository(TelegramUsersRepository).findByUsername(adminUsername);
   }
 }

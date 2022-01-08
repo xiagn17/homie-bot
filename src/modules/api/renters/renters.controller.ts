@@ -1,7 +1,6 @@
-import { Body, Controller, Post, Get, UsePipes, Param } from '@nestjs/common';
+import { Body, Controller, Post, Get, Param } from '@nestjs/common';
 import { CreateRenterDTO } from './renters.dto';
 import { RentersService } from './renters.service';
-import { RentersPipe } from './renters.pipe';
 import { RentersSerializer } from './renters.serializer';
 import { ApiRenterFullType, ApiRenterResponseType } from './renters.type';
 
@@ -38,6 +37,11 @@ export class RentersController {
     `;
   }
 
+  @Get('/is-renter/:chatId')
+  async isUserRenter(@Param('chatId') chatId: string): Promise<boolean> {
+    return this.rentersService.isUserRenter(chatId);
+  }
+
   @Get('/:chatId')
   async getRenterWithMatches(@Param('chatId') chatId: string): Promise<ApiRenterFullType> {
     const fullRenter = await this.rentersService.getRenterByChatId(chatId);
@@ -45,7 +49,6 @@ export class RentersController {
   }
 
   @Post()
-  @UsePipes(new RentersPipe())
   async createRenter(@Body() renter: CreateRenterDTO): Promise<ApiRenterResponseType | any> {
     const fullCreatedRenter = await this.rentersService.createRenter(renter);
     return this.rentersSerializer.toResponse(fullCreatedRenter);

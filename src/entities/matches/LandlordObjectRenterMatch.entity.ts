@@ -34,8 +34,11 @@ export class LandlordObjectRenterMatchEntity {
   @Column({
     type: 'enum',
     name: 'landlord_status',
-    nullable: false,
+    nullable: true,
     enum: MatchStatusEnumType,
   })
-  landlordStatus: MatchStatusEnumType;
+  landlordStatus: MatchStatusEnumType | null;
+
+  @Column({ name: 'updated_at', type: 'timestamptz' })
+  readonly updatedAt: Date | null;
 }

@@ -26,6 +26,9 @@ export class LandlordObjectEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'landlord_object_id' })
   readonly id: string;
 
+  @Column({ name: 'number', unique: true, nullable: false })
+  number: number;
+
   @Column({ type: 'varchar', name: 'name', nullable: false })
   name: string;
 
@@ -95,8 +98,8 @@ export class LandlordObjectEntity {
   @Column({ name: 'created_at', type: 'timestamptz', default: 'now()' })
   readonly createdAt: Date;
 
-  @Column({ name: 'updated_at', type: 'timestamptz', default: 'now()' })
-  readonly updatedAt: Date;
+  @Column({ name: 'updated_at', type: 'timestamptz' })
+  readonly updatedAt: Date | null;
 
   @Column({ name: 'archived_at', type: 'timestamptz' })
   readonly archivedAt: Date | null;
