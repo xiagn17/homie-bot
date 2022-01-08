@@ -5,6 +5,5 @@
   "root": ".",
   "compilerOptions": {
     "tsConfigPath": "./tsconfig.build.json",
-    "assets":["**/google-sheets.json"]
   }
 }
