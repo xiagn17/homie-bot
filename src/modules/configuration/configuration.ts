@@ -25,5 +25,6 @@ export default (): ConfigurationType => {
       paidMatchesCount: Number(process.env.PAID_MATCHES_COUNT),
     },
     adminUsername: String(process.env.ADMIN_USERNAME),
+    subAdminUsername: String(process.env.SUBADMIN_USERNAME),
   };
 };

@@ -49,4 +49,9 @@ export class TelegramBotService {
     const adminUsername = this.configService.get('adminUsername');
     return this.entityManager.getCustomRepository(TelegramUsersRepository).findByUsername(adminUsername);
   }
+
+  public getSubAdmin(): Promise<TelegramUserEntity> {
+    const subAdminUsername = this.configService.get('subAdminUsername');
+    return this.entityManager.getCustomRepository(TelegramUsersRepository).findByUsername(subAdminUsername);
+  }
 }

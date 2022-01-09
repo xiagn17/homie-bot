@@ -90,7 +90,11 @@ export class ObjectMatchesForRenterService {
     );
 
     const { chatId: adminChatId } = await this.telegramBotService.getAdmin();
-    if (adminChatId === landlordObject.telegramUser.chatId) {
+    const { chatId: subAdminChatId } = await this.telegramBotService.getSubAdmin();
+    if (
+      adminChatId === landlordObject.telegramUser.chatId ||
+      subAdminChatId === landlordObject.telegramUser.chatId
+    ) {
       await this.queueApproveAdminObjectService.setApproveAdminObject(renter.id, landlordObject.id);
       return;
     }

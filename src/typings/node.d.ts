@@ -21,5 +21,6 @@ declare namespace NodeJS {
     PAID_MATCHES_COUNT: string;
 
     ADMIN_USERNAME: string;
+    SUBADMIN_USERNAME: string;
   }
 }

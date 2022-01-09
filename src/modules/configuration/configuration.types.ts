@@ -28,4 +28,5 @@ export interface ConfigurationType {
   telegramToken: string;
   renterMatches: RenterMatchesConfigType;
   adminUsername: string;
+  subAdminUsername: string;
 }
