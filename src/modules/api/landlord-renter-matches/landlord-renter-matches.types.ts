@@ -11,3 +11,8 @@ export interface ApiChangeLandlordStatusOfObject {
   renterId: string;
   landlordStatus: MatchStatusEnumType.resolved | MatchStatusEnumType.rejected;
 }
+
+export interface ApiSetRenterLastInLandlordQueue {
+  landlordObjectId: string;
+  renterId: string;
+}

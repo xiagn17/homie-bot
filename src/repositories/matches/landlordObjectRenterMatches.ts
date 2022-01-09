@@ -60,7 +60,7 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
         AND renter_status = '${MatchStatusEnumType.processing}'
         GROUP BY renter_id;
     `,
-    );
+    ) as Promise<CountOfUnprocessedObjectsByRentersRawDataType[]>;
   }
 
   async getNextObjectIdForRenter(renterId: string): Promise<string | undefined> {
@@ -147,6 +147,19 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
       .update(LandlordObjectRenterMatchEntity)
       .set({
         landlordStatus: landlordStatus,
+        updatedAt: new Date(),
+      })
+      .where('renterId = :renterId AND landlordObjectId = :landlordObjectId', {
+        renterId: renterId,
+        landlordObjectId: landlordObjectId,
+      })
+      .execute();
+  }
+
+  async setRenterLastInLandlordQueue(renterId: string, landlordObjectId: string): Promise<void> {
+    await this.createQueryBuilder()
+      .update(LandlordObjectRenterMatchEntity)
+      .set({
         updatedAt: new Date(),
       })
       .where('renterId = :renterId AND landlordObjectId = :landlordObjectId', {

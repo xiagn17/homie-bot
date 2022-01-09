@@ -17,6 +17,7 @@ import { MatchStatusEnumType } from '../renter-matches/renter-matches.type';
 import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
 import { RentersService } from '../renters/renters.service';
 import { ChangeLandlordStatusOfObjectDto } from './dto/ChangeLandlordStatusOfObjectDto';
+import { SetRenterLastInLandlordQueueDto } from './dto/SetRenterLastInLandlordQueue.dto';
 
 @Injectable()
 export class ObjectMatchesForLandlordService {
@@ -97,6 +98,17 @@ export class ObjectMatchesForLandlordService {
 
       await this.flowXoService.notificationLandlordContactsToRenter(landlordObject, renter.telegramUser);
     }
+  }
+
+  public async setRenterLastInLandlordQueue(
+    setRenterLastInLandlordQueueDto: SetRenterLastInLandlordQueueDto,
+  ): Promise<void> {
+    await this.entityManager
+      .getCustomRepository(LandlordObjectRenterMatchesRepository)
+      .setRenterLastInLandlordQueue(
+        setRenterLastInLandlordQueueDto.renterId,
+        setRenterLastInLandlordQueueDto.landlordObjectId,
+      );
   }
 
   private async sendPushObjectToRenters(renterIds: string[]): Promise<void> {

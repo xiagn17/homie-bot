@@ -7,6 +7,7 @@ import { ObjectMatchesForRenterService } from './object-matches.for-renter.servi
 import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';
 import { ObjectMatchesForLandlordService } from './object-matches.for-landlord.service';
 import { ChangeLandlordStatusOfObjectDto } from './dto/ChangeLandlordStatusOfObjectDto';
+import { SetRenterLastInLandlordQueueDto } from './dto/SetRenterLastInLandlordQueue.dto';
 
 @Controller('landlord-renter-matches')
 export class LandlordRenterMatchesController {
@@ -59,5 +60,12 @@ export class LandlordRenterMatchesController {
     @Body() landlordStatusOfObjectDto: ChangeLandlordStatusOfObjectDto,
   ): Promise<void> {
     await this.objectMatchesForLandlordService.changeLandlordStatusOfObject(landlordStatusOfObjectDto);
+  }
+
+  @Post('/landlord/postpone-renter')
+  async setRenterLastInLandlordQueue(
+    @Body() setRenterLastInLandlordQueueDto: SetRenterLastInLandlordQueueDto,
+  ): Promise<void> {
+    await this.objectMatchesForLandlordService.setRenterLastInLandlordQueue(setRenterLastInLandlordQueueDto);
   }
 }
