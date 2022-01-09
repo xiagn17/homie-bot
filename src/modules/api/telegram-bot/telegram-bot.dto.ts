@@ -1,5 +1,8 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { TelegramUserType, ApiTelegramUserCreateType } from './telegram-bot.types';
+
+const transformStringToNullIfEmpty = (value: string): string | null => (value === '' ? null : value);
 
 export class TelegramUserCreateDto implements ApiTelegramUserCreateType {
   @IsString()
@@ -9,7 +12,9 @@ export class TelegramUserCreateDto implements ApiTelegramUserCreateType {
   channel_id: string;
 
   @IsString()
-  username: string;
+  @IsOptional()
+  @Transform(({ value }) => transformStringToNullIfEmpty(value), { toClassOnly: true })
+  username: string | null;
 }
 
 export class TelegramChatIdDTO implements TelegramUserType {

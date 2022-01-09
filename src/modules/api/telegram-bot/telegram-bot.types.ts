@@ -1,7 +1,7 @@
 export interface ApiTelegramUserCreateType {
   bot_id: string;
   channel_id: string;
-  username: string;
+  username: string | null;
 }
 
 export interface TelegramUserType {
