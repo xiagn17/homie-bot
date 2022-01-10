@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../logger/logger.service';
 import { MatchDataType } from '../api/renter-matches/renter-matches.type';
 import { LandlordObjectEntity } from '../../entities/landlord-objects/LandlordObject.entity';
@@ -16,6 +17,7 @@ const FLOW_URLS = {
 export class FlowXoService {
   constructor(
     private logger: LoggerService,
+    private configService: ConfigService,
     private flowXoRequests: FlowXoRequests,
     private flowXoSerializer: FlowXoSerializer,
   ) {
@@ -92,13 +94,7 @@ export class FlowXoService {
     landlordObject: LandlordObjectEntity,
     { chatId, botId }: FlowXoRouteType,
   ): Promise<void> {
-    const message =
-      `<b>Есть контакт!</b><pre>\n</pre>` +
-      `👋🏻 Имя: ${landlordObject.name}<pre>\n</pre>` +
-      `🎊 Контакт: @${landlordObject.telegramUser.username ?? ''}<pre>\n</pre>` +
-      `🌐 Номер телефона: ${landlordObject.phoneNumber}<pre>\n</pre>` +
-      `<pre>\n</pre>` +
-      `🏡 Объявление: #home${landlordObject.number}`;
+    const message = this.formContactsMessageOfLandlord(landlordObject);
     const flowData = this.flowXoSerializer.prepareNotificationFlowData(
       {
         chatId,
@@ -126,5 +122,51 @@ export class FlowXoService {
       message,
     );
     await this.flowXoRequests.runFlowAtUser(flowData, FLOW_URLS.pushNotification);
+  }
+
+  private formContactsMessageOfLandlord(landlordObject: LandlordObjectEntity): string {
+    const est_kontakt_text = `<b>Есть контакт!</b><pre>\n</pre>`;
+    const skip_line_text = `<pre>\n</pre>`;
+    const object_number_text = `🏡 Объявление: #home${landlordObject.number}`;
+    const getNameText = (name: string): string => `👋🏻 Имя: ${name}<pre>\n</pre>`;
+    const getContactText = (
+      { username, phoneNumber }: { username: string | null; phoneNumber: string },
+      socials?: string,
+    ): string => {
+      if (socials) {
+        return `🌐 Контакты: ${socials}<pre>\n</pre>`;
+      }
+      return `🎊 Контакт: ${username ? `@${username}` : phoneNumber}<pre>\n</pre>`;
+    };
+
+    let message = est_kontakt_text;
+
+    const adminUsername = this.configService.get('adminUsername');
+    const subAdminUsername = this.configService.get('subAdminUsername');
+    const isObjectFromAdmin =
+      landlordObject.telegramUser.username === adminUsername ||
+      landlordObject.telegramUser.username === subAdminUsername;
+    if (isObjectFromAdmin) {
+      const landlordName = landlordObject.name.split('-')[0].trim();
+      const landlordSocials = landlordObject.name.split('-')[1].trim();
+      message =
+        message +
+        getNameText(landlordName) +
+        getContactText({ username: '', phoneNumber: '' }, landlordSocials) +
+        skip_line_text +
+        object_number_text;
+    } else {
+      message =
+        message +
+        getNameText(landlordObject.name) +
+        getContactText({
+          username: landlordObject.telegramUser.username,
+          phoneNumber: landlordObject.phoneNumber,
+        }) +
+        skip_line_text +
+        object_number_text;
+    }
+
+    return message;
   }
 }
