@@ -41,9 +41,10 @@ export class QueueApproveAdminObjectProducerService {
   }
 
   private getDefaultOptionsForJob(): JobOptions {
-    const SIX_HOURS_TIMESTAMP = 6 * 60 * 60 * 1000;
+    // const SIX_HOURS_TIMESTAMP = 6 * 60 * 60 * 1000;
+    const HALF_HOUR_TIMESTAMP = 30 * 60 * 1000;
     return {
-      delay: SIX_HOURS_TIMESTAMP,
+      delay: HALF_HOUR_TIMESTAMP,
       attempts: 5,
       backoff: {
         type: 'fixed',
