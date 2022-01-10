@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '../logger/logger.service';
+import { LoggerService } from '../logger/logger.service';
 import { MatchDataType } from '../api/renter-matches/renter-matches.type';
 import { LandlordObjectEntity } from '../../entities/landlord-objects/LandlordObject.entity';
 import { FlowXoRequests } from './flow-xo.requests';
@@ -15,7 +15,7 @@ const FLOW_URLS = {
 @Injectable()
 export class FlowXoService {
   constructor(
-    private logger: Logger,
+    private logger: LoggerService,
     private flowXoRequests: FlowXoRequests,
     private flowXoSerializer: FlowXoSerializer,
   ) {

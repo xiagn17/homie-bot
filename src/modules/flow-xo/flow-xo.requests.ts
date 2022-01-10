@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { request } from '../../utils/requests';
-import { Logger } from '../logger/logger.service';
+import { LoggerService } from '../logger/logger.service';
 import { FlowXoFlowRunDataType, FlowXoDefaultResponseType } from './flow-xo.type';
 
 @Injectable()
 export class FlowXoRequests {
-  constructor(private logger: Logger) {
+  constructor(private logger: LoggerService) {
     this.logger.setContext(this.constructor.name);
   }
 
@@ -31,7 +31,7 @@ export class FlowXoRequests {
         data,
       );
       if (response.msg === 'success') {
-        this.logger.log(options.messageOnSuccess);
+        this.logger.info(options.messageOnSuccess);
       }
       return response;
     } catch (error) {

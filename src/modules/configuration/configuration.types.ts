@@ -1,3 +1,5 @@
+import { NODE_ENV_TYPE } from '../../typings/node';
+
 export interface DatabaseConfigType {
   db_username: string;
   db_password: string;
@@ -22,6 +24,7 @@ export interface RedisConfigType {
 }
 
 export interface ConfigurationType {
+  env: NODE_ENV_TYPE;
   port: number;
   database: DatabaseConfigType;
   redis: RedisConfigType;

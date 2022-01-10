@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
-import { Logger } from '../../logger/logger.service';
+import { LoggerService } from '../../logger/logger.service';
 import { RenterEntity } from '../../../entities/renters/Renter.entity';
 import { RentersRepository } from '../../../repositories/users/renters.repository';
 import { SubwayStationsRepository } from '../../../repositories/directories/subwayStations.repository';
@@ -22,7 +22,7 @@ import { SetRenterLastInLandlordQueueDto } from './dto/SetRenterLastInLandlordQu
 @Injectable()
 export class ObjectMatchesForLandlordService {
   constructor(
-    private logger: Logger,
+    private logger: LoggerService,
     private entityManager: EntityManager,
 
     private flowXoService: FlowXoService,

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Any, Connection, EntityManager } from 'typeorm';
-import { Logger } from '../../logger/logger.service';
+import { LoggerService } from '../../logger/logger.service';
 import { LocationEntity } from '../../../entities/directories/Location.entity';
 import { SubwayStationEntity } from '../../../entities/directories/SubwayStation.entity';
 import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
@@ -15,7 +15,7 @@ import { ArchiveLandlordObjectDto } from './dto/archive-landlord-object.dto';
 @Injectable()
 export class LandlordObjectsService {
   constructor(
-    private logger: Logger,
+    private logger: LoggerService,
     private connection: Connection,
 
     private landlordObjectsSerializer: LandlordObjectsSerializer,

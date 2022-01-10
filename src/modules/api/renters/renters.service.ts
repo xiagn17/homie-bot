@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Any, Connection, EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '../../logger/logger.service';
+import { LoggerService } from '../../logger/logger.service';
 import { MoneyRangeEntity } from '../../../entities/directories/MoneyRange.entity';
 import { LocationEntity } from '../../../entities/directories/Location.entity';
 import { SubwayStationEntity } from '../../../entities/directories/SubwayStation.entity';
@@ -20,7 +20,7 @@ import { CreateRenterDTO } from './renters.dto';
 @Injectable()
 export class RentersService {
   constructor(
-    private logger: Logger,
+    private logger: LoggerService,
     private connection: Connection,
 
     private rentersSerializer: RentersSerializer,

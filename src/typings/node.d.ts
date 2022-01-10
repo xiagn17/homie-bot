@@ -1,6 +1,8 @@
+export type NODE_ENV_TYPE = 'development' | 'production';
+
 declare namespace NodeJS {
   interface ProcessEnv {
-    NODE_ENV: 'development' | 'production';
+    NODE_ENV: NODE_ENV_TYPE;
     PORT: string;
 
     POSTGRES_HOST: string;

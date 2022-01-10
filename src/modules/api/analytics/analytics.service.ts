@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
-import { Logger } from '../../logger/logger.service';
+import { LoggerService } from '../../logger/logger.service';
 import { BusinessAnalyticsEntity } from '../../../entities/analytics/BusinessAnalytics.entity';
 import { BusinessAnalyticsRepository } from '../../../repositories/analytics/businessAnalytics.repository';
 import { AnalyticsChangeStatusDTO } from './analytics.dto';
 
 @Injectable()
 export class AnalyticsService {
-  constructor(private logger: Logger, private entityManager: EntityManager) {
+  constructor(private logger: LoggerService, private entityManager: EntityManager) {
     this.logger.setContext(this.constructor.name);
   }
 

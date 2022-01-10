@@ -1,7 +1,7 @@
 import { OnQueueCleaned, OnQueueError, OnQueueFailed, Process, Processor } from '@nestjs/bull';
 import { DoneCallback, Job } from 'bull';
 import { Injectable } from '@nestjs/common';
-import { Logger } from '../../../logger/logger.service';
+import { LoggerService } from '../../../logger/logger.service';
 import { MatchStatusEnumType } from '../../../api/renter-matches/renter-matches.type';
 import { ObjectMatchesForLandlordService } from '../../../api/landlord-renter-matches/object-matches.for-landlord.service';
 import {
@@ -14,7 +14,7 @@ import { AdminApproveObjectJobDataType } from '../queue-approve-admin-object.typ
 @Injectable()
 export class QueueApproveAdminObjectConsumerService {
   constructor(
-    private logger: Logger,
+    private logger: LoggerService,
     private objectMatchesForLandlordService: ObjectMatchesForLandlordService,
   ) {
     this.logger.setContext(this.constructor.name);
@@ -32,7 +32,7 @@ export class QueueApproveAdminObjectConsumerService {
 
   @OnQueueCleaned()
   onCleaned(): void {
-    this.logger.log('The queue was successfully served');
+    this.logger.info('The queue was successfully served');
   }
 
   @Process(JOB_APPROVE_ADMIN_OBJECT)
@@ -47,7 +47,7 @@ export class QueueApproveAdminObjectConsumerService {
         landlordObjectId: landlordObjectId,
         landlordStatus: MatchStatusEnumType.resolved,
       });
-      this.logger.log(`Contacts of object ${landlordObjectId} was sent to renter ${renterId}`);
+      this.logger.info(`Contacts of object ${landlordObjectId} was sent to renter ${renterId}`);
       done();
     } catch (e: any) {
       done(e);

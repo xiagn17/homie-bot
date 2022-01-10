@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '../../logger/logger.service';
+import { LoggerService } from '../../logger/logger.service';
 import { RenterEntity } from '../../../entities/renters/Renter.entity';
 import { RenterMatchesRepository } from '../../../repositories/matches/renterMatches.repository';
 import { RentersRepository } from '../../../repositories/users/renters.repository';
@@ -25,7 +25,7 @@ import { RenterMatchesChangeStatusDTO } from './renter-matches.dto';
 @Injectable()
 export class RenterMatchesService {
   constructor(
-    private logger: Logger,
+    private logger: LoggerService,
     private entityManager: EntityManager,
     private flowXoService: FlowXoService,
     private renterMatchesSerializer: RenterMatchesSerializer,
@@ -72,7 +72,7 @@ export class RenterMatchesService {
     const matchedRenters = await this.findMatchesForRenter(renter);
     if (matchedRenters[0]) {
       await this.processMatch(renter, matchedRenters[0]);
-      this.logger.log(
+      this.logger.info(
         `Match between renter (ids) ${matchedRenters[0].id} and ${matchedRenters[1].id} is created!`,
       );
       return {

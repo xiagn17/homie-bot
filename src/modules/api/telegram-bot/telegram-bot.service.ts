@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '../../logger/logger.service';
+import { LoggerService } from '../../logger/logger.service';
 import { TelegramUsersRepository } from '../../../repositories/users/telegramUsers.repository';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { RenterMatchesService } from '../renter-matches/renter-matches.service';
@@ -12,7 +12,7 @@ import { TelegramUserCreateDto } from './telegram-bot.dto';
 @Injectable()
 export class TelegramBotService {
   constructor(
-    private logger: Logger,
+    private logger: LoggerService,
     private entityManager: EntityManager,
     private telegramBotSerializer: TelegramBotSerializer,
     private renterMatchesService: RenterMatchesService,

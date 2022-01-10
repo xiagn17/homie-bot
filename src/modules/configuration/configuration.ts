@@ -1,7 +1,9 @@
+import { NODE_ENV_TYPE } from '../../typings/node';
 import { ConfigurationType } from './configuration.types';
 
 export default (): ConfigurationType => {
   return {
+    env: String(process.env.NODE_ENV) as NODE_ENV_TYPE,
     port: Number(process.env.PORT) || 3000,
     database: {
       db_username: String(process.env.POSTGRES_USERNAME),

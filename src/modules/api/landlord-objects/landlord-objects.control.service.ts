@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { Logger } from '../../logger/logger.service';
+import { LoggerService } from '../../logger/logger.service';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { LandlordObjectsRepository } from '../../../repositories/landlord-objects/landlord-objects.repository';
@@ -10,7 +10,7 @@ import { ApproveLandlordObjectDto } from './dto/landlord-objects.dto';
 @Injectable()
 export class LandlordObjectsControlService {
   constructor(
-    private logger: Logger,
+    private logger: LoggerService,
     private connection: Connection,
 
     private telegramBotService: TelegramBotService,

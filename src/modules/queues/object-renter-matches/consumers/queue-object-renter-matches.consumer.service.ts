@@ -1,7 +1,7 @@
 import { OnQueueCleaned, OnQueueError, OnQueueFailed, Process, Processor } from '@nestjs/bull';
 import { DoneCallback, Job } from 'bull';
 import { Injectable } from '@nestjs/common';
-import { Logger } from '../../../logger/logger.service';
+import { LoggerService } from '../../../logger/logger.service';
 import { ObjectMatchesForLandlordService } from '../../../api/landlord-renter-matches/object-matches.for-landlord.service';
 import { ObjectMatchesForRenterService } from '../../../api/landlord-renter-matches/object-matches.for-renter.service';
 import {
@@ -18,7 +18,7 @@ import {
 @Injectable()
 export class QueueObjectRenterMatchesConsumerService {
   constructor(
-    private logger: Logger,
+    private logger: LoggerService,
     private objectMatchesForLandlordService: ObjectMatchesForLandlordService,
     private objectMatchesForRenterService: ObjectMatchesForRenterService,
   ) {
@@ -37,7 +37,7 @@ export class QueueObjectRenterMatchesConsumerService {
 
   @OnQueueCleaned()
   onCleaned(): void {
-    this.logger.log('The queue was successfully served');
+    this.logger.info('The queue was successfully served');
   }
 
   @Process(JOB_CREATE_MATCHES_FOR_OBJECT)
@@ -48,7 +48,7 @@ export class QueueObjectRenterMatchesConsumerService {
     const { landlordObjectId } = job.data;
     try {
       await this.objectMatchesForLandlordService.matchObjectToRenters(landlordObjectId);
-      this.logger.log(`Matches for object ${landlordObjectId} is created!`);
+      this.logger.info(`Matches for object ${landlordObjectId} is created!`);
       done();
     } catch (e: any) {
       done(e);
@@ -64,7 +64,7 @@ export class QueueObjectRenterMatchesConsumerService {
     const { renterId } = job.data;
     try {
       await this.objectMatchesForRenterService.matchRenterToObjects(renterId);
-      this.logger.log(`Matches for renter ${renterId} is created!`);
+      this.logger.info(`Matches for renter ${renterId} is created!`);
       done();
     } catch (e: any) {
       done(e);

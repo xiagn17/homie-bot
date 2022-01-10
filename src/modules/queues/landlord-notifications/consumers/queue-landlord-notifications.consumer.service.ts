@@ -2,7 +2,7 @@ import { OnQueueCleaned, OnQueueError, OnQueueFailed, Process, Processor } from 
 import { DoneCallback, Job } from 'bull';
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { Logger } from '../../../logger/logger.service';
+import { LoggerService } from '../../../logger/logger.service';
 import { LandlordObjectsRepository } from '../../../../repositories/landlord-objects/landlord-objects.repository';
 import { FlowXoService } from '../../../flow-xo/flow-xo.service';
 import {
@@ -14,7 +14,11 @@ import { ToUpdateObjectJobDataType } from '../queue-landlord-notifications.types
 @Processor(LANDLORD_NOTIFICATIONS_QUEUE_NAME)
 @Injectable()
 export class QueueLandlordNotificationsConsumerService {
-  constructor(private logger: Logger, private connection: Connection, private flowXoService: FlowXoService) {
+  constructor(
+    private logger: LoggerService,
+    private connection: Connection,
+    private flowXoService: FlowXoService,
+  ) {
     this.logger.setContext(this.constructor.name);
   }
 
@@ -30,7 +34,7 @@ export class QueueLandlordNotificationsConsumerService {
 
   @OnQueueCleaned()
   onCleaned(): void {
-    this.logger.log('The queue was successfully served');
+    this.logger.info('The queue was successfully served');
   }
 
   @Process(NOTIFICATION_RENEW_OBJECT)
@@ -41,7 +45,7 @@ export class QueueLandlordNotificationsConsumerService {
         .getCustomRepository(LandlordObjectsRepository)
         .getFullObject(id);
       await this.flowXoService.notificationLandlordRenewObject(landlordObject, landlordObject.telegramUser);
-      this.logger.log(`Renew event for landlordObjectId ${id} was sent just now`);
+      this.logger.info(`Renew event for landlordObjectId ${id} was sent just now`);
       done();
     } catch (e: any) {
       done(e);
