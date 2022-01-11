@@ -16,7 +16,6 @@ import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import { MONEY_RANGE_DIFF } from '../directories/repositories/moneyRanges.repository';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { QueueApproveAdminObjectProducerService } from '../../queues/approve-admin-object/producers/queue-approve-admin-object.producer.service';
-import { RentersService } from '../renters/renters.service';
 import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';
@@ -29,16 +28,13 @@ export class ObjectMatchesForRenterService {
     private flowXoService: FlowXoService,
 
     private telegramBotService: TelegramBotService,
-    private rentersService: RentersService,
     private landlordObjectsService: LandlordObjectsService,
     private queueApproveAdminObjectService: QueueApproveAdminObjectProducerService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
 
-  public async matchRenterToObjects(renterId: string): Promise<void> {
-    const renter = await this.rentersService.getRenter(renterId);
-
+  public async matchRenterToObjects(renter: RenterEntity): Promise<void> {
     const matchedObjects = await this.findMatchesForRenter(renter);
     if (!matchedObjects.length) {
       return;
@@ -49,6 +45,8 @@ export class ObjectMatchesForRenterService {
       .createMatchesForRenter(renter, matchedObjects);
   }
 
+  // todo здесь должен быть renterId
+  // возвращаем objectId
   public async getNextObject(chatId: string): Promise<LandlordObjectEntity | null> {
     const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
     if (!renter) {
@@ -64,6 +62,7 @@ export class ObjectMatchesForRenterService {
     return this.landlordObjectsService.getLandlordObject(landlordObjectId);
   }
 
+  // тут сразу renterId тоже
   public async changeRenterStatusOfObject(
     renterStatusOfObjectDto: ChangeRenterStatusOfObjectDto,
   ): Promise<void> {

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { LoggerModule } from '../../logger/logger.module';
 import { FlowXoModule } from '../../flow-xo/flow-xo.module';
 import { TelegramBotModule } from '../telegram-bot/telegram-bot.module';
@@ -16,8 +16,9 @@ import { LandlordRenterMatchesController } from './landlord-renter-matches.contr
     TelegramBotModule,
     QueueApproveAdminObjectProducerModule,
 
-    RentersModule,
-    LandlordObjectsModule,
+    // todo remove this shit
+    forwardRef(() => RentersModule),
+    forwardRef(() => LandlordObjectsModule),
   ],
   controllers: [LandlordRenterMatchesController],
   providers: [ObjectMatchesForLandlordService, ObjectMatchesForRenterService],

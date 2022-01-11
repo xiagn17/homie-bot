@@ -42,8 +42,7 @@ export class ObjectMatchesForLandlordService {
     return this.landlordObjectsService.getLandlordObject(landlordObjectId);
   }
 
-  public async matchObjectToRenters(landlordObjectId: string): Promise<void> {
-    const landlordObject = await this.landlordObjectsService.getLandlordObject(landlordObjectId);
+  public async matchObjectToRenters(landlordObject: LandlordObjectEntity): Promise<void> {
     const matchedRenters = await this.findMatchesForObject(landlordObject);
     if (!matchedRenters.length) {
       return;

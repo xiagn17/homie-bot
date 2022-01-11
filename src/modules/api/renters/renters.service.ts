@@ -9,7 +9,7 @@ import { InterestEntity } from '../directories/entities/Interest.entity';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { BusinessAnalyticsFieldsEnumType } from '../analytics/interfaces/analytics.type';
-import { QueueObjectRenterMatchesProducerService } from '../../queues/object-renter-matches/producers/queue-object-renter-matches.producer.service';
+import { ObjectMatchesForRenterService } from '../landlord-renter-matches/object-matches.for-renter.service';
 import { RentersRepository } from './repositories/renters.repository';
 import { RenterEntity } from './entities/Renter.entity';
 import { MatchesInfoRepository } from './repositories/matchesInfo.repository';
@@ -25,7 +25,7 @@ export class RentersService {
 
     private rentersSerializer: RentersSerializer,
 
-    private queueObjectRenterMatchesService: QueueObjectRenterMatchesProducerService,
+    private objectMatchesForRenterService: ObjectMatchesForRenterService,
     private analyticsService: AnalyticsService,
     private configService: ConfigService,
   ) {
@@ -90,14 +90,14 @@ export class RentersService {
       const trialMatchesCount = this.configService.get('renterMatches.trialMatchesCount') as number;
       await manager.getCustomRepository(MatchesInfoRepository).createInfo(renter.id, trialMatchesCount);
 
-      return renter;
+      return manager.getCustomRepository(RentersRepository).getFullRenter(renter.id);
     });
 
     await this.analyticsService.changeStatus({
       chatId: renterDto.chatId,
       field: BusinessAnalyticsFieldsEnumType.end_fill_renter_info,
     });
-    await this.queueObjectRenterMatchesService.pushJobCreateMatchesForRenter(renter.id);
+    await this.objectMatchesForRenterService.matchRenterToObjects(renter);
 
     return renter;
   }

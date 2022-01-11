@@ -3,9 +3,10 @@ import { Connection } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
-import { QueueObjectRenterMatchesProducerService } from '../../queues/object-renter-matches/producers/queue-object-renter-matches.producer.service';
+import { ObjectMatchesForLandlordService } from '../landlord-renter-matches/object-matches.for-landlord.service';
 import { LandlordObjectsRepository } from './repositories/landlord-objects.repository';
 import { ApproveLandlordObjectDto } from './dto/landlord-objects.dto';
+import { LandlordObjectsService } from './landlord-objects.service';
 
 @Injectable()
 export class LandlordObjectsControlService {
@@ -15,7 +16,8 @@ export class LandlordObjectsControlService {
 
     private telegramBotService: TelegramBotService,
     private flowXoService: FlowXoService,
-    private queueObjectRenterMatchesService: QueueObjectRenterMatchesProducerService,
+    private landlordObjectsService: LandlordObjectsService,
+    private objectMatchesForLandlordService: ObjectMatchesForLandlordService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -43,6 +45,7 @@ export class LandlordObjectsControlService {
       .getCustomRepository(LandlordObjectsRepository)
       .approveObject(approveLandlordObjectDto.id);
 
-    await this.queueObjectRenterMatchesService.pushJobCreateMatchesForObject(approveLandlordObjectDto.id);
+    const landlordObject = await this.landlordObjectsService.getLandlordObject(approveLandlordObjectDto.id);
+    await this.objectMatchesForLandlordService.matchObjectToRenters(landlordObject);
   }
 }
