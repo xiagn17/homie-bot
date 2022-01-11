@@ -1,4 +1,4 @@
-import { InterestEnumType } from '../../entities/directories/Interest.entity';
+import { InterestEnumType } from '../../modules/api/directories/interfaces/interests.interface';
 
 const INTERESTS_DATA_IN_ORDER: InterestEnumType[] = [
   InterestEnumType.clubs,

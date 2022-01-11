@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { RenterEntity } from '../../../entities/renters/Renter.entity';
-import { LocationEntity } from '../../../entities/directories/Location.entity';
-import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
-import { MoneyRangeEntity } from '../../../entities/directories/MoneyRange.entity';
-import { MatchesInfoEntity } from '../../../entities/renters/MatchesInfo.entity';
-import { CreateRenterDTO } from './renters.dto';
-import { ApiRenterFullType, ApiRenterResponseType } from './renters.type';
+import { LocationEntity } from '../directories/entities/Location.entity';
+import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
+import { MoneyRangeEntity } from '../directories/entities/MoneyRange.entity';
+import { RenterEntity } from './entities/Renter.entity';
+import { MatchesInfoEntity } from './entities/MatchesInfo.entity';
+import { CreateRenterDTO } from './dto/renters.dto';
+import { ApiRenterFullType, ApiRenterResponseType } from './interfaces/renters.type';
 
 interface RenterData {
   renterDto: CreateRenterDTO;

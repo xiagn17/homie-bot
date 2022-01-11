@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { LocationEntity } from '../../../entities/directories/Location.entity';
-import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
-import { LandlordObjectEntity } from '../../../entities/landlord-objects/LandlordObject.entity';
+import { LocationEntity } from '../directories/entities/Location.entity';
+import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
+import { LandlordObjectEntity } from './entities/LandlordObject.entity';
 import { CreateLandlordObjectDto } from './dto/landlord-objects.dto';
-import { ApiLandlordObjectFullResponseType } from './landlord-objects.type';
+import { ApiLandlordObjectFullResponseType } from './interfaces/landlord-objects.type';
 
 interface LandlordObjectData {
   landlordObjectDto: CreateLandlordObjectDto;

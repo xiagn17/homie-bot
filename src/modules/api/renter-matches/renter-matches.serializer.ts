@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { RenterEntity } from '../../../entities/renters/Renter.entity';
-import { RenterMatchEntity } from '../../../entities/matches/RenterMatch.entity';
-import { ApiRenterMatchResponseType, MatchDataType } from './renter-matches.type';
+import { RenterEntity } from '../renters/entities/Renter.entity';
+import { RenterMatchEntity } from './entities/RenterMatch.entity';
+import { ApiRenterMatchResponseType, MatchDataType } from './interfaces/renter-matches.type';
 
 @Injectable()
 export class RenterMatchesSerializer {

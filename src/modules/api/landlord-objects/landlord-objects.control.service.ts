@@ -3,8 +3,8 @@ import { Connection } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
-import { LandlordObjectsRepository } from '../../../repositories/landlord-objects/landlord-objects.repository';
 import { QueueObjectRenterMatchesProducerService } from '../../queues/object-renter-matches/producers/queue-object-renter-matches.producer.service';
+import { LandlordObjectsRepository } from './repositories/landlord-objects.repository';
 import { ApproveLandlordObjectDto } from './dto/landlord-objects.dto';
 
 @Injectable()

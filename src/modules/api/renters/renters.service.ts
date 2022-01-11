@@ -2,20 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { Any, Connection, EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../../logger/logger.service';
-import { MoneyRangeEntity } from '../../../entities/directories/MoneyRange.entity';
-import { LocationEntity } from '../../../entities/directories/Location.entity';
-import { SubwayStationEntity } from '../../../entities/directories/SubwayStation.entity';
-import { InterestEntity } from '../../../entities/directories/Interest.entity';
-import { RentersRepository } from '../../../repositories/users/renters.repository';
-import { RenterEntity } from '../../../entities/renters/Renter.entity';
-import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
-import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo.repository';
-import { MatchesInfoEntity } from '../../../entities/renters/MatchesInfo.entity';
+import { MoneyRangeEntity } from '../directories/entities/MoneyRange.entity';
+import { LocationEntity } from '../directories/entities/Location.entity';
+import { SubwayStationEntity } from '../directories/entities/SubwayStation.entity';
+import { InterestEntity } from '../directories/entities/Interest.entity';
+import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
 import { AnalyticsService } from '../analytics/analytics.service';
-import { BusinessAnalyticsFieldsEnumType } from '../analytics/analytics.type';
+import { BusinessAnalyticsFieldsEnumType } from '../analytics/interfaces/analytics.type';
 import { QueueObjectRenterMatchesProducerService } from '../../queues/object-renter-matches/producers/queue-object-renter-matches.producer.service';
+import { RentersRepository } from './repositories/renters.repository';
+import { RenterEntity } from './entities/Renter.entity';
+import { MatchesInfoRepository } from './repositories/matchesInfo.repository';
+import { MatchesInfoEntity } from './entities/MatchesInfo.entity';
 import { RentersSerializer } from './renters.serializer';
-import { CreateRenterDTO } from './renters.dto';
+import { CreateRenterDTO } from './dto/renters.dto';
 
 @Injectable()
 export class RentersService {

@@ -1,24 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
-import { RenterEntity } from '../../../entities/renters/Renter.entity';
-import { SubwayStationsRepository } from '../../../repositories/directories/subwayStations.repository';
-import { LocationsRepository } from '../../../repositories/directories/locations.repository';
-import { LandlordObjectsRepository } from '../../../repositories/landlord-objects/landlord-objects.repository';
+import { RenterEntity } from '../renters/entities/Renter.entity';
+import { SubwayStationsRepository } from '../directories/repositories/subwayStations.repository';
+import { LocationsRepository } from '../directories/repositories/locations.repository';
+import { LandlordObjectsRepository } from '../landlord-objects/repositories/landlord-objects.repository';
 import {
   LandlordObjectEntity,
   PreferredGenderEnumType,
-} from '../../../entities/landlord-objects/LandlordObject.entity';
-import { LandlordObjectRenterMatchesRepository } from '../../../repositories/matches/landlordObjectRenterMatches';
-import { GenderEnumType } from '../renters/renters.type';
-import { RentersRepository } from '../../../repositories/users/renters.repository';
-import { MatchStatusEnumType } from '../renter-matches/renter-matches.type';
+} from '../landlord-objects/entities/LandlordObject.entity';
+import { GenderEnumType } from '../renters/interfaces/renters.type';
+import { RentersRepository } from '../renters/repositories/renters.repository';
+import { MatchStatusEnumType } from '../renter-matches/interfaces/renter-matches.type';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
-import { MONEY_RANGE_DIFF } from '../../../repositories/directories/moneyRanges.repository';
+import { MONEY_RANGE_DIFF } from '../directories/repositories/moneyRanges.repository';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { QueueApproveAdminObjectProducerService } from '../../queues/approve-admin-object/producers/queue-approve-admin-object.producer.service';
 import { RentersService } from '../renters/renters.service';
 import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
+import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';
 
 @Injectable()

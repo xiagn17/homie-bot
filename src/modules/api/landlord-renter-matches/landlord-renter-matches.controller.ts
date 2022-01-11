@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Param, Body } from '@nestjs/common';
 import { LandlordObjectsSerializer } from '../landlord-objects/landlord-objects.serializer';
-import { ApiLandlordObjectFullResponseType } from '../landlord-objects/landlord-objects.type';
-import { ApiRenterResponseType } from '../renters/renters.type';
+import { ApiLandlordObjectFullResponseType } from '../landlord-objects/interfaces/landlord-objects.type';
+import { ApiRenterResponseType } from '../renters/interfaces/renters.type';
 import { RentersSerializer } from '../renters/renters.serializer';
 import { ObjectMatchesForRenterService } from './object-matches.for-renter.service';
 import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';

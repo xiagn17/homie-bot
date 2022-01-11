@@ -1,7 +1,7 @@
 import { IsString } from 'class-validator';
-import { ApiChangeRenterStatusOfObject } from '../landlord-renter-matches.types';
-import { TelegramChatIdDTO } from '../../telegram-bot/telegram-bot.dto';
-import { MatchStatusEnumType } from '../../renter-matches/renter-matches.type';
+import { ApiChangeRenterStatusOfObject } from '../interfaces/landlord-renter-matches.types';
+import { TelegramChatIdDTO } from '../../telegram-bot/dto/telegram-bot.dto';
+import { MatchStatusEnumType } from '../../renter-matches/interfaces/renter-matches.type';
 
 export class ChangeRenterStatusOfObjectDto
   extends TelegramChatIdDTO

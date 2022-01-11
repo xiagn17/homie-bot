@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../logger/logger.service';
-import { MatchDataType } from '../api/renter-matches/renter-matches.type';
-import { LandlordObjectEntity } from '../../entities/landlord-objects/LandlordObject.entity';
+import { MatchDataType } from '../api/renter-matches/interfaces/renter-matches.type';
+import { LandlordObjectEntity } from '../api/landlord-objects/entities/LandlordObject.entity';
 import { FlowXoRequests } from './flow-xo.requests';
 import { FlowXoSerializer } from './flow-xo.serializer';
-import { FlowXoRouteType } from './flow-xo.type';
+import { FlowXoRouteType } from './interfaces/flow-xo.type';
 
 const FLOW_URLS = {
   sendMatch: '/hooks/a/2mjzknbz',

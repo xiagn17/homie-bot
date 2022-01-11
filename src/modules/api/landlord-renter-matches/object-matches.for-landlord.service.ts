@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
-import { RenterEntity } from '../../../entities/renters/Renter.entity';
-import { RentersRepository } from '../../../repositories/users/renters.repository';
-import { SubwayStationsRepository } from '../../../repositories/directories/subwayStations.repository';
-import { MoneyRangesRepository } from '../../../repositories/directories/moneyRanges.repository';
-import { LocationsRepository } from '../../../repositories/directories/locations.repository';
+import { RenterEntity } from '../renters/entities/Renter.entity';
+import { RentersRepository } from '../renters/repositories/renters.repository';
+import { SubwayStationsRepository } from '../directories/repositories/subwayStations.repository';
+import { MoneyRangesRepository } from '../directories/repositories/moneyRanges.repository';
+import { LocationsRepository } from '../directories/repositories/locations.repository';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import {
   LandlordObjectEntity,
   PreferredGenderEnumType,
-} from '../../../entities/landlord-objects/LandlordObject.entity';
-import { LandlordObjectRenterMatchesRepository } from '../../../repositories/matches/landlordObjectRenterMatches';
-import { GenderEnumType } from '../renters/renters.type';
-import { MatchStatusEnumType } from '../renter-matches/renter-matches.type';
+} from '../landlord-objects/entities/LandlordObject.entity';
+import { GenderEnumType } from '../renters/interfaces/renters.type';
+import { MatchStatusEnumType } from '../renter-matches/interfaces/renter-matches.type';
 import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
 import { RentersService } from '../renters/renters.service';
+import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeLandlordStatusOfObjectDto } from './dto/ChangeLandlordStatusOfObjectDto';
 import { SetRenterLastInLandlordQueueDto } from './dto/SetRenterLastInLandlordQueue.dto';
 

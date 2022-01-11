@@ -1,12 +1,12 @@
 import { ArrayMinSize, ArrayUnique, IsBoolean, IsDate, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { TelegramChatIdDTO } from '../../telegram-bot/telegram-bot.dto';
-import { LocationEnumType } from '../../../../entities/directories/Location.entity';
-import { PreferredGenderEnumType } from '../../../../entities/landlord-objects/LandlordObject.entity';
-import { SubwayStationEnumType } from '../../../../entities/directories/SubwayStation.entity';
+import { TelegramChatIdDTO } from '../../telegram-bot/dto/telegram-bot.dto';
+import { PreferredGenderEnumType } from '../entities/LandlordObject.entity';
 import { dateTransformer } from '../../../../utils/transform/dateTransformer';
 import { transformSubwayStations } from '../../../../utils/transform/transformSubwayStations';
-import { ApiLandlordObjectControlType, ApiLandlordObjectType } from '../landlord-objects.type';
+import { ApiLandlordObjectControlType, ApiLandlordObjectType } from '../interfaces/landlord-objects.type';
+import { SubwayStationEnumType } from '../../directories/interfaces/subway-stations.interface';
+import { LocationEnumType } from '../../directories/interfaces/locations.interface';
 
 export class CreateLandlordObjectDto extends TelegramChatIdDTO implements ApiLandlordObjectType {
   @IsString()

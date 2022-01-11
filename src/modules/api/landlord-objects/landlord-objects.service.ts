@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Any, Connection, EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
-import { LocationEntity } from '../../../entities/directories/Location.entity';
-import { SubwayStationEntity } from '../../../entities/directories/SubwayStation.entity';
-import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
-import { LandlordObjectsRepository } from '../../../repositories/landlord-objects/landlord-objects.repository';
-import { LandlordObjectPhotoEntity } from '../../../entities/landlord-objects/LandlordObjectPhoto.entity';
-import { LandlordObjectEntity } from '../../../entities/landlord-objects/LandlordObject.entity';
+import { LocationEntity } from '../directories/entities/Location.entity';
+import { SubwayStationEntity } from '../directories/entities/SubwayStation.entity';
+import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
+import { LandlordObjectsRepository } from './repositories/landlord-objects.repository';
+import { LandlordObjectPhotoEntity } from './entities/LandlordObjectPhoto.entity';
+import { LandlordObjectEntity } from './entities/LandlordObject.entity';
 import { LandlordObjectsSerializer } from './landlord-objects.serializer';
 import { CreateLandlordObjectDto } from './dto/landlord-objects.dto';
 import { RenewLandlordObjectDto } from './dto/renew-landlord-object.dto';

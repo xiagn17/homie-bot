@@ -2,7 +2,7 @@ import { OnQueueCleaned, OnQueueError, OnQueueFailed, Process, Processor } from 
 import { DoneCallback, Job } from 'bull';
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from '../../../logger/logger.service';
-import { MatchStatusEnumType } from '../../../api/renter-matches/renter-matches.type';
+import { MatchStatusEnumType } from '../../../api/renter-matches/interfaces/renter-matches.type';
 import { ObjectMatchesForLandlordService } from '../../../api/landlord-renter-matches/object-matches.for-landlord.service';
 import {
   JOB_APPROVE_ADMIN_OBJECT,

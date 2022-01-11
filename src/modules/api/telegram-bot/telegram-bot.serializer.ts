@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { TelegramUserEntity } from '../../../entities/users/TelegramUser.entity';
-import { TelegramUserCreateDto } from './telegram-bot.dto';
+import { TelegramUserEntity } from './entities/TelegramUser.entity';
+import { TelegramUserCreateDto } from './dto/telegram-bot.dto';
 
 @Injectable()
 export class TelegramBotSerializer {

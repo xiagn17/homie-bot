@@ -2,25 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../../logger/logger.service';
-import { RenterEntity } from '../../../entities/renters/Renter.entity';
-import { RenterMatchesRepository } from '../../../repositories/matches/renterMatches.repository';
-import { RentersRepository } from '../../../repositories/users/renters.repository';
-import { SubwayStationsRepository } from '../../../repositories/directories/subwayStations.repository';
-import { MoneyRangesRepository } from '../../../repositories/directories/moneyRanges.repository';
-import { LocationsRepository } from '../../../repositories/directories/locations.repository';
-import { MatchesInfoRepository } from '../../../repositories/matches/matchesInfo.repository';
-import { MatchesInfoEntity } from '../../../entities/renters/MatchesInfo.entity';
+import { RenterEntity } from '../renters/entities/Renter.entity';
+import { RentersRepository } from '../renters/repositories/renters.repository';
+import { SubwayStationsRepository } from '../directories/repositories/subwayStations.repository';
+import { MoneyRangesRepository } from '../directories/repositories/moneyRanges.repository';
+import { LocationsRepository } from '../directories/repositories/locations.repository';
+import { MatchesInfoRepository } from '../renters/repositories/matchesInfo.repository';
+import { MatchesInfoEntity } from '../renters/entities/MatchesInfo.entity';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
-import { RenterMatchEntity } from '../../../entities/matches/RenterMatch.entity';
 import { AnalyticsService } from '../analytics/analytics.service';
-import { BusinessAnalyticsFieldsEnumType } from '../analytics/analytics.type';
+import { BusinessAnalyticsFieldsEnumType } from '../analytics/interfaces/analytics.type';
+import { RenterMatchEntity } from './entities/RenterMatch.entity';
+import { RenterMatchesRepository } from './repositories/renterMatches.repository';
 import {
   ApiRenterStartMatchesResponse,
   MatchStatusEnumType,
   RenterStartMatchesStatus,
-} from './renter-matches.type';
+} from './interfaces/renter-matches.type';
 import { RenterMatchesSerializer } from './renter-matches.serializer';
-import { RenterMatchesChangeStatusDTO } from './renter-matches.dto';
+import { RenterMatchesChangeStatusDTO } from './dto/renter-matches.dto';
 
 @Injectable()
 export class RenterMatchesService {

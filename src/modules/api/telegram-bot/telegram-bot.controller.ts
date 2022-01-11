@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { TelegramBotService } from './telegram-bot.service';
-import { TelegramUserCreateDto } from './telegram-bot.dto';
+import { TelegramUserCreateDto } from './dto/telegram-bot.dto';
 
 @Controller('bot')
 export class TelegramBotController {

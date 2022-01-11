@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
-import { BusinessAnalyticsEntity } from '../../../entities/analytics/BusinessAnalytics.entity';
-import { BusinessAnalyticsRepository } from '../../../repositories/analytics/businessAnalytics.repository';
-import { AnalyticsChangeStatusDTO } from './analytics.dto';
+import { BusinessAnalyticsEntity } from './entities/BusinessAnalytics.entity';
+import { BusinessAnalyticsRepository } from './repositories/businessAnalytics.repository';
+import { AnalyticsChangeStatusDTO } from './dto/analytics.dto';
 
 @Injectable()
 export class AnalyticsService {

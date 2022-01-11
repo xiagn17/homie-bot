@@ -1,5 +1,5 @@
 import { IsString } from 'class-validator';
-import { ApiSetRenterLastInLandlordQueue } from '../landlord-renter-matches.types';
+import { ApiSetRenterLastInLandlordQueue } from '../interfaces/landlord-renter-matches.types';
 
 export class SetRenterLastInLandlordQueueDto implements ApiSetRenterLastInLandlordQueue {
   @IsString()

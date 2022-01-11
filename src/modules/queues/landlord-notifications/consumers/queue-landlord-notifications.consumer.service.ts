@@ -3,7 +3,7 @@ import { DoneCallback, Job } from 'bull';
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { LoggerService } from '../../../logger/logger.service';
-import { LandlordObjectsRepository } from '../../../../repositories/landlord-objects/landlord-objects.repository';
+import { LandlordObjectsRepository } from '../../../api/landlord-objects/repositories/landlord-objects.repository';
 import { FlowXoService } from '../../../flow-xo/flow-xo.service';
 import {
   LANDLORD_NOTIFICATIONS_QUEUE_NAME,

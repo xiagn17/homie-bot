@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { MatchDataType } from '../api/renter-matches/renter-matches.type';
-import { FlowXoFlowRunDataType, FlowXoRouteType } from './flow-xo.type';
+import { MatchDataType } from '../api/renter-matches/interfaces/renter-matches.type';
+import { FlowXoFlowRunDataType, FlowXoRouteType } from './interfaces/flow-xo.type';
 
 @Injectable()
 export class FlowXoSerializer {

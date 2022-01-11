@@ -1,8 +1,8 @@
 import { Body, Controller, Post, Get, Param } from '@nestjs/common';
-import { CreateRenterDTO } from './renters.dto';
+import { CreateRenterDTO } from './dto/renters.dto';
 import { RentersService } from './renters.service';
 import { RentersSerializer } from './renters.serializer';
-import { ApiRenterFullType, ApiRenterResponseType } from './renters.type';
+import { ApiRenterFullType, ApiRenterResponseType } from './interfaces/renters.type';
 
 @Controller('renters')
 export class RentersController {

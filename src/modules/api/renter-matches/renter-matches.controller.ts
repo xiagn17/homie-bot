@@ -1,14 +1,14 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { TelegramChatIdDTO } from '../telegram-bot/telegram-bot.dto';
+import { TelegramChatIdDTO } from '../telegram-bot/dto/telegram-bot.dto';
 import { AnalyticsService } from '../analytics/analytics.service';
-import { BusinessAnalyticsFieldsEnumType } from '../analytics/analytics.type';
+import { BusinessAnalyticsFieldsEnumType } from '../analytics/interfaces/analytics.type';
 import { RenterMatchesService } from './renter-matches.service';
 import {
   ApiAddPaidMatchesResponse,
   ApiRenterStartMatchesResponse,
   RenterStartMatchesStatus,
-} from './renter-matches.type';
-import { RenterMatchesChangeStatusDTO, RenterMatchesPaidDTO } from './renter-matches.dto';
+} from './interfaces/renter-matches.type';
+import { RenterMatchesChangeStatusDTO, RenterMatchesPaidDTO } from './dto/renter-matches.dto';
 
 @Controller('renter-matches')
 export class RenterMatchesController {

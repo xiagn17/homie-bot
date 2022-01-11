@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { request } from '../../utils/requests';
 import { LoggerService } from '../logger/logger.service';
-import { FlowXoFlowRunDataType, FlowXoDefaultResponseType } from './flow-xo.type';
+import { FlowXoFlowRunDataType, FlowXoDefaultResponseType } from './interfaces/flow-xo.type';
 
 @Injectable()
 export class FlowXoRequests {

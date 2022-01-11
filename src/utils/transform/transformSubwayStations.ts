@@ -1,5 +1,5 @@
-import { SubwayStationEnumType } from '../../entities/directories/SubwayStation.entity';
-import { LocationEnumType } from '../../entities/directories/Location.entity';
+import { SubwayStationEnumType } from '../../modules/api/directories/interfaces/subway-stations.interface';
+import { LocationEnumType } from '../../modules/api/directories/interfaces/locations.interface';
 
 const SUBWAY_STATIONS_IN_ORDER: SubwayStationEnumType[] = [
   SubwayStationEnumType.nevermind,

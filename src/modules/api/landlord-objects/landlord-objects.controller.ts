@@ -5,7 +5,7 @@ import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import { ApproveLandlordObjectDto, CreateLandlordObjectDto } from './dto/landlord-objects.dto';
 import { LandlordObjectsService } from './landlord-objects.service';
 import { LandlordObjectsControlService } from './landlord-objects.control.service';
-import { ApiLandlordObjectFullResponseType } from './landlord-objects.type';
+import { ApiLandlordObjectFullResponseType } from './interfaces/landlord-objects.type';
 import { LandlordObjectsSerializer } from './landlord-objects.serializer';
 import { RenewLandlordObjectDto } from './dto/renew-landlord-object.dto';
 import { ArchiveLandlordObjectDto } from './dto/archive-landlord-object.dto';

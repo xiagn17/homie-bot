@@ -1,5 +1,5 @@
 import { NODE_ENV_TYPE } from '../../typings/node';
-import { ConfigurationType } from './configuration.types';
+import { ConfigurationType } from './interfaces/configuration.types';
 
 export default (): ConfigurationType => {
   return {
