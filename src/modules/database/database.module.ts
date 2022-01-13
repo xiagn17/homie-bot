@@ -3,6 +3,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+const API_MODULES_ENTITIES_DIR = join(__dirname, '..', 'api', '**', 'entities', '**');
+const ALL_MODULES_ENTITIES_DIR = join(__dirname, '..', '**', 'entities', '**');
+
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -18,7 +21,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         synchronize: configService.get('database.settings.synchronize'),
         logging: configService.get('database.settings.logging'),
         migrations: [join(__dirname, '..', '..', 'migrations', '**')],
-        entities: [join(__dirname, '..', 'api', '**', 'entities', '**')],
+        entities: [API_MODULES_ENTITIES_DIR, ALL_MODULES_ENTITIES_DIR],
       }),
       inject: [ConfigService],
     }),
