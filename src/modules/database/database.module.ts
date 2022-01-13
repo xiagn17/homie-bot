@@ -18,7 +18,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         synchronize: configService.get('database.settings.synchronize'),
         logging: configService.get('database.settings.logging'),
         migrations: [join(__dirname, '..', '..', 'migrations', '**')],
-        entities: [join(__dirname, '..', '..', 'entities', '**')],
+        entities: [join(__dirname, '..', 'api', '**', 'entities', '**')],
       }),
       inject: [ConfigService],
     }),
