@@ -20,6 +20,10 @@ export class TasksAdminApproveObjectWorkerService {
   public async processTasksAdminApproveObject(
     tasks: TaskEntity<TaskDataAdminApproveObjectInterface>[],
   ): Promise<void> {
+    if (!tasks.length) {
+      return;
+    }
+
     await this.connection.transaction(async entityManager => {
       const processTasks = tasks.map(async task => {
         const { data: taskData, id: taskId } = task;

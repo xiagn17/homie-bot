@@ -6,16 +6,9 @@ import 'reflect-metadata';
 import { Logger as LoggerPinoService } from 'nestjs-pino';
 import configuration from './modules/configuration/configuration';
 import { DatabaseModule } from './modules/database/database.module';
-import { TelegramBotModule } from './modules/api/telegram-bot/telegram-bot.module';
-import { RentersModule } from './modules/api/renters/renters.module';
-import { RenterMatchesModule } from './modules/api/renter-matches/renter-matches.module';
-import { LandlordObjectsModule } from './modules/api/landlord-objects/landlord-objects.module';
-import { LandlordRenterMatchesModule } from './modules/api/landlord-renter-matches/landlord-renter-matches.module';
-import { RedisQueuesConnectionModule } from './modules/queues/redis-queues.connection.module';
 import { LoggerModule } from './modules/logger/logger.module';
 import { TasksWorkerModule } from './modules/tasks/worker/tasks.worker.module';
-import { QueueLandlordNotificationsProducerModule } from './modules/queues/landlord-notifications/producers/queue-landlord-notifications.producer.module';
-import { QueueApproveAdminObjectProducerModule } from './modules/queues/approve-admin-object/producers/queue-approve-admin-object.producer.module';
+import { ApiModule } from './modules/api/api.module';
 
 @Module({
   imports: [
@@ -25,16 +18,8 @@ import { QueueApproveAdminObjectProducerModule } from './modules/queues/approve-
     }),
     LoggerModule,
     DatabaseModule,
-    TelegramBotModule,
-    RentersModule,
-    RenterMatchesModule,
-    LandlordObjectsModule,
-    LandlordRenterMatchesModule,
     TasksWorkerModule,
-
-    RedisQueuesConnectionModule,
-    QueueLandlordNotificationsProducerModule,
-    QueueApproveAdminObjectProducerModule,
+    ApiModule,
   ],
 })
 export class AppModule {}
