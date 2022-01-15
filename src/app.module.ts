@@ -12,8 +12,10 @@ import { RenterMatchesModule } from './modules/api/renter-matches/renter-matches
 import { LandlordObjectsModule } from './modules/api/landlord-objects/landlord-objects.module';
 import { LandlordRenterMatchesModule } from './modules/api/landlord-renter-matches/landlord-renter-matches.module';
 import { RedisQueuesConnectionModule } from './modules/queues/redis-queues.connection.module';
-import { QueuesConsumersModule } from './modules/queues/queues.consumers.module';
 import { LoggerModule } from './modules/logger/logger.module';
+import { TasksWorkerModule } from './modules/tasks/worker/tasks.worker.module';
+import { QueueLandlordNotificationsProducerModule } from './modules/queues/landlord-notifications/producers/queue-landlord-notifications.producer.module';
+import { QueueApproveAdminObjectProducerModule } from './modules/queues/approve-admin-object/producers/queue-approve-admin-object.producer.module';
 
 @Module({
   imports: [
@@ -23,13 +25,16 @@ import { LoggerModule } from './modules/logger/logger.module';
     }),
     LoggerModule,
     DatabaseModule,
-    RedisQueuesConnectionModule,
-    QueuesConsumersModule,
     TelegramBotModule,
     RentersModule,
     RenterMatchesModule,
     LandlordObjectsModule,
     LandlordRenterMatchesModule,
+    TasksWorkerModule,
+
+    RedisQueuesConnectionModule,
+    QueueLandlordNotificationsProducerModule,
+    QueueApproveAdminObjectProducerModule,
   ],
 })
 export class AppModule {}

@@ -1,53 +1,31 @@
 import { InjectQueue } from '@nestjs/bull';
-import { Injectable } from '@nestjs/common';
-import { JobOptions, Queue } from 'bull';
-import {
-  LANDLORD_NOTIFICATIONS_QUEUE_NAME,
-  NOTIFICATION_RENEW_OBJECT,
-} from '../queue-landlord-notifications.constants';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Queue } from 'bull';
+import { LANDLORD_NOTIFICATIONS_QUEUE_NAME } from '../queue-landlord-notifications.constants';
 import { ToUpdateObjectJobDataType } from '../queue-landlord-notifications.types';
+import { TasksSchedulerService } from '../../../tasks/scheduler/tasks.scheduler.service';
 
-type JobType = { name: string; data: ToUpdateObjectJobDataType; opts: { jobId: string } };
+const ONE_DAY_TIMESTAMP = 24 * 60 * 60 * 1000;
 
 @Injectable()
-export class QueueLandlordNotificationsProducerService {
-  private backoffTimeout: number = 30 * 60 * 1000;
-
+export class QueueLandlordNotificationsProducerService implements OnModuleInit {
   constructor(
     @InjectQueue(LANDLORD_NOTIFICATIONS_QUEUE_NAME)
     private queue: Queue<ToUpdateObjectJobDataType>,
+
+    private tasksSchedulerService: TasksSchedulerService,
   ) {}
 
-  async sendNotificationRenewObject(landlordObjectId: string): Promise<void> {
-    await this.removeJob(landlordObjectId);
-    await this.addJob({
-      name: NOTIFICATION_RENEW_OBJECT,
-      data: landlordObjectId,
-      opts: { jobId: landlordObjectId },
-    });
-  }
+  async onModuleInit(): Promise<void> {
+    const jobs = await this.queue.getJobs(['waiting', 'active', 'delayed', 'paused']);
+    console.log(jobs.length, ' putting to table landlord');
 
-  private async addJob(job: JobType): Promise<void> {
-    await this.queue.add(job.name, job.data, {
-      ...this.getDefaultOptionsForJob(),
-      ...job.opts,
-    });
-  }
-
-  private async removeJob(jobId: string): Promise<void> {
-    const job = await this.queue.getJob(jobId);
-    return job?.remove();
-  }
-
-  private getDefaultOptionsForJob(): JobOptions {
-    const ONE_DAY_TIMESTAMP = 24 * 60 * 60 * 1000;
-    return {
-      delay: ONE_DAY_TIMESTAMP,
-      attempts: 5,
-      backoff: {
-        type: 'fixed',
-        delay: this.backoffTimeout,
-      },
-    };
+    for (let i = 0; i < jobs.length; i++) {
+      const job = jobs[i];
+      const scheduledFor = new Date(job.timestamp + ONE_DAY_TIMESTAMP);
+      const landlordObjectId = job.data;
+      await this.tasksSchedulerService.setTaskLandlordRenewNotification({ landlordObjectId }, scheduledFor);
+      await this.queue.removeJobs(job.id as string);
+    }
   }
 }

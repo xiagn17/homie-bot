@@ -15,8 +15,8 @@ import { MatchStatusEnumType } from '../renter-matches/interfaces/renter-matches
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import { MONEY_RANGE_DIFF } from '../directories/repositories/moneyRanges.repository';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
-import { QueueApproveAdminObjectProducerService } from '../../queues/approve-admin-object/producers/queue-approve-admin-object.producer.service';
 import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
+import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';
 
@@ -29,7 +29,7 @@ export class ObjectMatchesForRenterService {
 
     private telegramBotService: TelegramBotService,
     private landlordObjectsService: LandlordObjectsService,
-    private queueApproveAdminObjectService: QueueApproveAdminObjectProducerService,
+    private tasksSchedulerService: TasksSchedulerService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -94,7 +94,10 @@ export class ObjectMatchesForRenterService {
       adminChatId === landlordObject.telegramUser.chatId ||
       subAdminChatId === landlordObject.telegramUser.chatId
     ) {
-      await this.queueApproveAdminObjectService.setApproveAdminObject(renter.id, landlordObject.id);
+      await this.tasksSchedulerService.setAdminApproveObject({
+        renterId: renter.id,
+        landlordObjectId: landlordObject.id,
+      });
       return;
     }
     await this.flowXoService.notificationNewRenterToLandlord(landlordObject.telegramUser);

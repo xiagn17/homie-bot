@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { QueueLandlordNotificationsProducerService } from '../../queues/landlord-notifications/producers/queue-landlord-notifications.producer.service';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
+import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
 import { ApproveLandlordObjectDto, CreateLandlordObjectDto } from './dto/landlord-objects.dto';
 import { LandlordObjectsService } from './landlord-objects.service';
 import { LandlordObjectsControlService } from './landlord-objects.control.service';
@@ -17,7 +17,7 @@ export class LandlordObjectsController {
     private landlordObjectsControlService: LandlordObjectsControlService,
     private landlordObjectsSerializer: LandlordObjectsSerializer,
 
-    private landlordNotificationsQueueService: QueueLandlordNotificationsProducerService,
+    private tasksSchedulerService: TasksSchedulerService,
 
     private telegramBotService: TelegramBotService,
     private flowXoService: FlowXoService,
@@ -66,14 +66,16 @@ export class LandlordObjectsController {
       landlordObject.telegramUser,
     );
     if (approveLandlordObjectDto.isApproved) {
-      await this.landlordNotificationsQueueService.sendNotificationRenewObject(approveLandlordObjectDto.id);
+      await this.tasksSchedulerService.setTaskLandlordRenewNotification({
+        landlordObjectId: approveLandlordObjectDto.id,
+      });
     }
   }
 
   @Post('/renew')
   async renewObject(@Body() renewLandlordObjectDto: RenewLandlordObjectDto): Promise<void> {
     const landlordObjectId = await this.landlordObjectsService.renewObject(renewLandlordObjectDto);
-    await this.landlordNotificationsQueueService.sendNotificationRenewObject(landlordObjectId);
+    await this.tasksSchedulerService.setTaskLandlordRenewNotification({ landlordObjectId });
   }
 
   @Post('/stop')

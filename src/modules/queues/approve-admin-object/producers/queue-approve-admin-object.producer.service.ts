@@ -1,55 +1,29 @@
 import { InjectQueue } from '@nestjs/bull';
-import { Injectable } from '@nestjs/common';
-import { JobOptions, Queue } from 'bull';
-import {
-  QUEUE_APPROVE_ADMIN_OBJECT_NAME,
-  JOB_APPROVE_ADMIN_OBJECT,
-} from '../queue-approve-admin-object.constants';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Queue } from 'bull';
+import { QUEUE_APPROVE_ADMIN_OBJECT_NAME } from '../queue-approve-admin-object.constants';
 import { AdminApproveObjectJobDataType } from '../queue-approve-admin-object.types';
-
-type JobType = { name: string; data: AdminApproveObjectJobDataType; opts: { jobId: string } };
+import { TasksSchedulerService } from '../../../tasks/scheduler/tasks.scheduler.service';
+const HALF_HOUR_TIMESTAMP = 30 * 60 * 1000;
 
 @Injectable()
-export class QueueApproveAdminObjectProducerService {
-  private backoffTimeout: number = 30 * 60 * 1000;
-
+export class QueueApproveAdminObjectProducerService implements OnModuleInit {
   constructor(
     @InjectQueue(QUEUE_APPROVE_ADMIN_OBJECT_NAME)
     private queue: Queue<AdminApproveObjectJobDataType>,
+
+    private tasksSchedulerService: TasksSchedulerService,
   ) {}
 
-  async setApproveAdminObject(renterId: string, landlordObjectId: string): Promise<void> {
-    const jobId = `${renterId}_${landlordObjectId}`;
-    await this.removeJob(jobId);
-    await this.addJob({
-      name: JOB_APPROVE_ADMIN_OBJECT,
-      data: { renterId, landlordObjectId },
-      opts: { jobId: jobId },
-    });
-  }
-
-  private async addJob(job: JobType): Promise<void> {
-    await this.queue.add(job.name, job.data, {
-      ...this.getDefaultOptionsForJob(),
-      ...job.opts,
-    });
-  }
-
-  private async removeJob(jobId: string): Promise<void> {
-    const job = await this.queue.getJob(jobId);
-    return job?.remove();
-  }
-
-  private getDefaultOptionsForJob(): JobOptions {
-    // const SIX_HOURS_TIMESTAMP = 6 * 60 * 60 * 1000;
-    const HALF_HOUR_TIMESTAMP = 30 * 60 * 1000;
-    return {
-      delay: HALF_HOUR_TIMESTAMP,
-      attempts: 5,
-      backoff: {
-        type: 'fixed',
-        delay: this.backoffTimeout,
-      },
-    };
+  async onModuleInit(): Promise<void> {
+    const jobs = await this.queue.getJobs(['waiting', 'active', 'delayed']);
+    console.log(jobs.length, ' putting to table approve');
+    for (let i = 0; i < jobs.length; i++) {
+      const job = jobs[i];
+      const scheduledFor = new Date(job.timestamp + HALF_HOUR_TIMESTAMP);
+      const { renterId, landlordObjectId } = job.data;
+      await this.tasksSchedulerService.setAdminApproveObject({ renterId, landlordObjectId }, scheduledFor);
+      await this.queue.removeJobs(job.id as string);
+    }
   }
 }
