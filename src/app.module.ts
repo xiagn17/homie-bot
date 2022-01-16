@@ -10,6 +10,7 @@ import { DatabaseModule } from './modules/database/database.module';
 import { LoggerModule } from './modules/logger/logger.module';
 import { TasksWorkerModule } from './modules/tasks/worker/tasks.worker.module';
 import { ApiModule } from './modules/api/api.module';
+import { BotModule } from './modules/bot/main/bot.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ApiModule } from './modules/api/api.module';
     DatabaseModule,
     TasksWorkerModule,
     ApiModule,
+    BotModule,
   ],
 })
 export class AppModule {}

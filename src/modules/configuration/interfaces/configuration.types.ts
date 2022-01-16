@@ -23,6 +23,10 @@ export interface RedisConfigType {
   port: number;
 }
 
+export interface BotConfigType {
+  token: string;
+}
+
 export interface PaymentsPricesConfigType {
   oneContacts: string;
   fiveContacts: string;
@@ -38,9 +42,9 @@ export interface ConfigurationType {
   port: number;
   database: DatabaseConfigType;
   redis: RedisConfigType;
-  telegramToken: string;
   renterMatches: RenterMatchesConfigType;
   adminUsername: string;
   subAdminUsername: string;
+  bot: BotConfigType;
   payments: PaymentsConfigType;
 }

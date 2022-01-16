@@ -21,7 +21,9 @@ export default (): ConfigurationType => {
       host: String(process.env.REDIS_HOST),
       port: Number(process.env.REDIS_PORT),
     },
-    telegramToken: String(process.env.TELEGRAM_TOKEN),
+    bot: {
+      token: String(process.env.TELEGRAM_TOKEN),
+    },
     renterMatches: {
       trialMatchesCount: Number(process.env.TRIAL_FREE_MATCHES_COUNT),
       paidMatchesCount: Number(process.env.PAID_MATCHES_COUNT),

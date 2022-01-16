@@ -23,6 +23,7 @@
     "typeorm": "node -r ts-node/register ./node_modules/typeorm/cli.js"
   },
   "dependencies": {
+    "@grammyjs/runner": "1.0.3",
     "@a2seven/yoo-checkout": "1.1.2",
     "@nestjs/bull": "0.4.2",
     "@nestjs/common": "^8.0.0",
@@ -32,6 +33,7 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/schedule": "1.0.2",
     "@nestjs/typeorm": "^8.0.2",
+    "@satont/grammy-redis-storage": "1.2.0",
     "axios": "0.21.4",
     "body-parser": "^1.19.0",
     "bull": "3.29.3",
@@ -40,6 +42,9 @@
     "cron": "1.8.2",
     "express": "4.17.2",
     "flat": "^5.0.2",
+    "grammy": "1.6.2",
+    "grammy-middlewares": "1.0.11",
+    "ioredis": "4.28.3",
     "ip-range-check": "0.2.0",
     "lodash": "^4.17.21",
     "nestjs-pino": "2.4.0",
@@ -62,6 +67,7 @@
     "@types/cron": "1.7.3",
     "@types/express": "^4.17.13",
     "@types/flat": "^5.0.2",
+    "@types/ioredis": "4.28.7",
     "@types/lodash": "^4.14.172",
     "@types/node": "^16.7.5",
     "@types/pg-format": "^1.0.2",
