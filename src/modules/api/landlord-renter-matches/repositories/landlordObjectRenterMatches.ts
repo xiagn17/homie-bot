@@ -113,6 +113,7 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
         WHERE tu.chat_id = '${chatId}'
           AND renter_status = '${MatchStatusEnumType.resolved}'
           AND landlord_status = '${MatchStatusEnumType.processing}'
+          AND landlord_objects.archived_at IS NULL
         ORDER BY landlord_objects.updated_at
     `);
 
