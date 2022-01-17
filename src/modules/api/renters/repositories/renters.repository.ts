@@ -180,20 +180,20 @@ export class RentersRepository extends Repository<RenterEntity> {
       });
     }
 
-    rentersQuery.innerJoin('renter.moneyRange', 'moneyRange', `moneyRange.id = ANY (:moneyRangeIds)`, {
-      moneyRangeIds: matchOptions.moneyRangeIds,
-    });
-
-    if (matchOptions.locationIds.length) {
-      rentersQuery.andWhere('renter.locationId = ANY (:locationIds)', {
-        locationIds: matchOptions.locationIds,
-      });
-    }
-    if (matchOptions.subwayStationIds.length) {
-      rentersQuery.leftJoin('renter.subwayStations', 'subway', `subway.id = ANY (:subwayStationIds)`, {
-        subwayStationIds: matchOptions.subwayStationIds,
-      });
-    }
+    // rentersQuery.innerJoin('renter.moneyRange', 'moneyRange', `moneyRange.id = ANY (:moneyRangeIds)`, {
+    //   moneyRangeIds: matchOptions.moneyRangeIds,
+    // });
+    //
+    // if (matchOptions.locationIds.length) {
+    //   rentersQuery.andWhere('renter.locationId = ANY (:locationIds)', {
+    //     locationIds: matchOptions.locationIds,
+    //   });
+    // }
+    // if (matchOptions.subwayStationIds.length) {
+    //   rentersQuery.leftJoin('renter.subwayStations', 'subway', `subway.id = ANY (:subwayStationIds)`, {
+    //     subwayStationIds: matchOptions.subwayStationIds,
+    //   });
+    // }
 
     return rentersQuery.getMany();
   }

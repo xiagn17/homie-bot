@@ -128,21 +128,21 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       preferredGender: matchOptions.preferredGender,
     });
 
-    objectsQuery.andWhere('(object.price >= :priceRangeStart AND object.price <= :priceRangeEnd)', {
-      priceRangeStart: matchOptions.priceRange[0],
-      priceRangeEnd: matchOptions.priceRange[1],
-    });
-
-    if (matchOptions.locationIds.length) {
-      objectsQuery.andWhere('object.locationId = ANY (:locationIds)', {
-        locationIds: matchOptions.locationIds,
-      });
-    }
-    if (matchOptions.subwayStationIds.length) {
-      objectsQuery.leftJoin('object.subwayStations', 'subway', `subway.id = ANY (:subwayStationIds)`, {
-        subwayStationIds: matchOptions.subwayStationIds,
-      });
-    }
+    // objectsQuery.andWhere('(object.price >= :priceRangeStart AND object.price <= :priceRangeEnd)', {
+    //   priceRangeStart: matchOptions.priceRange[0],
+    //   priceRangeEnd: matchOptions.priceRange[1],
+    // });
+    //
+    // if (matchOptions.locationIds.length) {
+    //   objectsQuery.andWhere('object.locationId = ANY (:locationIds)', {
+    //     locationIds: matchOptions.locationIds,
+    //   });
+    // }
+    // if (matchOptions.subwayStationIds.length) {
+    //   objectsQuery.leftJoin('object.subwayStations', 'subway', `subway.id = ANY (:subwayStationIds)`, {
+    //     subwayStationIds: matchOptions.subwayStationIds,
+    //   });
+    // }
 
     return objectsQuery.getMany();
   }
