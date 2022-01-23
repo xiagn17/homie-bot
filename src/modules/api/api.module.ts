@@ -4,6 +4,7 @@ import { RentersModule } from './renters/renters.module';
 import { RenterMatchesModule } from './renter-matches/renter-matches.module';
 import { LandlordObjectsModule } from './landlord-objects/landlord-objects.module';
 import { LandlordRenterMatchesModule } from './landlord-renter-matches/landlord-renter-matches.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { LandlordRenterMatchesModule } from './landlord-renter-matches/landlord-
     RenterMatchesModule,
     LandlordObjectsModule,
     LandlordRenterMatchesModule,
+    PaymentsModule,
   ],
   exports: [
     TelegramBotModule,
@@ -19,6 +21,7 @@ import { LandlordRenterMatchesModule } from './landlord-renter-matches/landlord-
     RenterMatchesModule,
     LandlordObjectsModule,
     LandlordRenterMatchesModule,
+    PaymentsModule,
   ],
 })
 export class ApiModule {}

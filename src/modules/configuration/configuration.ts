@@ -28,5 +28,9 @@ export default (): ConfigurationType => {
     },
     adminUsername: String(process.env.ADMIN_USERNAME),
     subAdminUsername: String(process.env.SUBADMIN_USERNAME),
+    payments: {
+      secretKey: String(process.env.YOUKASSA_KEY),
+      shopId: String(process.env.YOUKASSA_SHOP_ID),
+    },
   };
 };

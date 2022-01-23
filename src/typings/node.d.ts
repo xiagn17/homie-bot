@@ -19,6 +19,9 @@ declare namespace NodeJS {
 
     TELEGRAM_TOKEN: string;
 
+    YOUKASSA_KEY: string;
+    YOUKASSA_SHOP_ID: string;
+
     TRIAL_FREE_MATCHES_COUNT: string;
     PAID_MATCHES_COUNT: string;
 

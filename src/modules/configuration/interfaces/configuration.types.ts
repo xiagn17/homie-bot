@@ -23,6 +23,11 @@ export interface RedisConfigType {
   port: number;
 }
 
+export interface PaymentsConfigType {
+  secretKey: string;
+  shopId: string;
+}
+
 export interface ConfigurationType {
   env: NODE_ENV_TYPE;
   port: number;
@@ -32,4 +37,5 @@ export interface ConfigurationType {
   renterMatches: RenterMatchesConfigType;
   adminUsername: string;
   subAdminUsername: string;
+  payments: PaymentsConfigType;
 }

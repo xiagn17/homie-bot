@@ -7,15 +7,15 @@ export class LoggerService extends PinoLogger {
     super(params);
   }
 
-  warn(message: string): void {
-    super.warn(message);
+  warn(message: string, ...args: any[]): void {
+    super.warn(message, ...args);
   }
 
   info(message: string, ...other: any[]): void {
     super.info(message, ...other);
   }
 
-  error(message: string): void {
-    super.error(message);
+  error(message: string, ...args: any[]): void {
+    super.error(message, ...args);
   }
 }
