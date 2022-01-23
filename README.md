@@ -1,3 +1,8 @@
+# how redeploy certificates
+$ docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d server.my-homie.ru
+### renew
+$ docker compose run --rm certbot renew
+
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
