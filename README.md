@@ -1,7 +1,11 @@
 # how redeploy certificates
-$ docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d server.my-homie.ru
-### renew
-$ docker compose run --rm certbot renew
+https://pentacent.medium.com/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71
+#### initial
+change ./init-letsencrypt.sh - domains, data_path, email
+chmod +x init-letsencrypt.sh
+sudo ./init-letsencrypt.sh
+#### after initial
+docker-compose up (to start certbot renew/nginx update)
 
 ## Description
 
