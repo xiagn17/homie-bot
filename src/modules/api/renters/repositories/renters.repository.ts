@@ -197,4 +197,18 @@ export class RentersRepository extends Repository<RenterEntity> {
 
     return rentersQuery.getMany();
   }
+
+  async addContacts(telegramUserId: string, count: number): Promise<number> {
+    const renter = await this.findOneOrFail({ telegramUserId });
+    renter.ableContacts += count;
+    await this.save(renter);
+    return renter.ableContacts;
+  }
+
+  async removeContact(renterId: string): Promise<number> {
+    const renter = await this.findOneOrFail({ id: renterId });
+    renter.ableContacts -= 1;
+    await this.save(renter);
+    return renter.ableContacts;
+  }
 }

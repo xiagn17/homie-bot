@@ -55,6 +55,14 @@ export class LandlordRenterMatchesController {
     return landlordObject && this.landlordObjectsSerializer.toFullResponse(landlordObject);
   }
 
+  @Get('/landlord/get-contacts/:renterId/:landlordObjectId')
+  getContacts(
+    @Param('renterId') renterId: string,
+    @Param('landlordObjectId') landlordObjectId: string,
+  ): Promise<string> {
+    return this.objectMatchesForLandlordService.getPaidContacts(renterId, landlordObjectId);
+  }
+
   @Post('/landlord/renter-action')
   async renterActionByLandlord(
     @Body() landlordStatusOfObjectDto: ChangeLandlordStatusOfObjectDto,

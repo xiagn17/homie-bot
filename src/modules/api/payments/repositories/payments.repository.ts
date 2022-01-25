@@ -1,12 +1,13 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { PaymentEntity } from '../entities/Payment.entity';
 import { PaymentStatusInterface } from '../interfaces/payment-status.interface';
+import { PaymentItemInterface } from '../interfaces/payment-item.interface';
 
 @EntityRepository(PaymentEntity)
 export class PaymentsRepository extends Repository<PaymentEntity> {
   async createAndSave(data: {
     status: PaymentStatusInterface;
-    item: string;
+    item: PaymentItemInterface;
     orderId: string;
     telegramUserId: string;
   }): Promise<PaymentEntity> {

@@ -124,7 +124,20 @@ export class FlowXoService {
     await this.flowXoRequests.runFlowAtUser(flowData, FLOW_URLS.pushNotification);
   }
 
-  private formContactsMessageOfLandlord(landlordObject: LandlordObjectEntity): string {
+  public async notificationPaidContacts({ chatId, botId }: FlowXoRouteType): Promise<void> {
+    const message = '';
+    const flowData = this.flowXoSerializer.prepareNotificationFlowData(
+      {
+        chatId,
+        botId,
+      },
+      'renter_paid_contacts',
+      message,
+    );
+    await this.flowXoRequests.runFlowAtUser(flowData, FLOW_URLS.pushNotification);
+  }
+
+  public formContactsMessageOfLandlord(landlordObject: LandlordObjectEntity): string {
     const est_kontakt_text = `<b>Есть контакт!</b><pre>\n</pre>`;
     const skip_line_text = `<pre>\n</pre>`;
     const object_number_text = `🏡 Объявление: #home${landlordObject.number}`;

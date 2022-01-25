@@ -88,12 +88,8 @@ export class ObjectMatchesForRenterService {
       renterStatusOfObjectDto.landlordObjectId,
     );
 
-    const { chatId: adminChatId } = await this.telegramBotService.getAdmin();
-    const { chatId: subAdminChatId } = await this.telegramBotService.getSubAdmin();
-    if (
-      adminChatId === landlordObject.telegramUser.chatId ||
-      subAdminChatId === landlordObject.telegramUser.chatId
-    ) {
+    const isPublishedByAdmins = await this.isObjectPublishedByAdmins(landlordObject);
+    if (isPublishedByAdmins) {
       await this.tasksSchedulerService.setAdminApproveObject({
         renterId: renter.id,
         landlordObjectId: landlordObject.id,
@@ -101,6 +97,15 @@ export class ObjectMatchesForRenterService {
       return;
     }
     await this.flowXoService.notificationNewRenterToLandlord(landlordObject.telegramUser);
+  }
+
+  private async isObjectPublishedByAdmins(landlordObject: LandlordObjectEntity): Promise<boolean> {
+    const { chatId: adminChatId } = await this.telegramBotService.getAdmin();
+    const { chatId: subAdminChatId } = await this.telegramBotService.getSubAdmin();
+    return (
+      adminChatId === landlordObject.telegramUser.chatId ||
+      subAdminChatId === landlordObject.telegramUser.chatId
+    );
   }
 
   private async findMatchesForRenter(

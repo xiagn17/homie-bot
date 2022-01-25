@@ -117,4 +117,12 @@ export class RenterEntity {
 
   @OneToOne(() => MatchesInfoEntity, info => info.renter)
   matchesInfo: MatchesInfoEntity;
+
+  @Column({
+    type: 'smallint',
+    name: 'able_contacts',
+    default: 0,
+    nullable: false,
+  })
+  ableContacts: number;
 }

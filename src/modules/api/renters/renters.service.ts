@@ -10,6 +10,8 @@ import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity
 import { AnalyticsService } from '../analytics/analytics.service';
 import { BusinessAnalyticsFieldsEnumType } from '../analytics/interfaces/analytics.type';
 import { ObjectMatchesForRenterService } from '../landlord-renter-matches/object-matches.for-renter.service';
+import { FlowXoService } from '../../flow-xo/flow-xo.service';
+import { TelegramUsersRepository } from '../telegram-bot/repositories/telegramUsers.repository';
 import { RentersRepository } from './repositories/renters.repository';
 import { RenterEntity } from './entities/Renter.entity';
 import { MatchesInfoRepository } from './repositories/matchesInfo.repository';
@@ -24,6 +26,7 @@ export class RentersService {
     private connection: Connection,
 
     private rentersSerializer: RentersSerializer,
+    private flowXoService: FlowXoService,
 
     private objectMatchesForRenterService: ObjectMatchesForRenterService,
     private analyticsService: AnalyticsService,
@@ -100,5 +103,24 @@ export class RentersService {
     await this.objectMatchesForRenterService.matchRenterToObjects(renter);
 
     return renter;
+  }
+
+  public async addPaidContacts(
+    telegramUserId: string,
+    count: number,
+    entityManager: EntityManager,
+  ): Promise<void> {
+    await entityManager.getCustomRepository(RentersRepository).addContacts(telegramUserId, count);
+    const telegramUser = await entityManager
+      .getCustomRepository(TelegramUsersRepository)
+      .findOneOrFail({ id: telegramUserId });
+    await this.flowXoService.notificationPaidContacts({
+      chatId: telegramUser.chatId,
+      botId: telegramUser.botId,
+    });
+  }
+
+  public async removeContact(renterId: string): Promise<void> {
+    await this.connection.getCustomRepository(RentersRepository).removeContact(renterId);
   }
 }

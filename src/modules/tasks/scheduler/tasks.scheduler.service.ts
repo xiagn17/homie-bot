@@ -8,7 +8,7 @@ import {
 } from '../interfaces/TaskData.interface';
 
 const ONE_DAY_TIMESTAMP = 24 * 60 * 60 * 1000;
-const HALF_HOUR_TIMESTAMP = 30 * 60 * 1000;
+const EIGHT_HOURS_TIMESTAMP = 8 * 60 * 60 * 1000;
 
 @Injectable()
 export class TasksSchedulerService {
@@ -23,7 +23,7 @@ export class TasksSchedulerService {
     const type = TaskTypeEnumInterface.landlord_notification;
     const date = customDate ?? new Date(Date.now() + ONE_DAY_TIMESTAMP);
     const prevTask = await this.tasksRepository.findOne({
-      where: { data: { landlordObjectId: data.landlordObjectId } },
+      where: { data: { landlordObjectId: data.landlordObjectId }, completedAt: null },
     });
     if (!prevTask) {
       await this.tasksRepository.createAndSave(type, date, data);
@@ -34,7 +34,13 @@ export class TasksSchedulerService {
 
   async setAdminApproveObject(data: TaskDataAdminApproveObjectInterface, customDate?: Date): Promise<void> {
     const type = TaskTypeEnumInterface.admin_approve;
-    const date = customDate ?? new Date(Date.now() + HALF_HOUR_TIMESTAMP);
+    const date = customDate ?? new Date(Date.now() + EIGHT_HOURS_TIMESTAMP);
     await this.tasksRepository.createAndSave(type, date, data);
+  }
+
+  async removeAdminApproveObject(data: TaskDataAdminApproveObjectInterface): Promise<void> {
+    await this.tasksRepository.delete({
+      data: { renterId: data.renterId, landlordObjectId: data.landlordObjectId },
+    });
   }
 }

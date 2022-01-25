@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import * as bodyParser from 'body-parser';
 import 'reflect-metadata';
 import { Logger as LoggerPinoService } from 'nestjs-pino';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import configuration from './modules/configuration/configuration';
 import { DatabaseModule } from './modules/database/database.module';
 import { LoggerModule } from './modules/logger/logger.module';
@@ -16,6 +17,7 @@ import { ApiModule } from './modules/api/api.module';
       isGlobal: true,
       load: [configuration],
     }),
+    EventEmitterModule.forRoot(),
     LoggerModule,
     DatabaseModule,
     TasksWorkerModule,

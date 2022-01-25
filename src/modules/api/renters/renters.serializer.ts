@@ -55,6 +55,7 @@ export class RentersSerializer {
       socials: fullRenter.socials,
       withAnimals: fullRenter.withAnimals,
       liveWithAnotherGender: fullRenter.liveWithAnotherGender,
+      ableContacts: fullRenter.ableContacts,
     };
   }
 

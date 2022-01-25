@@ -24,9 +24,14 @@ export class AddPayments1642901809333 implements MigrationInterface {
     await queryRunner.query(`
         CREATE INDEX idx_payment_order_id ON payments USING btree (order_id);
     `);
+
+    await queryRunner.query(`
+        ALTER TABLE renters ADD COLUMN able_contacts smallint NOT NULL DEFAULT 0;    
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`ALTER TABLE renters DROP COLUMN able_contacts`);
     await queryRunner.query(`DROP TABLE payments`);
     await queryRunner.query(`DROP TYPE payment_status_type`);
   }

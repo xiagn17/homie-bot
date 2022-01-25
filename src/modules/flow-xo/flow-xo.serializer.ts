@@ -27,7 +27,8 @@ export class FlowXoSerializer {
       | 'landlord_next_renter'
       | 'rent_landlord_contacts'
       | 'landlord_renew_object'
-      | 'landlord_got_approve',
+      | 'landlord_got_approve'
+      | 'renter_paid_contacts',
     message: string,
   ): FlowXoFlowRunDataType {
     return {

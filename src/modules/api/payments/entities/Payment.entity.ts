@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { PaymentStatusInterface } from '../interfaces/payment-status.interface';
+import { PaymentItemInterface } from '../interfaces/payment-item.interface';
 
 @Entity({ name: 'payments' })
 export class PaymentEntity {
@@ -7,7 +8,7 @@ export class PaymentEntity {
   readonly id: string;
 
   @Column({ name: 'item', type: 'varchar' })
-  readonly item: string;
+  readonly item: PaymentItemInterface;
 
   @Column({ name: 'order_id', type: 'uuid' })
   readonly orderId: string;

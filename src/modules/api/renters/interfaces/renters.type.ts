@@ -78,4 +78,5 @@ export interface ApiRenterResponseType extends ApiTelegramUserResponseType {
   socials: string;
   withAnimals: boolean;
   liveWithAnotherGender: WithAnotherGenderEnumType;
+  ableContacts: number;
 }

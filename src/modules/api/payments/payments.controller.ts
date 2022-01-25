@@ -1,9 +1,20 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Response,
+  UseGuards,
+} from '@nestjs/common';
+import { Response as ResponseType } from 'express';
 import { WebHookEvents } from '@a2seven/yoo-checkout';
 import { WebhookPaymentEvent } from './interfaces/payments-youkassa.interface';
 import { PaymentsWebhookGuard } from './guards/payments-webhook.guard';
 import { PaymentsService } from './payments.service';
-import { CreatePaymentDto } from './dto/CreatePayment.dto';
+import { PaymentItemInterface } from './interfaces/payment-item.interface';
 
 @Controller('payments')
 export class PaymentsController {
@@ -20,8 +31,13 @@ export class PaymentsController {
     }
   }
 
-  @Post()
-  async createPaymentLink(@Body() createPaymentDto: CreatePaymentDto): Promise<string> {
-    return this.paymentsService.createPayment(createPaymentDto);
+  @Get('/:chatId/:item')
+  async getPaymentLink(
+    @Param('chatId') chatId: string,
+    @Param('item') item: PaymentItemInterface,
+    @Response() response: ResponseType,
+  ): Promise<void> {
+    const paymentUrl = await this.paymentsService.getPaymentLink(chatId, item);
+    response.redirect(paymentUrl);
   }
 }
