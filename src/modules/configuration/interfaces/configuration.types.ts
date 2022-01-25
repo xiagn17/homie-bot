@@ -23,9 +23,14 @@ export interface RedisConfigType {
   port: number;
 }
 
+export interface PaymentsPricesConfigType {
+  oneContacts: string;
+  fiveContacts: string;
+}
 export interface PaymentsConfigType {
   secretKey: string;
   shopId: string;
+  prices: PaymentsPricesConfigType;
 }
 
 export interface ConfigurationType {

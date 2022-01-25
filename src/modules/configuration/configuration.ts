@@ -31,6 +31,10 @@ export default (): ConfigurationType => {
     payments: {
       secretKey: String(process.env.YOUKASSA_KEY),
       shopId: String(process.env.YOUKASSA_SHOP_ID),
+      prices: {
+        oneContacts: String(process.env.ONE_CONTACTS_PRICE),
+        fiveContacts: String(process.env.FIVE_CONTACTS_PRICE),
+      },
     },
   };
 };

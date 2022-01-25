@@ -21,6 +21,8 @@ declare namespace NodeJS {
 
     YOUKASSA_KEY: string;
     YOUKASSA_SHOP_ID: string;
+    ONE_CONTACTS_PRICE: string;
+    FIVE_CONTACTS_PRICE: string;
 
     TRIAL_FREE_MATCHES_COUNT: string;
     PAID_MATCHES_COUNT: string;

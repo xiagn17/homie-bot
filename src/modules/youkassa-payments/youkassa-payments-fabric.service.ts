@@ -1,10 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { ICreatePayment } from '@a2seven/yoo-checkout';
 import { IAmount } from '@a2seven/yoo-checkout/lib/types';
+import { ConfigService } from '@nestjs/config';
 import { PaymentItemInterface, PaymentItems } from '../api/payments/interfaces/payment-item.interface';
+import { PaymentsPricesConfigType } from '../configuration/interfaces/configuration.types';
 
 @Injectable()
 export class YoukassaPaymentsFabricService {
+  private readonly prices: PaymentsPricesConfigType;
+
+  constructor(private configService: ConfigService) {
+    this.prices = this.configService.get('payments.prices') as PaymentsPricesConfigType;
+  }
+
   createPaymentPayload(item: PaymentItemInterface): ICreatePayment {
     return {
       amount: this.getAmountByItem(item),
@@ -26,9 +34,9 @@ export class YoukassaPaymentsFabricService {
       currency: 'RUB',
     };
     if (item === PaymentItems['5-contacts']) {
-      amount.value = '299.00';
+      amount.value = this.prices.fiveContacts;
     } else {
-      amount.value = '99.00';
+      amount.value = this.prices.oneContacts;
     }
     return amount as IAmount;
   }
