@@ -69,6 +69,10 @@ export class LandlordObjectsService {
     return entityManager.getCustomRepository(LandlordObjectsRepository).getFullObject(id);
   }
 
+  getAllObjects(): Promise<LandlordObjectEntity[]> {
+    return this.connection.getCustomRepository(LandlordObjectsRepository).find();
+  }
+
   async hasUserObject(chatId: string): Promise<boolean> {
     try {
       await this.connection.getCustomRepository(LandlordObjectsRepository).getByChatId(chatId);
