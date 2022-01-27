@@ -45,16 +45,16 @@ export class LandlordObjectsController {
   }
 
   @Post()
-  async createObject(@Body() landlordObjectDto: CreateLandlordObjectDto): Promise<number> {
+  async createObject(@Body() landlordObjectDto: CreateLandlordObjectDto): Promise<{ number: number }> {
     const { chatId: adminChatId } = await this.telegramBotService.getAdmin();
     const { chatId: subAdminChatId } = await this.telegramBotService.getSubAdmin();
     const landlordObject = await this.landlordObjectsService.createObject(landlordObjectDto);
     if (adminChatId === landlordObjectDto.chatId || subAdminChatId === landlordObjectDto.chatId) {
       await this.landlordObjectsControlService.controlApprove({ id: landlordObject.id, isApproved: true });
-      return landlordObject.number;
+      return { number: landlordObject.number };
     } else {
       await this.landlordObjectsControlService.notificationApproveLandlordObject();
-      return landlordObject.number;
+      return { number: landlordObject.number };
     }
   }
 
