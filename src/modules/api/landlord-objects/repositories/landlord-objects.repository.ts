@@ -101,7 +101,7 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
   }
 
   findMatchesForRenterToObjects(
-    renter: RenterEntity,
+    _renter: RenterEntity,
     matchOptions: {
       priceRange: [number, number];
       locationIds: string[];
@@ -111,18 +111,18 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
   ): Promise<LandlordObjectEntity[]> {
     const objectsQuery = this.createQueryBuilder('object');
 
-    const renterAge = new Date().getFullYear() - renter.birthdayYear;
-    const ageRangeStart = renterAge - 10;
-    const ageRangeEnd = renterAge + 10;
-    objectsQuery.where('(object.averageAge >= :ageRangeStart AND object.averageAge <= :ageRangeEnd)', {
-      ageRangeStart: ageRangeStart,
-      ageRangeEnd: ageRangeEnd,
-    });
-    objectsQuery.andWhere('(object.isApproved = true AND object.archivedAt IS NULL)');
+    // const renterAge = new Date().getFullYear() - renter.birthdayYear;
+    // const ageRangeStart = renterAge - 10;
+    // const ageRangeEnd = renterAge + 10;
+    // objectsQuery.where('(object.averageAge >= :ageRangeStart AND object.averageAge <= :ageRangeEnd)', {
+    //   ageRangeStart: ageRangeStart,
+    //   ageRangeEnd: ageRangeEnd,
+    // });
+    objectsQuery.where('(object.isApproved = true AND object.archivedAt IS NULL)');
 
-    if (renter.withAnimals) {
-      objectsQuery.andWhere('object.showWithAnimals = :showWithAnimals', { showWithAnimals: true });
-    }
+    // if (renter.withAnimals) {
+    //   objectsQuery.andWhere('object.showWithAnimals = :showWithAnimals', { showWithAnimals: true });
+    // }
 
     objectsQuery.andWhere('object.preferredGender = ANY (:preferredGender)', {
       preferredGender: matchOptions.preferredGender,

@@ -152,7 +152,7 @@ export class RentersRepository extends Repository<RenterEntity> {
   }
 
   findMatchesForObjectToRenters(
-    landlordObject: LandlordObjectEntity,
+    _landlordObject: LandlordObjectEntity,
     matchOptions: {
       gender: GenderEnumType | null;
       moneyRangeIds: string[];
@@ -162,20 +162,20 @@ export class RentersRepository extends Repository<RenterEntity> {
   ): Promise<RenterEntity[]> {
     const rentersQuery = this.createQueryBuilder('renter');
 
-    const birthdayYearAverageAge = new Date().getFullYear() - landlordObject.averageAge;
-    const birthdayYearRangeStart = birthdayYearAverageAge - 10;
-    const birthdayYearRangeEnd = birthdayYearAverageAge + 10;
-    rentersQuery.where('(renter.birthdayYear >= :rangeStart AND renter.birthdayYear <= :rangeEnd)', {
-      rangeStart: birthdayYearRangeStart,
-      rangeEnd: birthdayYearRangeEnd,
-    });
+    // const birthdayYearAverageAge = new Date().getFullYear() - landlordObject.averageAge;
+    // const birthdayYearRangeStart = birthdayYearAverageAge - 10;
+    // const birthdayYearRangeEnd = birthdayYearAverageAge + 10;
+    // rentersQuery.where('(renter.birthdayYear >= :rangeStart AND renter.birthdayYear <= :rangeEnd)', {
+    //   rangeStart: birthdayYearRangeStart,
+    //   rangeEnd: birthdayYearRangeEnd,
+    // });
 
-    if (!landlordObject.showWithAnimals) {
-      rentersQuery.andWhere('renter.withAnimals = :withAnimals', { withAnimals: false });
-    }
+    // if (!landlordObject.showWithAnimals) {
+    //   rentersQuery.andWhere('renter.withAnimals = :withAnimals', { withAnimals: false });
+    // }
 
     if (matchOptions.gender) {
-      rentersQuery.andWhere('renter.gender = :gender', {
+      rentersQuery.where('renter.gender = :gender', {
         gender: matchOptions.gender,
       });
     }
