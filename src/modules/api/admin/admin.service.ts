@@ -17,17 +17,16 @@ export class AdminService {
         👋 #home${o.number}<br>
         Имя ${o.name}<br>
         Телефон ${o.phoneNumber}
-        🚇 Метро: ${o.subwayStations.join(', ')}<br>
         💵 Стоимость: ${o.price} руб./мес<br>
         <br>
         🚻/🚺/🚹 средний возраст ~ ${o.averageAge}<br>
         📍Адрес: ${o.address}<br>
         🕐 Заезд: с ${o.startArrivalDate}<br>
         📝 Комментарий: ${o.comment}<br>
+        <br><br><br>
     </div>`,
     );
 
-    console.log(htmlObjects);
     return `<div>${htmlObjects.join('')}</div>`;
   }
 }
