@@ -27,6 +27,7 @@ export class AdminService {
     </div>`,
     );
 
+    console.log(htmlObjects);
     return `<div>${htmlObjects.join('')}</div>`;
   }
 }
