@@ -70,7 +70,11 @@ export class LandlordObjectsService {
   }
 
   getAllObjects(): Promise<LandlordObjectEntity[]> {
-    return this.connection.getCustomRepository(LandlordObjectsRepository).find();
+    return this.connection.getCustomRepository(LandlordObjectsRepository).find({
+      order: {
+        number: 'DESC',
+      },
+    });
   }
 
   async hasUserObject(chatId: string): Promise<boolean> {
