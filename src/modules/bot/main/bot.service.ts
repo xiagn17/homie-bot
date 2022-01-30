@@ -1,12 +1,14 @@
 import { Bot } from 'grammy';
-import { ignoreOld, sequentialize } from 'grammy-middlewares';
+import { sequentialize } from 'grammy-middlewares';
 import { run } from '@grammyjs/runner';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { hydrateReply, parseMode } from '@grammyjs/parse-mode';
 import { LoggerService } from '../../logger/logger.service';
-import { BotHandlersService } from '../handlers/bot-handlers.service';
 import { SessionStorageService } from '../session-storage/session-storage.service';
+import { BotHandlersService } from './handlers/bot-handlers.service';
 import { MyContext } from './interfaces/bot.interface';
+import { BotMenusService } from './menus/bot-menus.service';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -18,6 +20,7 @@ export class BotService implements OnModuleInit {
 
     private botHandlersService: BotHandlersService,
     private sessionStorageService: SessionStorageService,
+    private botMenusService: BotMenusService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -33,7 +36,9 @@ export class BotService implements OnModuleInit {
     this.logger.info('Starting the bot...');
 
     this.setMiddlewares();
+    this.setConfig();
     this.listenCommands();
+    this.listenMessages();
     this.catchErrors();
 
     await this.bot.init();
@@ -43,11 +48,26 @@ export class BotService implements OnModuleInit {
   }
 
   private setMiddlewares(): void {
-    this.bot.use(sequentialize()).use(ignoreOld()).use(this.sessionStorageService.getSession());
+    const menus = this.botMenusService.menus;
+    this.bot
+      .use(sequentialize())
+      .use(hydrateReply)
+      .use(this.sessionStorageService.getSession())
+      .use(...menus);
+  }
+
+  private setConfig(): void {
+    this.bot.api.config.use(parseMode('HTML'));
   }
 
   private listenCommands(): void {
-    this.bot.command(['start'], this.botHandlersService.start);
+    this.bot.command('start', this.botHandlersService.start);
+  }
+
+  private listenMessages(): void {
+    this.bot.on('my_chat_member', _ctx => {
+      // ctx.update - получу инфу о бане бота/рестарте
+    });
   }
 
   private catchErrors(): void {

@@ -33,7 +33,8 @@ export class SessionStorageService implements OnModuleInit {
 
   private getInitialSession(): SessionDataInterface {
     return {
-      counter: 0,
+      type: undefined,
+      gender: undefined,
     };
   }
 }

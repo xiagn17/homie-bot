@@ -23,8 +23,10 @@
     "typeorm": "node -r ts-node/register ./node_modules/typeorm/cli.js"
   },
   "dependencies": {
-    "@grammyjs/runner": "1.0.3",
     "@a2seven/yoo-checkout": "1.1.2",
+    "@grammyjs/menu": "1.0.4",
+    "@grammyjs/parse-mode": "1.0.0",
+    "@grammyjs/runner": "1.0.3",
     "@nestjs/bull": "0.4.2",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.0.1",
@@ -60,6 +62,7 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
+    "@grammyjs/types": "2.5.1",
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
