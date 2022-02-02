@@ -1,24 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { MatchDataType } from '../api/renter-matches/interfaces/renter-matches.type';
 import { FlowXoFlowRunDataType, FlowXoRouteType } from './interfaces/flow-xo.type';
 
 @Injectable()
 export class FlowXoSerializer {
-  prepareMatchData(matchData: MatchDataType, isExistingMatch: boolean): FlowXoFlowRunDataType {
-    return {
-      ...this.prepareRunFlowData(matchData.targetChatId, matchData.botId),
-      data: {
-        isExistingMatch,
-        renter: matchData.matchedRenter,
-        matchId: matchData.matchId,
-      },
-    };
-  }
-
-  preparePayMatchData(chatId: string, botId: string): FlowXoFlowRunDataType {
-    return this.prepareRunFlowData(chatId, botId);
-  }
-
   prepareNotificationFlowData(
     { chatId, botId }: FlowXoRouteType,
     method:

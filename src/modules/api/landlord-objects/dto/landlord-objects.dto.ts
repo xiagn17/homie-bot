@@ -3,11 +3,9 @@ import { Transform } from 'class-transformer';
 import { TelegramChatIdDTO } from '../../telegram-bot/dto/telegram-bot.dto';
 import { PreferredGenderEnumType } from '../entities/LandlordObject.entity';
 import { dateTransformer } from '../../../../utils/transform/dateTransformer';
-import { transformSubwayStations } from '../../../../utils/transform/transformSubwayStations';
 import { ApiLandlordObjectControlType, ApiLandlordObjectType } from '../interfaces/landlord-objects.type';
-import { SubwayStationEnumType } from '../../directories/interfaces/subway-stations.interface';
-import { LocationEnumType } from '../../directories/interfaces/locations.interface';
 
+// todo абсолютно другая dto должна быть в соответствии с БД
 export class CreateLandlordObjectDto extends TelegramChatIdDTO implements ApiLandlordObjectType {
   @IsString()
   address: string;
@@ -18,9 +16,6 @@ export class CreateLandlordObjectDto extends TelegramChatIdDTO implements ApiLan
 
   @IsString()
   comment: string;
-
-  @IsEnum(LocationEnumType)
-  location: LocationEnumType;
 
   @IsString()
   name: string;
@@ -50,10 +45,6 @@ export class CreateLandlordObjectDto extends TelegramChatIdDTO implements ApiLan
   @IsDate()
   @Transform(({ value }) => dateTransformer(value), { toClassOnly: true })
   startArrivalDate: Date;
-
-  @IsEnum(SubwayStationEnumType, { each: true })
-  @Transform(({ obj }) => transformSubwayStations(obj), { toClassOnly: true })
-  subwayStations: SubwayStationEnumType[];
 }
 
 export class ApproveLandlordObjectDto implements ApiLandlordObjectControlType {

@@ -3,16 +3,12 @@ import { EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
 import { RenterEntity } from '../renters/entities/Renter.entity';
 import { RentersRepository } from '../renters/repositories/renters.repository';
-import { SubwayStationsRepository } from '../directories/repositories/subwayStations.repository';
-import { MoneyRangesRepository } from '../directories/repositories/moneyRanges.repository';
-import { LocationsRepository } from '../directories/repositories/locations.repository';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import {
   LandlordObjectEntity,
   PreferredGenderEnumType,
 } from '../landlord-objects/entities/LandlordObject.entity';
 import { GenderEnumType } from '../renters/interfaces/renters.type';
-import { MatchStatusEnumType } from '../renter-matches/interfaces/renter-matches.type';
 import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
 import { RentersService } from '../renters/renters.service';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
@@ -20,6 +16,7 @@ import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeLandlordStatusOfObjectDto } from './dto/ChangeLandlordStatusOfObjectDto';
 import { SetRenterLastInLandlordQueueDto } from './dto/SetRenterLastInLandlordQueue.dto';
+import { MatchStatusEnumType } from './interfaces/landlord-renter-matches.types';
 
 @Injectable()
 export class ObjectMatchesForLandlordService {
@@ -152,16 +149,6 @@ export class ObjectMatchesForLandlordService {
     landlordObject: LandlordObjectEntity,
     entityManager: EntityManager = this.entityManager,
   ): Promise<RenterEntity[]> {
-    const subwayStationIdsForMatch = await entityManager
-      .getCustomRepository(SubwayStationsRepository)
-      .getStationIdsForMatch(landlordObject.subwayStations);
-    const moneyRangeIdsForMatch = await entityManager
-      .getCustomRepository(MoneyRangesRepository)
-      .getMoneyRangeIdsForLocationMatch(landlordObject.price);
-    const locationIdsForMatch = await entityManager
-      .getCustomRepository(LocationsRepository)
-      .getLocationIdsForMatch(landlordObject.location);
-
     let gender: GenderEnumType | null = null;
     if (landlordObject.preferredGender !== PreferredGenderEnumType.NO_DIFFERENCE) {
       gender =
@@ -171,9 +158,9 @@ export class ObjectMatchesForLandlordService {
     }
     const matchOptions = {
       gender: gender,
-      moneyRangeIds: moneyRangeIdsForMatch,
-      locationIds: locationIdsForMatch,
-      subwayStationIds: subwayStationIdsForMatch,
+      location: landlordObject.location,
+      objectType: landlordObject.objectType,
+      price: landlordObject.price,
     };
     return entityManager
       .getCustomRepository(RentersRepository)

@@ -2,7 +2,7 @@ import { DeepPartial, EntityRepository, InsertResult, Repository } from 'typeorm
 import { RenterEntity } from '../../renters/entities/Renter.entity';
 import { LandlordObjectRenterMatchEntity } from '../entities/LandlordObjectRenterMatch.entity';
 import { LandlordObjectEntity } from '../../landlord-objects/entities/LandlordObject.entity';
-import { MatchStatusEnumType } from '../../renter-matches/interfaces/renter-matches.type';
+import { MatchStatusEnumType } from '../interfaces/landlord-renter-matches.types';
 
 interface CountOfUnprocessedObjectsByRentersRawDataType {
   renterId: string;

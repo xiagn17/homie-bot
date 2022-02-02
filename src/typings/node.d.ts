@@ -24,9 +24,6 @@ declare namespace NodeJS {
     ONE_CONTACTS_PRICE: string;
     FIVE_CONTACTS_PRICE: string;
 
-    TRIAL_FREE_MATCHES_COUNT: string;
-    PAID_MATCHES_COUNT: string;
-
     ADMIN_USERNAME: string;
     SUBADMIN_USERNAME: string;
   }

@@ -3,7 +3,6 @@ import { EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../../logger/logger.service';
 import { AnalyticsService } from '../analytics/analytics.service';
-import { RenterMatchesService } from '../renter-matches/renter-matches.service';
 import { TelegramUsersRepository } from './repositories/telegramUsers.repository';
 import { TelegramUserEntity } from './entities/TelegramUser.entity';
 import { TelegramBotSerializer } from './telegram-bot.serializer';
@@ -15,7 +14,6 @@ export class TelegramBotService {
     private logger: LoggerService,
     private entityManager: EntityManager,
     private telegramBotSerializer: TelegramBotSerializer,
-    private renterMatchesService: RenterMatchesService,
     private analyticsService: AnalyticsService,
     private configService: ConfigService,
   ) {
@@ -42,7 +40,6 @@ export class TelegramBotService {
 
   public async unsubscribeUser(chatId: string): Promise<void> {
     await this.entityManager.getCustomRepository(TelegramUsersRepository).archiveUser(chatId);
-    await this.renterMatchesService.stopMatchingRenter(chatId);
   }
 
   public getAdmin(): Promise<TelegramUserEntity> {

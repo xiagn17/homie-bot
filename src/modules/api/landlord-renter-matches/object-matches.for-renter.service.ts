@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
 import { RenterEntity } from '../renters/entities/Renter.entity';
-import { SubwayStationsRepository } from '../directories/repositories/subwayStations.repository';
-import { LocationsRepository } from '../directories/repositories/locations.repository';
 import { LandlordObjectsRepository } from '../landlord-objects/repositories/landlord-objects.repository';
 import {
   LandlordObjectEntity,
@@ -11,14 +9,13 @@ import {
 } from '../landlord-objects/entities/LandlordObject.entity';
 import { GenderEnumType } from '../renters/interfaces/renters.type';
 import { RentersRepository } from '../renters/repositories/renters.repository';
-import { MatchStatusEnumType } from '../renter-matches/interfaces/renter-matches.type';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
-import { MONEY_RANGE_DIFF } from '../directories/repositories/moneyRanges.repository';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';
+import { MatchStatusEnumType } from './interfaces/landlord-renter-matches.types';
 
 @Injectable()
 export class ObjectMatchesForRenterService {
@@ -112,29 +109,21 @@ export class ObjectMatchesForRenterService {
     renter: RenterEntity,
     entityManager: EntityManager = this.entityManager,
   ): Promise<LandlordObjectEntity[]> {
-    const subwayStationIdsForMatch = await entityManager
-      .getCustomRepository(SubwayStationsRepository)
-      .getStationIdsForMatch(renter.subwayStations);
-    const locationIdsForMatch = await entityManager
-      .getCustomRepository(LocationsRepository)
-      .getLocationIdsForMatch(renter.location);
-
-    const rangeStart = renter.moneyRange.range.split('-')[0];
-    const rangeEnd = renter.moneyRange.range.split('-')[1];
-    const priceRange: [number, number] = [
-      Number(rangeStart) - MONEY_RANGE_DIFF,
-      Number(rangeEnd) + MONEY_RANGE_DIFF,
-    ];
     const preferredGender =
       renter.gender === GenderEnumType.MALE
         ? [PreferredGenderEnumType.MALE, PreferredGenderEnumType.NO_DIFFERENCE]
         : [PreferredGenderEnumType.FEMALE, PreferredGenderEnumType.NO_DIFFERENCE];
 
     const matchOptions = {
-      priceRange: priceRange,
       preferredGender: preferredGender,
-      locationIds: locationIdsForMatch,
-      subwayStationIds: subwayStationIdsForMatch,
+      locations: renter.renterFiltersEntity.locations,
+      objectTypes: renter.renterFiltersEntity.objectType,
+      priceRange: renter.renterFiltersEntity.priceRangeStart
+        ? ([renter.renterFiltersEntity.priceRangeStart, renter.renterFiltersEntity.priceRangeEnd] as [
+            number,
+            number,
+          ])
+        : null,
     };
 
     return entityManager

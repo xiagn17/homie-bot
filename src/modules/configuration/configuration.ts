@@ -24,10 +24,6 @@ export default (): ConfigurationType => {
     bot: {
       token: String(process.env.TELEGRAM_TOKEN),
     },
-    renterMatches: {
-      trialMatchesCount: Number(process.env.TRIAL_FREE_MATCHES_COUNT),
-      paidMatchesCount: Number(process.env.PAID_MATCHES_COUNT),
-    },
     adminUsername: String(process.env.ADMIN_USERNAME),
     subAdminUsername: String(process.env.SUBADMIN_USERNAME),
     payments: {

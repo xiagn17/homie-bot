@@ -1,5 +1,10 @@
 import { TelegramUserType } from '../../telegram-bot/interfaces/telegram-bot.types';
-import { MatchStatusEnumType } from '../../renter-matches/interfaces/renter-matches.type';
+
+export enum MatchStatusEnumType {
+  resolved = 'resolved',
+  rejected = 'rejected',
+  processing = 'processing',
+}
 
 export interface ApiChangeRenterStatusOfObject extends TelegramUserType {
   landlordObjectId: string;

@@ -1,25 +1,16 @@
 import { EntityNotFoundError, EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
-import { SubwayStationEntity } from '../../directories/entities/SubwayStation.entity';
 import { LandlordObjectEntity, PreferredGenderEnumType } from '../entities/LandlordObject.entity';
 import { RenterEntity } from '../../renters/entities/Renter.entity';
+import { LocationsEnum, ObjectTypeEnum } from '../../renters/entities/RenterFilters.entity';
 
-interface RelationDataType {
-  subwayStations: SubwayStationEntity[];
-}
 @EntityRepository(LandlordObjectEntity)
 export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> {
   async createWithRelations(
     landlordObjectData: Partial<LandlordObjectEntity>,
-    { subwayStations }: RelationDataType,
   ): Promise<LandlordObjectEntity> {
     const landlordObjectEntity = await this.save(this.create(landlordObjectData));
 
-    await this.createQueryBuilder('landlordObject')
-      .relation('subwayStations')
-      .of(landlordObjectEntity.id)
-      .add(subwayStations);
-
-    return landlordObjectEntity;
+    return this.findOneOrFail(landlordObjectEntity.id);
   }
 
   async getNextObjectIdToApprove(): Promise<string | undefined> {
@@ -94,8 +85,6 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     landlordObjectQb: SelectQueryBuilder<LandlordObjectEntity>,
   ): SelectQueryBuilder<LandlordObjectEntity> {
     return landlordObjectQb
-      .innerJoinAndSelect('landlordObject.subwayStations', 'subwayStation')
-      .innerJoinAndSelect('landlordObject.location', 'location')
       .innerJoinAndSelect('landlordObject.telegramUser', 'telegramUser')
       .innerJoinAndSelect('landlordObject.photos', 'photos');
   }
@@ -103,46 +92,36 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
   findMatchesForRenterToObjects(
     _renter: RenterEntity,
     matchOptions: {
-      priceRange: [number, number];
-      locationIds: string[];
-      subwayStationIds: string[];
       preferredGender: PreferredGenderEnumType[];
+      locations: LocationsEnum[];
+      objectTypes: ObjectTypeEnum[];
+      priceRange: [number, number] | null;
     },
   ): Promise<LandlordObjectEntity[]> {
     const objectsQuery = this.createQueryBuilder('object');
-
-    // const renterAge = new Date().getFullYear() - renter.birthdayYear;
-    // const ageRangeStart = renterAge - 10;
-    // const ageRangeEnd = renterAge + 10;
-    // objectsQuery.where('(object.averageAge >= :ageRangeStart AND object.averageAge <= :ageRangeEnd)', {
-    //   ageRangeStart: ageRangeStart,
-    //   ageRangeEnd: ageRangeEnd,
-    // });
     objectsQuery.where('(object.isApproved = true AND object.archivedAt IS NULL)');
-
-    // if (renter.withAnimals) {
-    //   objectsQuery.andWhere('object.showWithAnimals = :showWithAnimals', { showWithAnimals: true });
-    // }
 
     objectsQuery.andWhere('object.preferredGender = ANY (:preferredGender)', {
       preferredGender: matchOptions.preferredGender,
     });
 
-    // objectsQuery.andWhere('(object.price >= :priceRangeStart AND object.price <= :priceRangeEnd)', {
-    //   priceRangeStart: matchOptions.priceRange[0],
-    //   priceRangeEnd: matchOptions.priceRange[1],
-    // });
-    //
-    // if (matchOptions.locationIds.length) {
-    //   objectsQuery.andWhere('object.locationId = ANY (:locationIds)', {
-    //     locationIds: matchOptions.locationIds,
-    //   });
-    // }
-    // if (matchOptions.subwayStationIds.length) {
-    //   objectsQuery.leftJoin('object.subwayStations', 'subway', `subway.id = ANY (:subwayStationIds)`, {
-    //     subwayStationIds: matchOptions.subwayStationIds,
-    //   });
-    // }
+    if (matchOptions.priceRange) {
+      objectsQuery.andWhere('(object.price >= :priceRangeStart AND object.price <= :priceRangeEnd)', {
+        priceRangeStart: matchOptions.priceRange[0],
+        priceRangeEnd: matchOptions.priceRange[1],
+      });
+    }
+
+    if (matchOptions.objectTypes?.length) {
+      objectsQuery.andWhere('object.objectType = ANY (:types)', {
+        types: matchOptions.objectTypes,
+      });
+    }
+    if (matchOptions.locations?.length) {
+      objectsQuery.andWhere('object.location = ANY (:locations)', {
+        locations: matchOptions.locations,
+      });
+    }
 
     return objectsQuery.getMany();
   }

@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Any, Connection, EntityManager } from 'typeorm';
+import { Connection, EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
-import { LocationEntity } from '../directories/entities/Location.entity';
-import { SubwayStationEntity } from '../directories/entities/SubwayStation.entity';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
 import { LandlordObjectsRepository } from './repositories/landlord-objects.repository';
 import { LandlordObjectPhotoEntity } from './entities/LandlordObjectPhoto.entity';
@@ -28,25 +26,15 @@ export class LandlordObjectsService {
       const telegramUser = await manager
         .getRepository(TelegramUserEntity)
         .findOneOrFail({ chatId: landlordObjectDto.chatId });
-      const location = await manager
-        .getRepository(LocationEntity)
-        .findOneOrFail({ area: landlordObjectDto.location });
-      const subwayStations = await manager
-        .getRepository(SubwayStationEntity)
-        .find({ station: Any(landlordObjectDto.subwayStations) });
 
       const landlordObjectDbData = this.landlordObjectsSerializer.mapToDbData({
         landlordObjectDto,
-        location,
         telegramUser,
       });
-      const relationEntities = {
-        subwayStations,
-      };
 
       const landlordObjectEntity = await manager
         .getCustomRepository(LandlordObjectsRepository)
-        .createWithRelations(landlordObjectDbData, relationEntities);
+        .createWithRelations(landlordObjectDbData);
 
       const photoEntitiesCreatePromise = landlordObjectDto.photoIds.map(photoId =>
         manager.save(

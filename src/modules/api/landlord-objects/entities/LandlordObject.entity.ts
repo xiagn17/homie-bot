@@ -1,18 +1,10 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { SubwayStationEntity } from '../../directories/entities/SubwayStation.entity';
-import { LocationEntity } from '../../directories/entities/Location.entity';
 import { TelegramUserEntity } from '../../telegram-bot/entities/TelegramUser.entity';
+import { LocationsEnum, ObjectTypeEnum } from '../../renters/entities/RenterFilters.entity';
+import { LandlordObjectDetailsInterface } from '../interfaces/landlord-object-details.interface';
+import { LandlordObjectRoomBedInfoInterface } from '../interfaces/landlord-object-room-bed-info.interface';
+import { LandlordObjectApartmentsInfoInterface } from '../interfaces/landlord-object-apartments-info.interface';
 import { LandlordObjectPhotoEntity } from './LandlordObjectPhoto.entity';
 
 export enum PreferredGenderEnumType {
@@ -26,10 +18,10 @@ export class LandlordObjectEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'landlord_object_id' })
   readonly id: string;
 
-  @Column({ name: 'number', unique: true, nullable: false })
+  @Column({ name: 'number', unique: true })
   number: number;
 
-  @Column({ type: 'varchar', name: 'name', nullable: false })
+  @Column({ type: 'varchar', name: 'name' })
   name: string;
 
   @Column({
@@ -39,31 +31,14 @@ export class LandlordObjectEntity {
   })
   phoneNumber: string;
 
-  @ManyToOne(() => LocationEntity)
-  @JoinColumn({ name: 'location_id' })
-  location: LocationEntity;
+  @Column({ type: 'enum', name: 'location', enum: LocationsEnum })
+  location: LocationsEnum;
 
-  @Column('uuid', { name: 'location_id' })
-  locationId: string;
-
-  @Column({ type: 'varchar', name: 'address', nullable: false })
+  @Column({ type: 'varchar', name: 'address' })
   address: string;
-
-  @Column({
-    type: 'smallint',
-    name: 'average_age',
-    nullable: false,
-  })
-  averageAge: number;
 
   @Column({ type: 'enum', name: 'preferred_gender', nullable: false, enum: PreferredGenderEnumType })
   preferredGender: PreferredGenderEnumType;
-
-  @Column({ name: 'show_couples', type: 'boolean', nullable: false })
-  showCouples: boolean;
-
-  @Column({ name: 'show_with_animals', type: 'boolean', nullable: false })
-  showWithAnimals: boolean;
 
   @Column({ name: 'start_arrival_date', type: 'date', nullable: false })
   startArrivalDate: string;
@@ -84,14 +59,6 @@ export class LandlordObjectEntity {
   @Column({ name: 'is_approved', type: 'boolean', nullable: false, default: false })
   isApproved: boolean;
 
-  @ManyToMany(() => SubwayStationEntity)
-  @JoinTable({
-    name: 'landlord_objects_j_directory_subway_stations',
-    joinColumn: { name: 'landlord_object_id' },
-    inverseJoinColumn: { name: 'subway_station_id' },
-  })
-  subwayStations: SubwayStationEntity[];
-
   @OneToMany(() => LandlordObjectPhotoEntity, photo => photo.landlordObject)
   photos: LandlordObjectPhotoEntity[];
 
@@ -103,4 +70,19 @@ export class LandlordObjectEntity {
 
   @Column({ name: 'archived_at', type: 'timestamptz' })
   readonly archivedAt: Date | null;
+
+  @Column({ name: 'object_type', type: 'enum', enum: ObjectTypeEnum })
+  objectType: ObjectTypeEnum;
+
+  @Column({ name: 'rooms_number', type: 'varchar' })
+  roomsNumber: string;
+
+  @Column({ name: 'details', type: 'jsonb' })
+  details: LandlordObjectDetailsInterface;
+
+  @Column({ name: 'apartments_info', type: 'jsonb' })
+  apartmentsInfo: LandlordObjectApartmentsInfoInterface | null;
+
+  @Column({ name: 'room_bed_info', type: 'jsonb' })
+  roomBedInfo: LandlordObjectRoomBedInfoInterface | null;
 }

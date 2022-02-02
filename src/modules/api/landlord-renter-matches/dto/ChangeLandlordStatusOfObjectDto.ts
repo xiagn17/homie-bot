@@ -1,6 +1,8 @@
 import { IsString } from 'class-validator';
-import { ApiChangeLandlordStatusOfObject } from '../interfaces/landlord-renter-matches.types';
-import { MatchStatusEnumType } from '../../renter-matches/interfaces/renter-matches.type';
+import {
+  ApiChangeLandlordStatusOfObject,
+  MatchStatusEnumType,
+} from '../interfaces/landlord-renter-matches.types';
 
 export class ChangeLandlordStatusOfObjectDto implements ApiChangeLandlordStatusOfObject {
   @IsString()

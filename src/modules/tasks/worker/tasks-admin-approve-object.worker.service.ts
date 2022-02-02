@@ -4,8 +4,8 @@ import { LoggerService } from '../../logger/logger.service';
 import { TasksRepository } from '../repositories/tasks.repository';
 import { TaskEntity } from '../entities/Task.entity';
 import { TaskDataAdminApproveObjectInterface } from '../interfaces/TaskData.interface';
-import { MatchStatusEnumType } from '../../api/renter-matches/interfaces/renter-matches.type';
 import { ObjectMatchesForLandlordService } from '../../api/landlord-renter-matches/object-matches.for-landlord.service';
+import { MatchStatusEnumType } from '../../api/landlord-renter-matches/interfaces/landlord-renter-matches.types';
 
 @Injectable()
 export class TasksAdminApproveObjectWorkerService {

@@ -1,15 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../logger/logger.service';
-import { MatchDataType } from '../api/renter-matches/interfaces/renter-matches.type';
 import { LandlordObjectEntity } from '../api/landlord-objects/entities/LandlordObject.entity';
 import { FlowXoRequests } from './flow-xo.requests';
 import { FlowXoSerializer } from './flow-xo.serializer';
 import { FlowXoRouteType } from './interfaces/flow-xo.type';
 
 const FLOW_URLS = {
-  sendMatch: '/hooks/a/2mjzknbz',
-  buyMatches: '/hooks/a/eaajwkyy',
   pushNotification: '/hooks/a/4xjkew94',
 };
 
@@ -22,16 +19,6 @@ export class FlowXoService {
     private flowXoSerializer: FlowXoSerializer,
   ) {
     this.logger.setContext(this.constructor.name);
-  }
-
-  public async sendMessageWithMatch(matchData: MatchDataType, isExistingMatch: boolean): Promise<void> {
-    const flowData = this.flowXoSerializer.prepareMatchData(matchData, isExistingMatch);
-    await this.flowXoRequests.runFlowAtUser(flowData, FLOW_URLS.sendMatch);
-  }
-
-  public async sendRenterToMatchPayment(chatId: string, botId: string): Promise<void> {
-    const flowData = this.flowXoSerializer.preparePayMatchData(chatId, botId);
-    await this.flowXoRequests.runFlowAtUser(flowData, FLOW_URLS.buyMatches);
   }
 
   public async notificationApproveLandlordObjectToAdmin({ chatId, botId }: FlowXoRouteType): Promise<void> {

@@ -42,7 +42,6 @@ export interface ConfigurationType {
   port: number;
   database: DatabaseConfigType;
   redis: RedisConfigType;
-  renterMatches: RenterMatchesConfigType;
   adminUsername: string;
   subAdminUsername: string;
   bot: BotConfigType;

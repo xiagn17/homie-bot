@@ -1,14 +1,10 @@
 import { TelegramUserResposeType, TelegramUserType } from '../../telegram-bot/interfaces/telegram-bot.types';
 import { PreferredGenderEnumType } from '../entities/LandlordObject.entity';
-import { SubwayStationEnumType } from '../../directories/interfaces/subway-stations.interface';
-import { LocationEnumType } from '../../directories/interfaces/locations.interface';
 
 export interface ApiLandlordObjectType extends TelegramUserType {
   name: string;
   phoneNumber: string;
-  location: LocationEnumType;
   address: string;
-  subwayStations: SubwayStationEnumType[];
   averageAge: number;
   preferredGender: PreferredGenderEnumType;
   showCouples: boolean;
@@ -32,13 +28,8 @@ export interface ApiLandlordObjectFullResponseType extends TelegramUserResposeTy
   number: number;
   name: string;
   phoneNumber: string;
-  location: LocationEnumType;
   address: string;
-  subwayStations: string;
-  averageAge: number;
   preferredGender: PreferredGenderEnumType;
-  showCouples: boolean;
-  showWithAnimals: boolean;
   startArrivalDate: string;
   price: string;
   photoIds: string;

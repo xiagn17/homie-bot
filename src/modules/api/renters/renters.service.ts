@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Any, Connection, EntityManager } from 'typeorm';
-import { ConfigService } from '@nestjs/config';
+import { Connection, EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
-import { MoneyRangeEntity } from '../directories/entities/MoneyRange.entity';
-import { LocationEntity } from '../directories/entities/Location.entity';
-import { SubwayStationEntity } from '../directories/entities/SubwayStation.entity';
-import { InterestEntity } from '../directories/entities/Interest.entity';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { BusinessAnalyticsFieldsEnumType } from '../analytics/interfaces/analytics.type';
@@ -14,10 +9,10 @@ import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import { TelegramUsersRepository } from '../telegram-bot/repositories/telegramUsers.repository';
 import { RentersRepository } from './repositories/renters.repository';
 import { RenterEntity } from './entities/Renter.entity';
-import { MatchesInfoRepository } from './repositories/matchesInfo.repository';
-import { MatchesInfoEntity } from './entities/MatchesInfo.entity';
 import { RentersSerializer } from './renters.serializer';
 import { CreateRenterDTO } from './dto/renters.dto';
+import { RenterSettingsRepository } from './repositories/renter-settings.repository';
+import { RenterFiltersRepository } from './repositories/renter-filters.repository';
 
 @Injectable()
 export class RentersService {
@@ -30,7 +25,6 @@ export class RentersService {
 
     private objectMatchesForRenterService: ObjectMatchesForRenterService,
     private analyticsService: AnalyticsService,
-    private configService: ConfigService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -39,21 +33,9 @@ export class RentersService {
     return entityManager.getCustomRepository(RentersRepository).getFullRenter(id);
   }
 
-  public async getRenterByChatId(
-    chatId: string,
-  ): Promise<{ renter: RenterEntity; matchesInfo: MatchesInfoEntity } | undefined> {
+  public async getRenterByChatId(chatId: string): Promise<{ renter?: RenterEntity }> {
     const renter = await this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
-    if (!renter) {
-      return undefined;
-    }
-    const matchesInfo = await this.connection
-      .getCustomRepository(MatchesInfoRepository)
-      .getMatchesInfoByRenterId(renter.id);
-    return { renter, matchesInfo };
-  }
-
-  public getRenterByPhone(phoneNumber: string): Promise<RenterEntity | undefined> {
-    return this.connection.getCustomRepository(RentersRepository).getByPhone(phoneNumber);
+    return { renter: renter ? renter : undefined };
   }
 
   public async isUserRenter(chatId: string): Promise<boolean> {
@@ -66,32 +48,17 @@ export class RentersService {
       const telegramUser = await manager
         .getRepository(TelegramUserEntity)
         .findOneOrFail({ chatId: renterDto.chatId });
-      const location = await manager
-        .getRepository(LocationEntity)
-        .findOneOrFail({ area: renterDto.location });
-      const moneyRange = await manager
-        .getRepository(MoneyRangeEntity)
-        .findOneOrFail({ range: renterDto.moneyRange });
-      const interests = await manager
-        .getRepository(InterestEntity)
-        .find({ interest: Any(renterDto.interests ?? []) });
-      const subwayStations = await manager
-        .getRepository(SubwayStationEntity)
-        .find({ station: Any(renterDto.subwayStations) });
 
       const renterDbData = this.rentersSerializer.mapToDbData({
         renterDto,
-        location,
-        moneyRange,
         telegramUser,
       });
 
-      const renter = await manager
-        .getCustomRepository(RentersRepository)
-        .createWithRelations(renterDbData, { subwayStations, interests });
-
-      const trialMatchesCount = this.configService.get('renterMatches.trialMatchesCount') as number;
-      await manager.getCustomRepository(MatchesInfoRepository).createInfo(renter.id, trialMatchesCount);
+      const renter = await manager.getCustomRepository(RentersRepository).createWithRelations(renterDbData);
+      await manager
+        .getCustomRepository(RenterSettingsRepository)
+        .createWithRelations({ renterId: renter.id });
+      await manager.getCustomRepository(RenterFiltersRepository).createWithRelations({ renterId: renter.id });
 
       return manager.getCustomRepository(RentersRepository).getFullRenter(renter.id);
     });
@@ -110,7 +77,7 @@ export class RentersService {
     count: number,
     entityManager: EntityManager,
   ): Promise<void> {
-    await entityManager.getCustomRepository(RentersRepository).addContacts(telegramUserId, count);
+    await entityManager.getCustomRepository(RenterSettingsRepository).addContacts(telegramUserId, count);
     const telegramUser = await entityManager
       .getCustomRepository(TelegramUsersRepository)
       .findOneOrFail({ id: telegramUserId });
@@ -121,6 +88,6 @@ export class RentersService {
   }
 
   public async removeContact(renterId: string): Promise<void> {
-    await this.connection.getCustomRepository(RentersRepository).removeContact(renterId);
+    await this.connection.getCustomRepository(RenterSettingsRepository).removeContact(renterId);
   }
 }

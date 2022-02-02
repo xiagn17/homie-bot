@@ -19,7 +19,6 @@ export class AdminService {
         Телефон ${o.phoneNumber}
         💵 Стоимость: ${o.price} руб./мес<br>
         <br>
-        🚻/🚺/🚹 средний возраст ~ ${o.averageAge}<br>
         📍Адрес: ${o.address}<br>
         🕐 Заезд: с ${o.startArrivalDate}<br>
         📝 Комментарий: ${o.comment}<br>

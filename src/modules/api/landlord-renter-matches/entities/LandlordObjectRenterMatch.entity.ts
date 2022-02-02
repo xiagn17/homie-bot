@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { RenterEntity } from '../../renters/entities/Renter.entity';
-import { MatchStatusEnumType } from '../../renter-matches/interfaces/renter-matches.type';
 import { LandlordObjectEntity } from '../../landlord-objects/entities/LandlordObject.entity';
+import { MatchStatusEnumType } from '../interfaces/landlord-renter-matches.types';
 
 @Entity({ name: 'landlord_object_renter_matches' })
 @Unique(['landlordObjectId', 'renterId'])
