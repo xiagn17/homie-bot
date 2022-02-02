@@ -233,7 +233,7 @@ export class MigrateBotToCustom1643554063202 implements MigrationInterface {
     const objectUpdate = landlordObjects.map(o => {
       const id = o.landlord_object_id;
       const objectType = 'room';
-      const location = o.area === 'Не имеет значения' || 'Центр (любая ветка)' ? 'Центр' : o.area;
+      const location = o.area === 'Не имеет значения' || o.area === 'Центр (любая ветка)' ? 'Центр' : o.area;
       const roomsNumber = '-';
       const details: LandlordObjectDetailsInterface = {
         couples: o.show_couples,
@@ -269,9 +269,11 @@ export class MigrateBotToCustom1643554063202 implements MigrationInterface {
             room_bed_info = t.room_bed_info
         FROM (
             VALUES %L
-        ) as t (object_type, location, rooms_number, details, room_bed_info)
+        ) as t (id, object_type, location, rooms_number, details, room_bed_info)
+        WHERE landlord_objects.landlord_object_id = t.id::uuid
       `,
         objectUpdate.map(upd => [
+          upd.id,
           upd.objectType,
           upd.location,
           upd.roomsNumber,
