@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '../../logger/logger.module';
 import { SessionStorageModule } from '../session-storage/session-storage.module';
-import { BotHandlersModule } from './handlers/bot-handlers.module';
+import { RedisConnectorModule } from '../../redis-connector/redis-connector.module';
 import { BotService } from './bot.service';
-import { BotMenusModule } from './menus/bot-menus.module';
+import { BotMiddlewaresModule } from './middlewares/bot-middlewares.module';
 
 @Module({
-  imports: [LoggerModule, BotHandlersModule, SessionStorageModule, BotMenusModule],
+  imports: [LoggerModule, SessionStorageModule, BotMiddlewaresModule, RedisConnectorModule],
   providers: [BotService],
   exports: [BotService],
 })

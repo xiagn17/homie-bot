@@ -19,6 +19,15 @@ export class RenterSettingsRepository extends Repository<RenterSettingsEntity> {
     return renterSettings.ableContacts;
   }
 
+  async addPrivateHelper(telegramUserId: string): Promise<void> {
+    const renterSettings = await this.findOneOrFail(
+      { renterEntity: { telegramUserId: telegramUserId } },
+      { relations: ['renterEntity'] },
+    );
+    renterSettings.privateHelper = true;
+    await this.save(renterSettings);
+  }
+
   async removeContact(renterId: string): Promise<number> {
     const renter = await this.findOneOrFail({ renterId: renterId });
     renter.ableContacts -= 1;

@@ -6,8 +6,9 @@ import { FlowXoRequests } from './flow-xo.requests';
 import { FlowXoSerializer } from './flow-xo.serializer';
 import { FlowXoRouteType } from './interfaces/flow-xo.type';
 
+// todo удалить ваще флоу и заменить на модуль который отсылает запрос на отправку пушей в BotModule
 const FLOW_URLS = {
-  pushNotification: '/hooks/a/4xjkew94',
+  pushNotification: '/hooks/alaslladsldlal',
 };
 
 @Injectable()

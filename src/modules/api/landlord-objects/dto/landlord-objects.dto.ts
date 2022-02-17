@@ -5,7 +5,6 @@ import { PreferredGenderEnumType } from '../entities/LandlordObject.entity';
 import { dateTransformer } from '../../../../utils/transform/dateTransformer';
 import { ApiLandlordObjectControlType, ApiLandlordObjectType } from '../interfaces/landlord-objects.type';
 
-// todo абсолютно другая dto должна быть в соответствии с БД
 export class CreateLandlordObjectDto extends TelegramChatIdDTO implements ApiLandlordObjectType {
   @IsString()
   address: string;

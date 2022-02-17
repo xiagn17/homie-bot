@@ -21,7 +21,10 @@ export class LandlordObjectsService {
     this.logger.setContext(this.constructor.name);
   }
 
-  public createObject(landlordObjectDto: CreateLandlordObjectDto): Promise<LandlordObjectEntity> {
+  public createObject(
+    landlordObjectDto: CreateLandlordObjectDto,
+    isAdmin: boolean,
+  ): Promise<LandlordObjectEntity> {
     return this.connection.transaction(async manager => {
       const telegramUser = await manager
         .getRepository(TelegramUserEntity)
@@ -30,6 +33,7 @@ export class LandlordObjectsService {
       const landlordObjectDbData = this.landlordObjectsSerializer.mapToDbData({
         landlordObjectDto,
         telegramUser,
+        isAdmin,
       });
 
       const landlordObjectEntity = await manager

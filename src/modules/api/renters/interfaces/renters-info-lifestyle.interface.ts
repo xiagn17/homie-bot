@@ -3,6 +3,6 @@ export interface RentersInfoLifestyleInterface {
   smallAnimals: boolean;
   dontSmoke: boolean;
   dontDrink: boolean;
-  workFiveTwo: boolean;
+  kids: boolean;
   workRemotely: boolean;
 }

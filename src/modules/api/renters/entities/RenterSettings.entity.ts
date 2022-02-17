@@ -13,6 +13,9 @@ export class RenterSettingsEntity {
   @Column({ name: 'able_contacts', type: 'smallint', default: 0 })
   ableContacts: number;
 
+  @Column({ name: 'private_helper', type: 'boolean' })
+  privateHelper: boolean;
+
   @Column({ name: 'renter_id', type: 'uuid' })
   renterId: string;
 

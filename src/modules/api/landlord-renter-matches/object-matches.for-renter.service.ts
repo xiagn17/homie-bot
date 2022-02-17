@@ -10,9 +10,10 @@ import {
 import { GenderEnumType } from '../renters/interfaces/renters.type';
 import { RentersRepository } from '../renters/repositories/renters.repository';
 import { FlowXoService } from '../../flow-xo/flow-xo.service';
-import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
+import { ApiObjectPreviewInterface } from '../landlord-objects/interfaces/landlord-objects.type';
+import { LandlordObjectsSerializer } from '../landlord-objects/landlord-objects.serializer';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';
 import { MatchStatusEnumType } from './interfaces/landlord-renter-matches.types';
@@ -24,9 +25,10 @@ export class ObjectMatchesForRenterService {
     private entityManager: EntityManager,
     private flowXoService: FlowXoService,
 
-    private telegramBotService: TelegramBotService,
     private landlordObjectsService: LandlordObjectsService,
     private tasksSchedulerService: TasksSchedulerService,
+
+    private landlordObjectsSerializer: LandlordObjectsSerializer,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -42,13 +44,26 @@ export class ObjectMatchesForRenterService {
       .createMatchesForRenter(renter, matchedObjects);
   }
 
-  // todo здесь должен быть renterId
-  // возвращаем objectId
-  public async getNextObject(chatId: string): Promise<LandlordObjectEntity | null> {
-    const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
-    if (!renter) {
-      throw new Error(`No renter with chatId ${chatId}`);
+  public async recreateMatches(
+    renter: RenterEntity,
+    entityManager: EntityManager = this.entityManager,
+  ): Promise<void> {
+    await entityManager
+      .getCustomRepository(LandlordObjectRenterMatchesRepository)
+      .deleteUnprocessedObjectsForRenter(renter.id);
+
+    const matchedObjects = await this.findMatchesForRenter(renter, entityManager);
+    if (!matchedObjects.length) {
+      return;
     }
+
+    await entityManager
+      .getCustomRepository(LandlordObjectRenterMatchesRepository)
+      .createMatchesForRenter(renter, matchedObjects);
+  }
+
+  public async getNextObject(chatId: string): Promise<ApiObjectPreviewInterface | null> {
+    const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
     const landlordObjectId = await this.entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .getNextObjectIdForRenter(renter.id);
@@ -56,7 +71,8 @@ export class ObjectMatchesForRenterService {
       return null;
     }
 
-    return this.landlordObjectsService.getLandlordObject(landlordObjectId);
+    const landlordObject = await this.landlordObjectsService.getLandlordObject(landlordObjectId);
+    return this.landlordObjectsSerializer.toPreview(landlordObject);
   }
 
   // тут сразу renterId тоже
@@ -66,9 +82,6 @@ export class ObjectMatchesForRenterService {
     const renter = await this.entityManager
       .getCustomRepository(RentersRepository)
       .getByChatId(renterStatusOfObjectDto.chatId);
-    if (!renter) {
-      throw new Error(`No renter with chatId ${renterStatusOfObjectDto.chatId}`);
-    }
     await this.entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .changeRenterStatus(
@@ -77,7 +90,7 @@ export class ObjectMatchesForRenterService {
         renterStatusOfObjectDto.renterStatus,
       );
 
-    if (renterStatusOfObjectDto.renterStatus !== MatchStatusEnumType.resolved) {
+    if (renterStatusOfObjectDto.renterStatus === MatchStatusEnumType.rejected) {
       return;
     }
 
@@ -85,7 +98,7 @@ export class ObjectMatchesForRenterService {
       renterStatusOfObjectDto.landlordObjectId,
     );
 
-    const isPublishedByAdmins = await this.isObjectPublishedByAdmins(landlordObject);
+    const isPublishedByAdmins = landlordObject.isAdmin;
     if (isPublishedByAdmins) {
       await this.tasksSchedulerService.setAdminApproveObject({
         renterId: renter.id,
@@ -94,15 +107,6 @@ export class ObjectMatchesForRenterService {
       return;
     }
     await this.flowXoService.notificationNewRenterToLandlord(landlordObject.telegramUser);
-  }
-
-  private async isObjectPublishedByAdmins(landlordObject: LandlordObjectEntity): Promise<boolean> {
-    const { chatId: adminChatId } = await this.telegramBotService.getAdmin();
-    const { chatId: subAdminChatId } = await this.telegramBotService.getSubAdmin();
-    return (
-      adminChatId === landlordObject.telegramUser.chatId ||
-      subAdminChatId === landlordObject.telegramUser.chatId
-    );
   }
 
   private async findMatchesForRenter(
@@ -114,16 +118,23 @@ export class ObjectMatchesForRenterService {
         ? [PreferredGenderEnumType.MALE, PreferredGenderEnumType.NO_DIFFERENCE]
         : [PreferredGenderEnumType.FEMALE, PreferredGenderEnumType.NO_DIFFERENCE];
 
+    const excludedObjectIds = await entityManager
+      .getCustomRepository(LandlordObjectRenterMatchesRepository)
+      .getAllObjectIdsForRenter(renter.id);
+
     const matchOptions = {
       preferredGender: preferredGender,
       locations: renter.renterFiltersEntity.locations,
       objectTypes: renter.renterFiltersEntity.objectType,
-      priceRange: renter.renterFiltersEntity.priceRangeStart
-        ? ([renter.renterFiltersEntity.priceRangeStart, renter.renterFiltersEntity.priceRangeEnd] as [
-            number,
-            number,
-          ])
-        : null,
+      priceRange:
+        renter.renterFiltersEntity.priceRangeStart !== null &&
+        renter.renterFiltersEntity.priceRangeEnd !== null
+          ? ([renter.renterFiltersEntity.priceRangeStart, renter.renterFiltersEntity.priceRangeEnd] as [
+              number,
+              number,
+            ])
+          : null,
+      excludedObjectIds: excludedObjectIds,
     };
 
     return entityManager

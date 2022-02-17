@@ -1,14 +1,17 @@
-import { Bot } from 'grammy';
-import { sequentialize } from 'grammy-middlewares';
-import { run } from '@grammyjs/runner';
+import { Bot, GrammyError, HttpError } from 'grammy';
+import { run, sequentialize } from '@grammyjs/runner';
+import { apiThrottler } from '@grammyjs/transformer-throttler';
+import { limit } from '@grammyjs/ratelimiter';
+import { hydrate } from '@grammyjs/hydrate';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { hydrateReply, parseMode } from '@grammyjs/parse-mode';
 import { LoggerService } from '../../logger/logger.service';
 import { SessionStorageService } from '../session-storage/session-storage.service';
-import { BotHandlersService } from './handlers/bot-handlers.service';
+import { RedisConnectorService } from '../../redis-connector/redis-connector.service';
+import { getSessionKey } from '../session-storage/helpers/get-session-key.helper';
 import { MyContext } from './interfaces/bot.interface';
-import { BotMenusService } from './menus/bot-menus.service';
+import { BotMiddlewaresService } from './middlewares/bot-middlewares.service';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -17,10 +20,10 @@ export class BotService implements OnModuleInit {
   constructor(
     private logger: LoggerService,
     private configService: ConfigService,
+    private redisConnectorService: RedisConnectorService,
 
-    private botHandlersService: BotHandlersService,
     private sessionStorageService: SessionStorageService,
-    private botMenusService: BotMenusService,
+    private botMiddlewaresService: BotMiddlewaresService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -37,40 +40,67 @@ export class BotService implements OnModuleInit {
 
     this.setMiddlewares();
     this.setConfig();
-    this.listenCommands();
     this.listenMessages();
     this.catchErrors();
 
     await this.bot.init();
-    run(this.bot);
+    const runner = run(this.bot);
+
+    const stopRunner: () => void = () => runner.isRunning() && runner.stop();
+    process.once('SIGINT', stopRunner);
+    process.once('SIGTERM', stopRunner);
 
     this.logger.info(`Bot ${this.bot.botInfo.username} is up and running`);
   }
 
   private setMiddlewares(): void {
-    const menus = this.botMenusService.menus;
+    const businessLogicMiddlewares = this.botMiddlewaresService.middlewares;
     this.bot
-      .use(sequentialize())
+      .use(sequentialize(getSessionKey))
+      .use(
+        limit({
+          timeFrame: 2000,
+          limit: 3,
+          storageClient: this.redisConnectorService.redis,
+          onLimitExceeded: ctx => {
+            ctx?.reply('Флуд-контроль: наш бот ленивый и не любит обрабатывать много сообщений за раз!');
+          },
+        }),
+      )
       .use(hydrateReply)
+      .use(hydrate())
       .use(this.sessionStorageService.getSession())
-      .use(...menus);
+      .use(...businessLogicMiddlewares);
   }
 
   private setConfig(): void {
-    this.bot.api.config.use(parseMode('HTML'));
-  }
-
-  private listenCommands(): void {
-    this.bot.command('start', this.botHandlersService.start);
+    const throttler = apiThrottler({ out: { maxConcurrent: 1, minTime: 500 } });
+    this.bot.api.config.use(parseMode('HTML')).use(throttler);
   }
 
   private listenMessages(): void {
     this.bot.on('my_chat_member', _ctx => {
       // ctx.update - получу инфу о бане бота/рестарте
     });
+    this.bot.on('callback_query:data', async ctx => {
+      this.logger.info('Unknown button event with payload', ctx.callbackQuery.data);
+      await ctx.answerCallbackQuery();
+    });
   }
 
   private catchErrors(): void {
-    this.bot.catch(this.logger.errorForBot.bind(this.logger));
+    this.bot.catch(err => {
+      const ctx = err.ctx;
+      this.logger.error(`Error while handling update ${ctx.update.update_id}:`);
+      const e = err.error;
+      if (e instanceof GrammyError) {
+        this.logger.error('Error in request:', e);
+      } else if (e instanceof HttpError) {
+        this.logger.error('Could not contact Telegram:', e);
+      } else {
+        this.logger.error('Unknown error:', e);
+      }
+      console.error(e);
+    });
   }
 }

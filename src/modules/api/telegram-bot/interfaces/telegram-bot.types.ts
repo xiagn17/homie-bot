@@ -6,6 +6,8 @@ export interface ApiTelegramUserCreateType {
 
 export interface TelegramUserType {
   chatId: string; // user's telegram id
+  // todo[TECH] (отложить) сделать везде обязательным
+  botId?: string;
 }
 
 export interface TelegramUserResposeType {

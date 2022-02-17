@@ -1,17 +1,20 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { TelegramBotService } from '../../../api/telegram-bot/telegram-bot.service';
 
-// todo нужен тут type или нет?
 export interface CreateTelegramUserInterface {
-  bot_id: string;
   channel_id: string;
   username: string | null;
 }
 @Injectable()
 export class BotApiService {
-  constructor(private readonly telegramBotService: TelegramBotService) {}
+  constructor(
+    private readonly telegramBotService: TelegramBotService,
+    private configService: ConfigService,
+  ) {}
 
   async create(data: CreateTelegramUserInterface): Promise<void> {
-    await this.telegramBotService.subscribeUser(data);
+    const botId = this.configService.get('bot.id') as string;
+    await this.telegramBotService.subscribeUser({ ...data, bot_id: botId });
   }
 }

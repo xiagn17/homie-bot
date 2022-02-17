@@ -18,8 +18,4 @@ export class LoggerService extends PinoLogger {
   error(message: string, ...args: any[]): void {
     super.error(message, ...args);
   }
-
-  errorForBot(message: any): void {
-    super.error(message);
-  }
 }

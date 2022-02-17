@@ -15,7 +15,7 @@ export class RentersRepository extends Repository<RenterEntity> {
   async createWithRelations(renterData: Partial<RenterEntity>): Promise<RenterEntity> {
     const renter = await this.save(this.create(renterData));
 
-    return this.getFullRenter(renter.id);
+    return renter;
   }
 
   getFullRenter(renterId: string): Promise<RenterEntity> {
@@ -25,11 +25,11 @@ export class RentersRepository extends Repository<RenterEntity> {
     return this.getWithRelationsQb(renterQb).getOneOrFail();
   }
 
-  getByChatId(chatId: string): Promise<RenterEntity | undefined> {
+  getByChatId(chatId: string): Promise<RenterEntity> {
     const renterQb = this.createQueryBuilder('renter').where('telegramUser.chatId = :chatId', {
       chatId: chatId,
     });
-    return this.getWithRelationsQb(renterQb).getOne();
+    return this.getWithRelationsQb(renterQb).getOneOrFail();
   }
 
   getWithRelationsQb(renterQb: SelectQueryBuilder<RenterEntity>): SelectQueryBuilder<RenterEntity> {
@@ -60,7 +60,7 @@ export class RentersRepository extends Repository<RenterEntity> {
       gender: GenderEnumType | null;
       location: LocationsEnum;
       objectType: ObjectTypeEnum;
-      price: string;
+      price: number;
     },
   ): Promise<RenterEntity[]> {
     const rentersQuery = this.createQueryBuilder('renter');
@@ -68,11 +68,11 @@ export class RentersRepository extends Repository<RenterEntity> {
     rentersQuery.innerJoin(
       'renter.renterFiltersEntity',
       'filters',
-      `((filters.priceRangeStart = NULL) OR (filters.priceRangeStart <= :price AND filters.priceRangeEnd >= :price))
-       AND (:location = ANY(filters.locations::location_type[]) OR coalesce(array_length(filters.locations, 1), 0) = 0)
-       AND (:objectType = ANY(filters.object_type::object_type[]) OR coalesce(array_length(filters.object_type, 1), 0) = 0)`,
+      `((filters.priceRangeStart = NULL) OR (filters.priceRangeEnd = NULL) OR (filters.priceRangeStart <= :price AND filters.priceRangeEnd >= :price))
+       AND (coalesce(array_length(filters.locations, 1), 0) = 0 OR :location = ANY(filters.locations::location_type[]))
+       AND (coalesce(array_length(filters.object_type, 1), 0) = 0) OR :objectType = ANY(filters.object_type::object_type[])`,
       {
-        price: Number(matchOptions.price),
+        price: matchOptions.price,
         location: matchOptions.location,
         objectType: matchOptions.objectType,
       },

@@ -9,10 +9,21 @@ import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import { TelegramUsersRepository } from '../telegram-bot/repositories/telegramUsers.repository';
 import { RentersRepository } from './repositories/renters.repository';
 import { RenterEntity } from './entities/Renter.entity';
-import { RentersSerializer } from './renters.serializer';
-import { CreateRenterDTO } from './dto/renters.dto';
+import { RentersSerializer } from './serializers/renters.serializer';
+import {
+  CreateRenterDTO,
+  CreateRenterInfoDto,
+  UpdateRenterFiltersDto,
+  UpdateRenterInfoDto,
+} from './dto/renters.dto';
 import { RenterSettingsRepository } from './repositories/renter-settings.repository';
 import { RenterFiltersRepository } from './repositories/renter-filters.repository';
+import { ApiRenterFull } from './interfaces/renters.type';
+import { RenterInfosRepository } from './repositories/renter-infos.repository';
+import { RenterInfosSerializer } from './serializers/renter-infos.serializer';
+import { ApiRenterFullInfo, ApiRenterInfo } from './interfaces/renter-info.interface';
+import { ApiRenterFilters } from './interfaces/renter-filters.interface';
+import { RenterFiltersSerializer } from './serializers/renter-filters.serializer';
 
 @Injectable()
 export class RentersService {
@@ -21,6 +32,8 @@ export class RentersService {
     private connection: Connection,
 
     private rentersSerializer: RentersSerializer,
+    private renterInfosSerializer: RenterInfosSerializer,
+    private renterFiltersSerializer: RenterFiltersSerializer,
     private flowXoService: FlowXoService,
 
     private objectMatchesForRenterService: ObjectMatchesForRenterService,
@@ -33,34 +46,38 @@ export class RentersService {
     return entityManager.getCustomRepository(RentersRepository).getFullRenter(id);
   }
 
-  public async getRenterByChatId(chatId: string): Promise<{ renter?: RenterEntity }> {
+  public async getRenterByChatId(chatId: string): Promise<ApiRenterFull> {
     const renter = await this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
-    return { renter: renter ? renter : undefined };
+    return this.rentersSerializer.toFullResponse(renter);
   }
 
   public async isUserRenter(chatId: string): Promise<boolean> {
-    const renter = await this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
-    return !!renter;
+    try {
+      await this.connection.getCustomRepository(RentersRepository).getByChatId(chatId);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   public async createRenter(renterDto: CreateRenterDTO): Promise<RenterEntity> {
     const renter = await this.connection.transaction<RenterEntity>(async manager => {
       const telegramUser = await manager
         .getRepository(TelegramUserEntity)
-        .findOneOrFail({ chatId: renterDto.chatId });
+        .findOneOrFail({ chatId: renterDto.chatId, botId: renterDto.botId });
 
       const renterDbData = this.rentersSerializer.mapToDbData({
         renterDto,
         telegramUser,
       });
 
-      const renter = await manager.getCustomRepository(RentersRepository).createWithRelations(renterDbData);
-      await manager
-        .getCustomRepository(RenterSettingsRepository)
-        .createWithRelations({ renterId: renter.id });
-      await manager.getCustomRepository(RenterFiltersRepository).createWithRelations({ renterId: renter.id });
+      const { id: renterId } = await manager
+        .getCustomRepository(RentersRepository)
+        .createWithRelations(renterDbData);
+      await manager.getCustomRepository(RenterSettingsRepository).createWithRelations({ renterId: renterId });
+      await manager.getCustomRepository(RenterFiltersRepository).createWithRelations({ renterId: renterId });
 
-      return manager.getCustomRepository(RentersRepository).getFullRenter(renter.id);
+      return manager.getCustomRepository(RentersRepository).getFullRenter(renterId);
     });
 
     await this.analyticsService.changeStatus({
@@ -70,6 +87,67 @@ export class RentersService {
     await this.objectMatchesForRenterService.matchRenterToObjects(renter);
 
     return renter;
+  }
+
+  async createInfo(renterInfoDto: CreateRenterInfoDto): Promise<ApiRenterInfo> {
+    const renter = await this.getRenterByChatId(renterInfoDto.chatId);
+    const dbData = this.renterInfosSerializer.mapToDbData({ renterInfoDto, renter });
+    const renterInfoEntity = await this.connection
+      .getCustomRepository(RenterInfosRepository)
+      .createWithRelations(dbData);
+    return this.renterInfosSerializer.toResponse(renterInfoEntity);
+  }
+
+  async isRenterInfoExists(chatId: string): Promise<boolean> {
+    const renter = await this.getRenterByChatId(chatId);
+    const renterInfoEntity = await this.connection
+      .getCustomRepository(RenterInfosRepository)
+      .findOne({ renterId: renter.id });
+    return !!renterInfoEntity;
+  }
+
+  async getRenterInfo(chatId: string): Promise<ApiRenterFullInfo | undefined> {
+    const renter = await this.getRenterByChatId(chatId);
+    const renterInfo = await this.connection
+      .getCustomRepository(RenterInfosRepository)
+      .findOne({ renterId: renter.id });
+    return renterInfo && this.renterInfosSerializer.toFullResponse(renterInfo, renter);
+  }
+
+  async updateRenterFilters(renterFiltersDto: UpdateRenterFiltersDto): Promise<ApiRenterFilters> {
+    return this.connection.transaction(async entityManager => {
+      await entityManager
+        .getCustomRepository(RenterFiltersRepository)
+        .update({ renterId: renterFiltersDto.renterId }, renterFiltersDto);
+
+      const renter = await entityManager
+        .getCustomRepository(RentersRepository)
+        .getFullRenter(renterFiltersDto.renterId);
+      await this.objectMatchesForRenterService.recreateMatches(renter, entityManager);
+
+      const filters = await entityManager
+        .getCustomRepository(RenterFiltersRepository)
+        .findOneOrFail({ renterId: renterFiltersDto.renterId });
+      return this.renterFiltersSerializer.toResponse(filters);
+    });
+  }
+
+  async updateRenterInfo(renterInfoDto: UpdateRenterInfoDto): Promise<void> {
+    const { chatId, ...updatingProperties } = renterInfoDto;
+    const renter = await this.getRenterByChatId(chatId);
+    await this.connection.transaction(async entityManager => {
+      await entityManager
+        .getCustomRepository(RenterInfosRepository)
+        .update({ renterId: renter.id }, updatingProperties);
+    });
+  }
+
+  async getRenterFilters(chatId: string): Promise<ApiRenterFilters> {
+    const renter = await this.getRenterByChatId(chatId);
+    const filters = await this.connection
+      .getCustomRepository(RenterFiltersRepository)
+      .findOneOrFail({ renterId: renter.id });
+    return this.renterFiltersSerializer.toResponse(filters);
   }
 
   public async addPaidContacts(
@@ -85,6 +163,19 @@ export class RentersService {
       chatId: telegramUser.chatId,
       botId: telegramUser.botId,
     });
+  }
+
+  public async addPrivateHelper(telegramUserId: string, entityManager: EntityManager): Promise<void> {
+    await entityManager.getCustomRepository(RenterSettingsRepository).addPrivateHelper(telegramUserId);
+    const telegramUser = await entityManager
+      .getCustomRepository(TelegramUsersRepository)
+      .findOneOrFail({ id: telegramUserId });
+    console.log(telegramUser);
+    // todo push купившему + админу с никнеймом
+    // await this.flowXoService.notificationPaidContacts({
+    //   chatId: telegramUser.chatId,
+    //   botId: telegramUser.botId,
+    // });
   }
 
   public async removeContact(renterId: string): Promise<void> {

@@ -20,7 +20,8 @@ export class FlowXoRequests {
   private async baseRequestMethod<ReqT, ResT extends FlowXoDefaultResponseType>(
     data: ReqT,
     options: { endpoint: string; messageOnSuccess: string; method: 'POST' | 'GET' },
-  ): Promise<ResT> {
+  ): Promise<ResT | void> {
+    return;
     try {
       const response = await request<ReqT, ResT>(
         options.endpoint,

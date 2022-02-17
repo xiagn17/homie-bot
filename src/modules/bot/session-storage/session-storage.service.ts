@@ -1,40 +1,45 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { RedisAdapter } from '@satont/grammy-redis-storage';
-import IORedis from 'ioredis';
 import { lazySession } from 'grammy';
-import { RedisConfigType } from '../../configuration/interfaces/configuration.types';
+import { RedisConnectorService } from '../../redis-connector/redis-connector.service';
 import {
   SessionDataInterface,
   SessionStorageInterface,
   StorageInterface,
 } from './interfaces/session-storage.interface';
+import { getSessionKey } from './helpers/get-session-key.helper';
 
 @Injectable()
 export class SessionStorageService implements OnModuleInit {
-  private redisInstance: IORedis.Redis;
-
   private storage: StorageInterface;
 
-  constructor(private configService: ConfigService) {}
+  constructor(private redisConnectorService: RedisConnectorService) {}
 
   onModuleInit(): void {
-    const redisConfig = this.configService.get('redis') as RedisConfigType;
-    this.redisInstance = new IORedis(`redis://${redisConfig.host}:${redisConfig.port}`);
-    this.storage = new RedisAdapter({ instance: this.redisInstance, ttl: undefined });
+    const redisInstance = this.redisConnectorService.redis;
+    this.storage = new RedisAdapter({ instance: redisInstance, ttl: undefined });
   }
 
   public getSession(): SessionStorageInterface {
     return lazySession({
       initial: this.getInitialSession.bind(this),
       storage: this.storage,
+      getSessionKey: getSessionKey,
     });
   }
 
   private getInitialSession(): SessionDataInterface {
     return {
       type: undefined,
-      gender: undefined,
+      renter: {
+        infoStepsData: {},
+        infoFillFrom: undefined,
+        infoStep: undefined,
+        infoStepUpdate: false,
+        viewedObjects: 0,
+        firstMenuTip: false,
+      },
+      landlord: {},
     };
   }
 }

@@ -27,6 +27,7 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
       renterId: r.id,
       landlordObjectId: landlordObject.id,
       renterStatus: MatchStatusEnumType.processing,
+      paid: false,
       landlordStatus: null,
       updatedAt: new Date(),
     }));
@@ -42,6 +43,7 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
       renterId: renter.id,
       landlordObjectId: lo.id,
       renterStatus: MatchStatusEnumType.processing,
+      paid: false,
       landlordStatus: null,
       updatedAt: new Date(),
     }));
@@ -58,9 +60,23 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
         SELECT renter_id as "renterId", COUNT(match_id)::integer AS "count" FROM landlord_object_renter_matches
         WHERE renter_id IN ('${renterIdsString}')
         AND renter_status = '${MatchStatusEnumType.processing}'
+        AND paid = false
         GROUP BY renter_id;
     `,
     ) as Promise<CountOfUnprocessedObjectsByRentersRawDataType[]>;
+  }
+
+  async deleteUnprocessedObjectsForRenter(renterId: string): Promise<void> {
+    await this.delete({ renterId: renterId, renterStatus: MatchStatusEnumType.processing, paid: false });
+  }
+
+  async getAllObjectIdsForRenter(renterId: string): Promise<string[]> {
+    const data: { landlordObjectId: string }[] = await this.query(`
+        SELECT landlord_object_id as "landlordObjectId"
+            FROM landlord_object_renter_matches
+            WHERE renter_id = '${renterId}'
+    `);
+    return data.map(({ landlordObjectId }) => landlordObjectId);
   }
 
   async getNextObjectIdForRenter(renterId: string): Promise<string | undefined> {
@@ -73,6 +89,7 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
             FROM landlord_object_renter_matches
             WHERE renter_id = '${renterId}'
               AND renter_status = '${MatchStatusEnumType.processing}'
+              AND paid = false
         )
         SELECT
                landlord_object_id as "landlordObjectId"
@@ -80,11 +97,11 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
         JOIN renter_matches USING (landlord_object_id)
         WHERE t_landlordObjects.landlord_object_id = renter_matches.landlord_object_id
           AND t_landlordObjects.archived_at IS NULL
-          AND t_landlordObjects.updated_at > now() - (interval '2 days')
         ORDER BY t_landlordObjects.created_at
         LIMIT 1
     `);
-
+    // todo !!! вернуть назад перед мержем в мастер
+    //  AND t_landlordObjects.updated_at > now() - (interval '2 days')
     return result[0]?.landlordObjectId;
   }
 
@@ -95,6 +112,7 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
         FROM landlord_object_renter_matches
         WHERE landlord_object_id = '${landlordObjectId}'
           AND renter_status = '${MatchStatusEnumType.resolved}'
+          AND paid = false
           AND landlord_status = '${MatchStatusEnumType.processing}'
         ORDER BY updated_at
         LIMIT 1
@@ -149,6 +167,20 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
       .set({
         landlordStatus: landlordStatus,
         updatedAt: new Date(),
+      })
+      .where('renterId = :renterId AND landlordObjectId = :landlordObjectId', {
+        renterId: renterId,
+        landlordObjectId: landlordObjectId,
+      })
+      .execute();
+  }
+
+  async markAsPaidMatch(renterId: string, landlordObjectId: string): Promise<void> {
+    await this.createQueryBuilder()
+      .update(LandlordObjectRenterMatchEntity)
+      .set({
+        updatedAt: new Date(),
+        paid: true,
       })
       .where('renterId = :renterId AND landlordObjectId = :landlordObjectId', {
         renterId: renterId,

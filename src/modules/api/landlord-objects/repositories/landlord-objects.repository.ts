@@ -93,23 +93,33 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     _renter: RenterEntity,
     matchOptions: {
       preferredGender: PreferredGenderEnumType[];
-      locations: LocationsEnum[];
-      objectTypes: ObjectTypeEnum[];
+      locations: LocationsEnum[] | null;
+      objectTypes: ObjectTypeEnum[] | null;
       priceRange: [number, number] | null;
+      excludedObjectIds: string[];
     },
   ): Promise<LandlordObjectEntity[]> {
     const objectsQuery = this.createQueryBuilder('object');
+    // todo !!! вернуть назад перед мержем в мастер
+    //       "(object.isApproved = true AND object.archivedAt IS NULL AND object.updated_at > now() - (interval '2 days'))",
     objectsQuery.where('(object.isApproved = true AND object.archivedAt IS NULL)');
-
     objectsQuery.andWhere('object.preferredGender = ANY (:preferredGender)', {
       preferredGender: matchOptions.preferredGender,
     });
 
-    if (matchOptions.priceRange) {
-      objectsQuery.andWhere('(object.price >= :priceRangeStart AND object.price <= :priceRangeEnd)', {
-        priceRangeStart: matchOptions.priceRange[0],
-        priceRangeEnd: matchOptions.priceRange[1],
+    if (matchOptions.excludedObjectIds.length) {
+      objectsQuery.andWhere('(object.id NOT IN (:...excludedObjectIds))', {
+        excludedObjectIds: matchOptions.excludedObjectIds,
       });
+    }
+    if (matchOptions.priceRange) {
+      objectsQuery.andWhere(
+        '(object.price::int >= :priceRangeStart AND object.price::int <= :priceRangeEnd)',
+        {
+          priceRangeStart: matchOptions.priceRange[0],
+          priceRangeEnd: matchOptions.priceRange[1],
+        },
+      );
     }
 
     if (matchOptions.objectTypes?.length) {

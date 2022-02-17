@@ -4,6 +4,7 @@ declare namespace NodeJS {
   interface ProcessEnv {
     NODE_ENV: NODE_ENV_TYPE;
     PORT: string;
+    API_PREFIX: string;
 
     POSTGRES_HOST: string;
     POSTGRES_PORT: string;
@@ -18,11 +19,13 @@ declare namespace NodeJS {
     REDIS_PORT: string;
 
     TELEGRAM_TOKEN: string;
+    TELEGRAM_BOT_ID: string;
 
     YOUKASSA_KEY: string;
     YOUKASSA_SHOP_ID: string;
     ONE_CONTACTS_PRICE: string;
     FIVE_CONTACTS_PRICE: string;
+    PRIVATE_HELPER_PRICE: string;
 
     ADMIN_USERNAME: string;
     SUBADMIN_USERNAME: string;

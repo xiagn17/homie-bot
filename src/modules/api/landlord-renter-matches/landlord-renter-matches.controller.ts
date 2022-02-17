@@ -2,9 +2,7 @@ import { Controller, Post, Get, Param, Body } from '@nestjs/common';
 import { LandlordObjectsSerializer } from '../landlord-objects/landlord-objects.serializer';
 import { ApiLandlordObjectFullResponseType } from '../landlord-objects/interfaces/landlord-objects.type';
 import { ApiRenterResponseType } from '../renters/interfaces/renters.type';
-import { RentersSerializer } from '../renters/renters.serializer';
-import { ObjectMatchesForRenterService } from './object-matches.for-renter.service';
-import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';
+import { RentersSerializer } from '../renters/serializers/renters.serializer';
 import { ObjectMatchesForLandlordService } from './object-matches.for-landlord.service';
 import { ChangeLandlordStatusOfObjectDto } from './dto/ChangeLandlordStatusOfObjectDto';
 import { SetRenterLastInLandlordQueueDto } from './dto/SetRenterLastInLandlordQueue.dto';
@@ -12,27 +10,27 @@ import { SetRenterLastInLandlordQueueDto } from './dto/SetRenterLastInLandlordQu
 @Controller('landlord-renter-matches')
 export class LandlordRenterMatchesController {
   constructor(
-    private objectMatchesForRenterService: ObjectMatchesForRenterService,
+    // private objectMatchesForRenterService: ObjectMatchesForRenterService,
     private objectMatchesForLandlordService: ObjectMatchesForLandlordService,
     private landlordObjectsSerializer: LandlordObjectsSerializer,
     private rentersSerializer: RentersSerializer,
   ) {}
 
-  @Get('/renter/:chatId')
-  async getNextObjectForRenter(
-    @Param('chatId') chatId: string,
-  ): Promise<ApiLandlordObjectFullResponseType | null> {
-    const nextLandlordObject = await this.objectMatchesForRenterService.getNextObject(chatId);
-    if (!nextLandlordObject) {
-      return null;
-    }
-    return this.landlordObjectsSerializer.toFullResponse(nextLandlordObject);
-  }
+  // @Get('/renter/:chatId')
+  // async getNextObjectForRenter(
+  //   @Param('chatId') chatId: string,
+  // ): Promise<ApiLandlordObjectFullResponseType | null> {
+  //   const nextLandlordObject = await this.objectMatchesForRenterService.getNextObject(chatId);
+  //   if (!nextLandlordObject) {
+  //     return null;
+  //   }
+  //   return this.landlordObjectsSerializer.toFullResponse(nextLandlordObject);
+  // }
 
-  @Post('/renter/object-action')
-  async objectActionByRenter(@Body() renterStatusOfObjectDto: ChangeRenterStatusOfObjectDto): Promise<void> {
-    await this.objectMatchesForRenterService.changeRenterStatusOfObject(renterStatusOfObjectDto);
-  }
+  // @Post('/renter/object-action')
+  // async objectActionByRenter(@Body() renterStatusOfObjectDto: ChangeRenterStatusOfObjectDto): Promise<void> {
+  //   await this.objectMatchesForRenterService.changeRenterStatusOfObject(renterStatusOfObjectDto);
+  // }
 
   @Get('/landlord/:landlordObjectId')
   async getNextRenterForLandlord(
@@ -55,13 +53,13 @@ export class LandlordRenterMatchesController {
     return landlordObject && this.landlordObjectsSerializer.toFullResponse(landlordObject);
   }
 
-  @Get('/landlord/get-contacts/:renterId/:landlordObjectId')
-  getContacts(
-    @Param('renterId') renterId: string,
-    @Param('landlordObjectId') landlordObjectId: string,
-  ): Promise<string> {
-    return this.objectMatchesForLandlordService.getPaidContacts(renterId, landlordObjectId);
-  }
+  // @Get('/landlord/get-contacts/:renterId/:landlordObjectId')
+  // getContacts(
+  //   @Param('renterId') renterId: string,
+  //   @Param('landlordObjectId') landlordObjectId: string,
+  // ): Promise<string> {
+  //   return this.objectMatchesForLandlordService.getPaidContacts(renterId, landlordObjectId);
+  // }
 
   @Post('/landlord/renter-action')
   async renterActionByLandlord(

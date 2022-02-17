@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
+import { RedisConnectorModule } from '../../redis-connector/redis-connector.module';
 import { SessionStorageService } from './session-storage.service';
 
 @Module({
-  imports: [],
+  imports: [RedisConnectorModule],
   providers: [SessionStorageService],
   exports: [SessionStorageService],
 })

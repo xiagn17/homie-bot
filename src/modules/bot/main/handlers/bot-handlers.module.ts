@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '../../../logger/logger.module';
-import { RentersModule } from '../../renters/renters.module';
 import { BotApiModule } from '../api/bot-api.module';
+import { BotKeyboardsModule } from '../keyboards/bot-keyboards.module';
 import { BotHandlersService } from './bot-handlers.service';
-import { MenusModule } from './menus/menus.module';
 
 @Module({
-  imports: [LoggerModule, MenusModule, RentersModule, BotApiModule],
+  imports: [LoggerModule, BotKeyboardsModule, BotApiModule],
   providers: [BotHandlersService],
   exports: [BotHandlersService],
 })

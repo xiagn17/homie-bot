@@ -25,7 +25,7 @@ export class TelegramBotService {
     const chatId = telegramUserDbData.chatId as string;
     const isUserExists = await this.entityManager
       .getCustomRepository(TelegramUsersRepository)
-      .findOne({ chatId: chatId });
+      .findOne({ chatId: chatId, botId: newWebhookRenter.bot_id });
     if (!isUserExists) {
       const telegramUser = await this.entityManager
         .getCustomRepository(TelegramUsersRepository)

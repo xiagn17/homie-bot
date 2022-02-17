@@ -1,5 +1,9 @@
 import { TelegramUserResposeType, TelegramUserType } from '../../telegram-bot/interfaces/telegram-bot.types';
 import { PreferredGenderEnumType } from '../entities/LandlordObject.entity';
+import { ObjectTypeEnum } from '../../renters/entities/RenterFilters.entity';
+import { LandlordObjectDetailsInterface } from './landlord-object-details.interface';
+import { LandlordObjectRoomBedInfoInterface } from './landlord-object-room-bed-info.interface';
+import { LandlordObjectApartmentsInfoInterface } from './landlord-object-apartments-info.interface';
 
 export interface ApiLandlordObjectType extends TelegramUserType {
   name: string;
@@ -33,5 +37,22 @@ export interface ApiLandlordObjectFullResponseType extends TelegramUserResposeTy
   startArrivalDate: string;
   price: string;
   photoIds: string;
+  comment: string;
+}
+
+export interface ApiObjectPreviewInterface {
+  id: string;
+  isAdmin: boolean;
+  number: number;
+  objectType: ObjectTypeEnum;
+  roomsNumber: string;
+  details: LandlordObjectDetailsInterface;
+  roomBedInfo: LandlordObjectRoomBedInfoInterface | null;
+  apartmentsInfo: LandlordObjectApartmentsInfoInterface | null;
+
+  address: string;
+  price: string;
+  photoIds: string[];
+  startArrivalDate: string;
   comment: string;
 }

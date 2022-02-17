@@ -1,7 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { LoggerModule } from '../../logger/logger.module';
 import { FlowXoModule } from '../../flow-xo/flow-xo.module';
-import { TelegramBotModule } from '../telegram-bot/telegram-bot.module';
 import { RentersModule } from '../renters/renters.module';
 import { LandlordObjectsModule } from '../landlord-objects/landlord-objects.module';
 import { TasksSchedulerModule } from '../../tasks/scheduler/tasks.scheduler.module';
@@ -13,10 +12,9 @@ import { LandlordRenterMatchesController } from './landlord-renter-matches.contr
   imports: [
     LoggerModule,
     FlowXoModule,
-    TelegramBotModule,
     TasksSchedulerModule,
 
-    // todo remove this shit
+    // todo[TECH] remove this shit
     forwardRef(() => RentersModule),
     forwardRef(() => LandlordObjectsModule),
   ],

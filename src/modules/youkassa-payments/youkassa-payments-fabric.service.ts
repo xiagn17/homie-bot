@@ -24,8 +24,10 @@ export class YoukassaPaymentsFabricService {
   private getDescriptionByItem(item: PaymentItemInterface): string {
     if (item === PaymentItems['5-contacts']) {
       return 'Покупка 5-ти контактов';
-    } else {
+    } else if (item === PaymentItems['1-contacts']) {
       return 'Покупка 1-го контакта';
+    } else {
+      return 'Услуга Личного помощника';
     }
   }
 
@@ -35,9 +37,14 @@ export class YoukassaPaymentsFabricService {
     };
     if (item === PaymentItems['5-contacts']) {
       amount.value = this.prices.fiveContacts;
-    } else {
+    } else if (item === PaymentItems['1-contacts']) {
       amount.value = this.prices.oneContacts;
+    } else {
+      amount.value = this.prices.privateHelper;
     }
+    const postfix = '.00';
+    amount.value += postfix;
+
     return amount as IAmount;
   }
 

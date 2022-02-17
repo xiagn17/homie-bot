@@ -85,4 +85,7 @@ export class LandlordObjectEntity {
 
   @Column({ name: 'room_bed_info', type: 'jsonb' })
   roomBedInfo: LandlordObjectRoomBedInfoInterface | null;
+
+  @Column({ name: 'is_admin', type: 'boolean' })
+  isAdmin: boolean;
 }

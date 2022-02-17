@@ -25,11 +25,13 @@ export interface RedisConfigType {
 
 export interface BotConfigType {
   token: string;
+  id: string;
 }
 
 export interface PaymentsPricesConfigType {
   oneContacts: string;
   fiveContacts: string;
+  privateHelper: string;
 }
 export interface PaymentsConfigType {
   secretKey: string;
@@ -40,6 +42,7 @@ export interface PaymentsConfigType {
 export interface ConfigurationType {
   env: NODE_ENV_TYPE;
   port: number;
+  apiPrefix: string;
   database: DatabaseConfigType;
   redis: RedisConfigType;
   adminUsername: string;

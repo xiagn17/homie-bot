@@ -32,6 +32,7 @@ const LOCATIONS_DATA = ['Центр (любая ветка)', 'Север', 'Ю�
 
 export class Initializing1629241839172 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
     await queryRunner.query(`
       CREATE TYPE gender_type AS ENUM (
         'male',

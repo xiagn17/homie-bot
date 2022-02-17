@@ -2,6 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 import format from 'pg-format';
 import { LandlordObjectDetailsInterface } from '../modules/api/landlord-objects/interfaces/landlord-object-details.interface';
 import { LandlordObjectRoomBedInfoInterface } from '../modules/api/landlord-objects/interfaces/landlord-object-room-bed-info.interface';
+import { RENTER_DEFAULT_PHOTO } from '../modules/bot/constants/imageUrls';
 
 interface FullRenterDb {
   renter_id: string;
@@ -65,6 +66,7 @@ export class MigrateBotToCustom1643554063202 implements MigrationInterface {
             lifestyle jsonb NOT NULL,
             profession varchar NOT NULL,
             about text NOT NULL,
+            photo varchar NOT NULL,
             renter_id uuid NOT NULL REFERENCES renters (renter_id),
             UNIQUE(renter_id)
         );
@@ -102,6 +104,7 @@ export class MigrateBotToCustom1643554063202 implements MigrationInterface {
             renter_settings_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
             in_search boolean DEFAULT true,
             able_contacts smallint NOT NULL DEFAULT 0,
+            private_helper boolean NOT NULL DEFAULT false,
             renter_id uuid NOT NULL REFERENCES renters (renter_id),
             UNIQUE (renter_id)
         );
@@ -136,6 +139,7 @@ export class MigrateBotToCustom1643554063202 implements MigrationInterface {
         lifestyle: lifestyle,
         profession: profession,
         about: about,
+        photo: RENTER_DEFAULT_PHOTO,
         renterId: renterId,
       };
 
@@ -160,57 +164,61 @@ export class MigrateBotToCustom1643554063202 implements MigrationInterface {
     });
 
     const data = await Promise.all(queringRenters);
-    await queryRunner.query(
-      format(
-        `
-        INSERT INTO renter_infos (name, birthday_year, phone_number, zodiac_sign, socials, lifestyle, profession, about, renter_id)
+    if (data.length) {
+      await queryRunner.query(
+        format(
+          `
+        INSERT INTO renter_infos (name, birthday_year, phone_number, zodiac_sign, socials, lifestyle, profession, about, photo, renter_id)
         VALUES %L
         ON CONFLICT DO NOTHING
       `,
-        data.map(({ renterInfo }) => [
-          renterInfo.name,
-          renterInfo.birthdayYear,
-          renterInfo.phoneNumber,
-          renterInfo.zodiacSign,
-          renterInfo.socials,
-          renterInfo.lifestyle,
-          renterInfo.profession,
-          renterInfo.about,
-          renterInfo.renterId,
-        ]),
-      ),
-    );
-    await queryRunner.query(
-      format(
-        `
+          data.map(({ renterInfo }) => [
+            renterInfo.name,
+            renterInfo.birthdayYear,
+            renterInfo.phoneNumber,
+            renterInfo.zodiacSign,
+            renterInfo.socials,
+            renterInfo.lifestyle,
+            renterInfo.profession,
+            renterInfo.about,
+            renterInfo.photo,
+            renterInfo.renterId,
+          ]),
+        ),
+      );
+      await queryRunner.query(
+        format(
+          `
         INSERT INTO renter_settings (in_search, able_contacts, renter_id)
         VALUES %L
         ON CONFLICT DO NOTHING
       `,
-        data.map(({ renterSettings }) => [
-          renterSettings.inSearch,
-          renterSettings.ableContacts,
-          renterSettings.renterId,
-        ]),
-      ),
-    );
+          data.map(({ renterSettings }) => [
+            renterSettings.inSearch,
+            renterSettings.ableContacts,
+            renterSettings.renterId,
+          ]),
+        ),
+      );
 
-    await queryRunner.query(
-      format(
-        `
+      await queryRunner.query(
+        format(
+          `
         INSERT INTO renter_filters (object_type, price_range_start, price_range_end, locations, renter_id)
         VALUES %L
         ON CONFLICT DO NOTHING
       `,
-        data.map(({ renterFilters }) => [
-          `{${renterFilters.objectType.join(', ')}}`,
-          Number(renterFilters.moneyRange.split('-')[0]),
-          Number(renterFilters.moneyRange.split('-')[1]),
-          `{${renterFilters.locations.join(', ')}}`,
-          renterFilters.renterId,
-        ]),
-      ),
-    );
+          data.map(({ renterFilters }) => [
+            `{${renterFilters.objectType.join(', ')}}`,
+            Number(renterFilters.moneyRange.split('-')[0]),
+            Number(renterFilters.moneyRange.split('-')[1]),
+            `{${renterFilters.locations.join(', ')}}`,
+            renterFilters.renterId,
+          ]),
+        ),
+      );
+    }
+
     const landlordObjects: FullLandlordObjectDb[] = await queryRunner.query(`
         SELECT * FROM landlord_objects
         INNER JOIN directory_locations dl on landlord_objects.location_id = dl.location_id;
@@ -227,70 +235,101 @@ export class MigrateBotToCustom1643554063202 implements MigrationInterface {
             ADD COLUMN rooms_number varchar(30) NOT NULL DEFAULT '-',
             ADD COLUMN details jsonb NOT NULL DEFAULT '{}'::jsonb,
             ADD COLUMN apartments_info jsonb,
-            ADD COLUMN room_bed_info jsonb
+            ADD COLUMN room_bed_info jsonb,
+            ADD COLUMN is_admin boolean NOT NULL DEFAULT false
     `);
 
-    const objectUpdate = landlordObjects.map(o => {
-      const id = o.landlord_object_id;
-      const objectType = 'room';
-      const location = o.area === 'Не имеет значения' || o.area === 'Центр (любая ветка)' ? 'Центр' : o.area;
-      const roomsNumber = '-';
-      const details: LandlordObjectDetailsInterface = {
-        couples: o.show_couples,
-        animals: o.show_with_animals,
-        kids: false,
-        fridge: false,
-        washer: false,
-        dishWasher: false,
-        conditioner: false,
-        internet: false,
-      };
-      const roomBedInfo: LandlordObjectRoomBedInfoInterface = {
-        averageAge: o.average_age,
-        livingPeopleNumber: '-',
-      };
-      return {
-        id,
-        objectType,
-        location: location,
-        roomsNumber,
-        details,
-        roomBedInfo,
-      };
-    });
-    await queryRunner.query(
-      format(
-        `
+    const objectUpdate = await Promise.all(
+      landlordObjects.map(async o => {
+        const id = o.landlord_object_id;
+        const objectType = 'room';
+        const location =
+          o.area === 'Не имеет значения' || o.area === 'Центр (любая ветка)' ? 'Центр' : o.area;
+        const roomsNumber = '-';
+        const details: LandlordObjectDetailsInterface = {
+          couples: o.show_couples,
+          animals: o.show_with_animals,
+          kids: false,
+          fridge: false,
+          washer: false,
+          dishWasher: false,
+          conditioner: false,
+          internet: false,
+        };
+        const roomBedInfo: LandlordObjectRoomBedInfoInterface = {
+          averageAge: o.average_age,
+          livingPeopleNumber: '-',
+        };
+        const adminUsername = process.env.ADMIN_USERNAME;
+        const subAdminUsername = process.env.SUBADMIN_USERNAME;
+        const [{ username }]: [{ username: string }] = await queryRunner.query(`
+          SELECT username from telegram_users
+                WHERE telegram_user_id = '${o.telegram_user_id}'
+      `);
+        const isAdmin = username === adminUsername || username === subAdminUsername;
+        return {
+          id,
+          objectType,
+          location: location,
+          roomsNumber,
+          details,
+          roomBedInfo,
+          isAdmin,
+        };
+      }),
+    );
+
+    if (objectUpdate.length) {
+      await queryRunner.query(
+        format(
+          `
         UPDATE landlord_objects
         SET object_type = t.object_type::object_type,
             location = t.location::location_type,
             rooms_number = t.rooms_number,
             details = t.details,
-            room_bed_info = t.room_bed_info
+            room_bed_info = t.room_bed_info,
+            is_admin = t.is_admin::boolean
         FROM (
             VALUES %L
-        ) as t (id, object_type, location, rooms_number, details, room_bed_info)
+        ) as t (id, object_type, location, rooms_number, details, room_bed_info, is_admin)
         WHERE landlord_objects.landlord_object_id = t.id::uuid
       `,
-        objectUpdate.map(upd => [
-          upd.id,
-          upd.objectType,
-          upd.location,
-          upd.roomsNumber,
-          upd.details,
-          upd.roomBedInfo,
-        ]),
-      ),
-    );
+          objectUpdate.map(upd => [
+            upd.id,
+            upd.objectType,
+            upd.location,
+            upd.roomsNumber,
+            upd.details,
+            upd.roomBedInfo,
+            upd.isAdmin,
+          ]),
+        ),
+      );
+    }
 
     await queryRunner.query(`
         ALTER TABLE landlord_objects
             ALTER COLUMN object_type DROP DEFAULT,
             ALTER COLUMN location DROP DEFAULT,
             ALTER COLUMN rooms_number DROP DEFAULT,
-            ALTER COLUMN details DROP DEFAULT
+            ALTER COLUMN details DROP DEFAULT,
+            ALTER COLUMN is_admin DROP DEFAULT
     `);
 
+    const botId = String(process.env.TELEGRAM_BOT_ID);
+    await queryRunner.query(`
+        UPDATE telegram_users
+        SET bot_id = '${botId}'
+        WHERE 1 = 1
+    `);
+
+    await queryRunner.query(`
+        ALTER TABLE landlord_object_renter_matches ADD COLUMN paid boolean NOT NULL DEFAULT FALSE;
+    `);
+    await queryRunner.query(`
+        ALTER TABLE landlord_object_renter_matches ALTER COLUMN paid DROP DEFAULT;
+    `);
     await this.dropOldTables(queryRunner);
   }
 

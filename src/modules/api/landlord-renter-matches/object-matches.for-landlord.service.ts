@@ -12,7 +12,6 @@ import { GenderEnumType } from '../renters/interfaces/renters.type';
 import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
 import { RentersService } from '../renters/renters.service';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
-import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeLandlordStatusOfObjectDto } from './dto/ChangeLandlordStatusOfObjectDto';
 import { SetRenterLastInLandlordQueueDto } from './dto/SetRenterLastInLandlordQueue.dto';
@@ -28,7 +27,6 @@ export class ObjectMatchesForLandlordService {
     private landlordObjectsService: LandlordObjectsService,
     private rentersService: RentersService,
     private tasksSchedulerService: TasksSchedulerService,
-    private telegramBotService: TelegramBotService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -111,10 +109,13 @@ export class ObjectMatchesForLandlordService {
       );
   }
 
-  public async getPaidContacts(renterId: string, landlordObjectId: string): Promise<string> {
+  public async getPaidContacts(renterId: string, landlordObjectId: string): Promise<LandlordObjectEntity> {
     const landlordObject = await this.landlordObjectsService.getLandlordObject(landlordObjectId);
-    const isPublishedByAdmins = await this.isObjectPublishedByAdmins(landlordObject);
-    // todo если не админ - просто убирать из списка у лендлорда этого чела
+    await this.entityManager
+      .getCustomRepository(LandlordObjectRenterMatchesRepository)
+      .markAsPaidMatch(renterId, landlordObjectId);
+
+    const isPublishedByAdmins = landlordObject.isAdmin;
     if (isPublishedByAdmins) {
       await this.tasksSchedulerService.removeAdminApproveObject({
         renterId: renterId,
@@ -122,17 +123,9 @@ export class ObjectMatchesForLandlordService {
       });
     }
 
+    // todo push отправлять лендлорду "о высокой заинтересованности" сообщение
     await this.rentersService.removeContact(renterId);
-    return this.flowXoService.formContactsMessageOfLandlord(landlordObject);
-  }
-
-  private async isObjectPublishedByAdmins(landlordObject: LandlordObjectEntity): Promise<boolean> {
-    const { chatId: adminChatId } = await this.telegramBotService.getAdmin();
-    const { chatId: subAdminChatId } = await this.telegramBotService.getSubAdmin();
-    return (
-      adminChatId === landlordObject.telegramUser.chatId ||
-      subAdminChatId === landlordObject.telegramUser.chatId
-    );
+    return landlordObject;
   }
 
   private async sendPushObjectToRenters(renterIds: string[]): Promise<void> {
@@ -160,7 +153,7 @@ export class ObjectMatchesForLandlordService {
       gender: gender,
       location: landlordObject.location,
       objectType: landlordObject.objectType,
-      price: landlordObject.price,
+      price: Number(landlordObject.price),
     };
     return entityManager
       .getCustomRepository(RentersRepository)

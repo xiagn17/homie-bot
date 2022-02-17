@@ -38,6 +38,9 @@ export class RenterInfoEntity {
   @Column({ type: 'text', name: 'about' })
   about: string;
 
+  @Column({ type: 'varchar', name: 'photo', array: true })
+  photo: string;
+
   @Column({ name: 'renter_id', type: 'uuid' })
   renterId: string;
 

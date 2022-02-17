@@ -20,7 +20,7 @@ export class RenterFiltersEntity {
   readonly id: string;
 
   @Column({ type: 'enum', name: 'object_type', enum: ObjectTypeEnum, array: true })
-  objectType: ObjectTypeEnum[];
+  objectType: ObjectTypeEnum[] | null;
 
   @Column({ type: 'integer', name: 'price_range_start' })
   priceRangeStart: number | null;
@@ -29,7 +29,7 @@ export class RenterFiltersEntity {
   priceRangeEnd: number | null;
 
   @Column({ type: 'enum', name: 'locations', array: true, enum: LocationsEnum })
-  locations: LocationsEnum[];
+  locations: LocationsEnum[] | null;
 
   @Column({ name: 'renter_id', type: 'uuid' })
   renterId: string;

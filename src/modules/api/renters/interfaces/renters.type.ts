@@ -1,10 +1,6 @@
-import { TelegramUserType } from '../../telegram-bot/interfaces/telegram-bot.types';
+import { TelegramUserResposeType, TelegramUserType } from '../../telegram-bot/interfaces/telegram-bot.types';
 
-export interface ApiTelegramUserResponseType {
-  username: string;
-}
-
-export interface RenterInterface extends TelegramUserType {
+export interface RenterDraftInterface extends TelegramUserType {
   gender: GenderEnumType;
 }
 
@@ -13,12 +9,17 @@ export enum GenderEnumType {
   FEMALE = 'female',
 }
 
-export interface ApiRenterFullType {
-  isRenter: 'yes' | 'no';
-  renter: ApiRenterResponseType | undefined;
+export interface ApiRenterFull extends ApiRenterResponseType {
+  settings: ApiRenterSettings;
 }
 
-export interface ApiRenterResponseType extends ApiTelegramUserResponseType {
+export interface ApiRenterResponseType extends TelegramUserResposeType {
   id: string;
   gender: GenderEnumType;
+}
+
+export interface ApiRenterSettings {
+  inSearch: boolean;
+  ableContacts: number;
+  renterId: string;
 }

@@ -5,6 +5,7 @@ export default (): ConfigurationType => {
   return {
     env: String(process.env.NODE_ENV) as NODE_ENV_TYPE,
     port: Number(process.env.PORT) || 3000,
+    apiPrefix: String(process.env.API_PREFIX) || 'https://server.my-homie.ru/api',
     database: {
       db_username: String(process.env.POSTGRES_USERNAME),
       db_password: String(process.env.POSTGRES_PASSWORD),
@@ -23,6 +24,7 @@ export default (): ConfigurationType => {
     },
     bot: {
       token: String(process.env.TELEGRAM_TOKEN),
+      id: String(process.env.TELEGRAM_BOT_ID),
     },
     adminUsername: String(process.env.ADMIN_USERNAME),
     subAdminUsername: String(process.env.SUBADMIN_USERNAME),
@@ -32,6 +34,7 @@ export default (): ConfigurationType => {
       prices: {
         oneContacts: String(process.env.ONE_CONTACTS_PRICE),
         fiveContacts: String(process.env.FIVE_CONTACTS_PRICE),
+        privateHelper: String(process.env.PRIVATE_HELPER_PRICE),
       },
     },
   };
