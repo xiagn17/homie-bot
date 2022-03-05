@@ -7,3 +7,6 @@ https://www.techniquehow.com/send-a-blank-message-on-whatsapp-messenger/
 
 
 // невидимый символ - &#8205;
+
+##docker restore/dump
+https://davejansen.com/how-to-dump-and-restore-a-postgresql-database-from-a-docker-container/
