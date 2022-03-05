@@ -42,15 +42,23 @@ import { validateFiltersPrice } from './helpers/filtersPrice.validate';
 
 const ROUTE_GENDER = 'route-gender';
 const ROUTE_FILTER_PRICE = 'filters-price-question';
+
 @Injectable()
 export class RentersHandlersService implements OnModuleInit {
-  composer: Composer<MyContext> = new Composer<MyContext>();
+  composer: Composer<MyContext> = new Composer<MyContext>().filter(async ctx => {
+    const session = await ctx.session;
+    return session.type === TelegramUserType.renter;
+  });
 
   public routerFilters: Router<MyContext> = new Router<MyContext>(async ctx => {
-    const renterSession = (await ctx.session).renter;
-    const showPriceQuestion = renterSession.filterStep === 'priceRange';
-    const priceRoute = showPriceQuestion ? ROUTE_FILTER_PRICE : null;
-    return priceRoute ?? '';
+    const session = await ctx.session;
+    const userType = session.type;
+    if (userType === TelegramUserType.renter) {
+      const showPriceQuestion = session.renter.filterStep === 'priceRange';
+      const priceRoute = showPriceQuestion ? ROUTE_FILTER_PRICE : undefined;
+      return priceRoute;
+    }
+    return undefined;
   });
 
   public routerGender: Router<MyContext> = new Router<MyContext>(async ctx => {
@@ -59,9 +67,9 @@ export class RentersHandlersService implements OnModuleInit {
     if (type === TelegramUserType.renter) {
       const chatId = ctx.from?.id.toString() as string;
       const isExists = await this.rentersApiService.isRenterExists(chatId);
-      return !isExists ? ROUTE_GENDER : '';
+      return !isExists ? ROUTE_GENDER : undefined;
     }
-    return '';
+    return undefined;
   });
 
   constructor(

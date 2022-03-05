@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ObjectMatchesForRenterService } from '../../../api/landlord-renter-matches/object-matches.for-renter.service';
-import { ApiObjectPreviewInterface } from '../../../api/landlord-objects/interfaces/landlord-objects.type';
+import { ApiObjectResponse } from '../../../api/landlord-objects/interfaces/landlord-objects.type';
 import { LandlordObjectsService } from '../../../api/landlord-objects/landlord-objects.service';
 import { MatchStatusEnumType } from '../../../api/landlord-renter-matches/interfaces/landlord-renter-matches.types';
 import { RentersService } from '../../../api/renters/renters.service';
@@ -26,7 +26,7 @@ export class RenterObjectsApiService {
     private readonly rentersService: RentersService,
   ) {}
 
-  async getNextObject(chatId: string): Promise<ApiObjectPreviewInterface | null> {
+  async getNextObject(chatId: string): Promise<ApiObjectResponse | null> {
     return this.objectMatchesForRenterService.getNextObject(chatId);
   }
 
@@ -56,7 +56,6 @@ export class RenterObjectsApiService {
     return renter;
   }
 
-  // todo land сделать сериалайзер
   async getLandlordContact(data: GetLandlordContactsData): Promise<LandlordObjectEntity> {
     return this.objectMatchesForLandlordService.getPaidContacts(data.renterId, data.objectId);
   }

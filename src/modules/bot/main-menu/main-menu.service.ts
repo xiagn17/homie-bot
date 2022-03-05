@@ -3,12 +3,14 @@ import { TelegramUserType } from '../session-storage/interfaces/session-storage.
 import { GetFirstMenuTip, GetMainMenu, GetMainMenuText } from './interfaces/main-menu.interface';
 import { MainMenuTextsService } from './texts/main-menu-texts.service';
 import { MainMenuKeyboardsService } from './keyboards/main-menu-keyboards.service';
+import { MainMenuApiService } from './api/main-menu-api.service';
 
 @Injectable()
 export class MainMenuService {
   constructor(
     private readonly mainMenuTextsService: MainMenuTextsService,
     private readonly mainMenuKeyboardsService: MainMenuKeyboardsService,
+    private readonly mainMenuApiService: MainMenuApiService,
   ) {}
 
   getFirstMenuTip: GetFirstMenuTip = async ctx => {
@@ -19,22 +21,21 @@ export class MainMenuService {
   };
 
   getMenu: GetMainMenu = async ctx => {
-    const session = await ctx.session;
-    if (session.type === TelegramUserType.renter) {
-      const text = this.mainMenuTextsService.getRenterMainPageText();
-      await ctx.reply(text, {
-        reply_markup: this.mainMenuKeyboardsService.renterMainMenu,
-      });
-      return;
-    } else if (session.type === TelegramUserType.landlord) {
-      return;
-    }
+    const text = await this.getMenuMainPageText(ctx);
+    await ctx.reply(text, {
+      reply_markup: this.mainMenuKeyboardsService.mainMenuKeyboard,
+    });
   };
 
-  getMenuText: GetMainMenuText = async ctx => {
+  getMenuMainPageText: GetMainMenuText = async ctx => {
     const session = await ctx.session;
     if (session.type === TelegramUserType.renter) {
       return this.mainMenuTextsService.getRenterMainPageText();
+    } else if (session.type === TelegramUserType.landlord) {
+      const chatId = ctx.from?.id.toString() as string;
+      const object = await this.mainMenuApiService.getUserObject(chatId);
+      const hasObject = !!object;
+      return this.mainMenuTextsService.getLandlordMainPageText(hasObject);
     }
 
     return '';

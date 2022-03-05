@@ -122,7 +122,8 @@ export class RentersKeyboardsService {
     onFilters: HandlerOnFilters,
   ): void {
     this.filtersKeyboard = new Menu<MyContext>('keyboard-filters')
-      .submenu(`${EMOJI_HOUSE_TYPE} Тип жилья`, 'keyboard-objectTypes')
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      .submenu(`${EMOJI_HOUSE_TYPE} Тип жилья`, 'keyboard-objectTypes', () => {})
       .text(`${EMOJI_MONEY} Бюджет`, onSendFiltersPriceQuestion)
       .submenu(`${EMOJI_LOCATION} Локация`, 'keyboard-filtersLocation', onSendFiltersLocationQuestion)
       .row()
@@ -148,7 +149,8 @@ export class RentersKeyboardsService {
           .text(textRooms, onFiltersObjectTypes.bind(this, ObjectTypeEnum.room))
           .text(textBeds, onFiltersObjectTypes.bind(this, ObjectTypeEnum.bed))
           .row()
-          .back(`${EMOJI_BACK} Назад`);
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          .back(`${EMOJI_BACK} Назад`, () => {});
       },
     );
 

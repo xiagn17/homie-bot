@@ -7,3 +7,8 @@ export type HandlerOnNextObject = Middleware<Filter<MyContext, 'callback_query:d
 export type HandlerOnFilters = Middleware<Filter<MyContext, 'callback_query:data'> & MenuFlavor>;
 export type HandlerOnRenterInfo = Middleware<Filter<MyContext, 'callback_query:data'> & MenuFlavor>;
 export type HandlerOnBackToMainMenu = Middleware<Filter<MyContext, 'callback_query:data'> & MenuFlavor>;
+
+export type HandlerOnOther = (ctx: MyContext) => Promise<void>;
+export type HandlerOnAbout = Middleware<Filter<MyContext, 'callback_query:data'> & MenuFlavor>;
+
+export type HandlerOnLandlordObject = Middleware<Filter<MyContext, 'callback_query:data'> & MenuFlavor>;

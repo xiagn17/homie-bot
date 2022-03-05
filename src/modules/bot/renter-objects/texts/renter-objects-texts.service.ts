@@ -1,33 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { ApiObjectPreviewInterface } from '../../../api/landlord-objects/interfaces/landlord-objects.type';
+import { ApiObjectResponse } from '../../../api/landlord-objects/interfaces/landlord-objects.type';
 import { LandlordObjectEntity } from '../../../api/landlord-objects/entities/LandlordObject.entity';
 import {
-  EMOJI_CLOCK,
-  EMOJI_COMMENT,
   EMOJI_GREEN_BOOM,
   EMOJI_HOLMS_WOMAN,
   EMOJI_LIGHTNING,
   EMOJI_MEDAL,
-  EMOJI_MONEY,
   EMOJI_PLUS,
   EMOJI_SEND_REQUEST,
   EMOJI_STAR,
-  EMOJI_SUBWAY,
 } from '../../constants/emoji';
-import { getDetailsRow, getFiveRow, getSecondRow } from './helpers/object-preview.helpers';
+import { getDefaultObjectText } from './helpers/object-preview.helpers';
 
 @Injectable()
 export class RenterObjectsTextsService {
-  getPreviewObjectText(object: ApiObjectPreviewInterface): string {
-    const firstRow = `#home${object.number}${object.isAdmin ? ' <i>(админ.)</i>' : ''}` + '\n';
-    const secondRow = getSecondRow(object) + '\n\n';
-    const thirdRow = `${EMOJI_SUBWAY} <i>Метро</i>: ${object.address}` + '\n';
-    const fourRow = `${EMOJI_MONEY} <i>Стоимость</i>: ${object.price}` + '\n';
-    const fiveRow = getFiveRow(object) + '\n';
-    const detailsRow = getDetailsRow(object) + '\n\n';
-    const arrivalRow = `${EMOJI_CLOCK} <i>Заезд</i>: с ${object.startArrivalDate}` + '\n';
-    const commentRow = `${EMOJI_COMMENT} <i>Комментарий</i>: ${object.comment}` + '\n';
-    return firstRow + secondRow + thirdRow + fourRow + fiveRow + detailsRow + arrivalRow + commentRow;
+  getObjectText(object: ApiObjectResponse): string {
+    return getDefaultObjectText(object);
   }
 
   getObjectsEnded(): string {

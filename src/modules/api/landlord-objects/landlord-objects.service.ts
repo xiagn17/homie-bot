@@ -2,13 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { Connection, EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
+import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
+import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
 import { LandlordObjectsRepository } from './repositories/landlord-objects.repository';
 import { LandlordObjectPhotoEntity } from './entities/LandlordObjectPhoto.entity';
 import { LandlordObjectEntity } from './entities/LandlordObject.entity';
 import { LandlordObjectsSerializer } from './landlord-objects.serializer';
-import { CreateLandlordObjectDto } from './dto/landlord-objects.dto';
 import { RenewLandlordObjectDto } from './dto/renew-landlord-object.dto';
 import { ArchiveLandlordObjectDto } from './dto/archive-landlord-object.dto';
+import { ApiLandlordObjectDraft, ApiObjectResponse } from './interfaces/landlord-objects.type';
+import { LandlordObjectsControlService } from './landlord-objects.control.service';
 
 @Injectable()
 export class LandlordObjectsService {
@@ -16,22 +19,28 @@ export class LandlordObjectsService {
     private logger: LoggerService,
     private connection: Connection,
 
+    private telegramBotService: TelegramBotService,
+    private tasksSchedulerService: TasksSchedulerService,
+
     private landlordObjectsSerializer: LandlordObjectsSerializer,
+    private landlordObjectsControlService: LandlordObjectsControlService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
 
-  public createObject(
-    landlordObjectDto: CreateLandlordObjectDto,
-    isAdmin: boolean,
-  ): Promise<LandlordObjectEntity> {
-    return this.connection.transaction(async manager => {
+  public async createObject(landlordObjectDraft: ApiLandlordObjectDraft): Promise<LandlordObjectEntity> {
+    const { chatId: adminChatId } = await this.telegramBotService.getAdmin();
+    const { chatId: subAdminChatId } = await this.telegramBotService.getSubAdmin();
+    const isAdmin =
+      adminChatId === landlordObjectDraft.chatId || subAdminChatId === landlordObjectDraft.chatId;
+
+    const landlordObject = await this.connection.transaction(async manager => {
       const telegramUser = await manager
         .getRepository(TelegramUserEntity)
-        .findOneOrFail({ chatId: landlordObjectDto.chatId });
+        .findOneOrFail({ chatId: landlordObjectDraft.chatId });
 
       const landlordObjectDbData = this.landlordObjectsSerializer.mapToDbData({
-        landlordObjectDto,
+        landlordObjectDraft,
         telegramUser,
         isAdmin,
       });
@@ -40,7 +49,8 @@ export class LandlordObjectsService {
         .getCustomRepository(LandlordObjectsRepository)
         .createWithRelations(landlordObjectDbData);
 
-      const photoEntitiesCreatePromise = landlordObjectDto.photoIds.map(photoId =>
+      // todo[TECH] заменить на просто массив, убрать отдельную таблицу с фотками (сделать как у рентера)
+      const photoEntitiesCreatePromise = landlordObjectDraft.photoIds.map(photoId =>
         manager.save(
           manager.getRepository(LandlordObjectPhotoEntity).create({
             photoId,
@@ -52,6 +62,30 @@ export class LandlordObjectsService {
 
       return this.getLandlordObject(landlordObjectEntity.id, manager);
     });
+
+    if (isAdmin) {
+      await this.landlordObjectsControlService.controlApprove({ id: landlordObject.id, isApproved: true });
+    } else {
+      const objectResponse = this.landlordObjectsSerializer.toResponse(landlordObject);
+      await this.landlordObjectsControlService.notificationApproveLandlordObject(objectResponse);
+    }
+
+    return landlordObject;
+  }
+
+  async getObjectByChatId(chatId: string): Promise<ApiObjectResponse | null> {
+    const isUserAdmin = await this.telegramBotService.isUserAdmin(chatId);
+    if (isUserAdmin) {
+      return null;
+    }
+    try {
+      const object = (
+        await this.connection.getCustomRepository(LandlordObjectsRepository).getByChatId(chatId)
+      )[0];
+      return this.landlordObjectsSerializer.toResponse(object);
+    } catch (e) {
+      return null;
+    }
   }
 
   getLandlordObject(
@@ -69,15 +103,6 @@ export class LandlordObjectsService {
     });
   }
 
-  async hasUserObject(chatId: string): Promise<boolean> {
-    try {
-      await this.connection.getCustomRepository(LandlordObjectsRepository).getByChatId(chatId);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   async renewObject(renewLandlordObjectDto: RenewLandlordObjectDto): Promise<string> {
     const landlordObject = (
       await this.connection
@@ -85,6 +110,10 @@ export class LandlordObjectsService {
         .getByChatId(renewLandlordObjectDto.chatId)
     )[0];
     await this.connection.getCustomRepository(LandlordObjectsRepository).renewObject(landlordObject.id);
+    await this.tasksSchedulerService.setTaskLandlordRenewNotification({
+      landlordObjectId: landlordObject.id,
+    });
+
     return landlordObject.id;
   }
 

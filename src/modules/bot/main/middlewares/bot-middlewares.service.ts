@@ -5,16 +5,19 @@ import { BotHandlersService } from '../handlers/bot-handlers.service';
 import { RentersHandlersService } from '../../renters/handlers/renters-handlers.service';
 import { MainMenuHandlersService } from '../../main-menu/handlers/main-menu-handlers.service';
 import { RentersObjectsHandlersService } from '../../renter-objects/handlers/renters-objects-handlers.service';
-import { BotKeyboardsService } from '../keyboards/bot-keyboards.service';
 import { RentersKeyboardsService } from '../../renters/keyboards/renters-keyboards.service';
 import { MainMenuKeyboardsService } from '../../main-menu/keyboards/main-menu-keyboards.service';
 import { RentersObjectsKeyboardsService } from '../../renter-objects/keyboards/renters-objects-keyboards.service';
+import { LandlordsHandlersService } from '../../landlords/handlers/landlords-handlers.service';
+import { AdminHandlersService } from '../../admin/handlers/admin-handlers.service';
+import { LandlordRentersHandlersService } from '../../landlord-renters/handlers/landlord-renters-handlers.service';
 
 @Injectable()
 export class BotMiddlewaresService {
   constructor(
     private readonly botHandlersService: BotHandlersService,
-    private readonly botKeyboardsService: BotKeyboardsService,
+
+    private readonly adminHandlersService: AdminHandlersService,
 
     private readonly mainMenuHandlersService: MainMenuHandlersService,
     private readonly mainMenuKeyboardsService: MainMenuKeyboardsService,
@@ -22,27 +25,39 @@ export class BotMiddlewaresService {
     private readonly rentersHandlersService: RentersHandlersService,
     private readonly rentersKeyboardsService: RentersKeyboardsService,
 
+    private readonly landlordsHandlersService: LandlordsHandlersService,
+
     private readonly rentersObjectsHandlersService: RentersObjectsHandlersService,
     private readonly rentersObjectsKeyboardsService: RentersObjectsKeyboardsService,
+
+    private readonly landlordRentersHandlersService: LandlordRentersHandlersService,
   ) {}
 
   get middlewares(): Middleware<MyContext>[] {
     return [
       this.botHandlersService.composer,
-      this.botKeyboardsService.chooseUserTypeKeyboard,
       this.botHandlersService.routerUserType,
 
-      this.mainMenuKeyboardsService.renterMainMenu,
+      this.rentersKeyboardsService.genderKeyboard,
+      this.rentersHandlersService.routerGender,
+
+      this.mainMenuKeyboardsService.mainMenuKeyboard,
       this.mainMenuHandlersService.composer,
       this.mainMenuHandlersService.router,
 
-      this.rentersHandlersService.composer,
-      this.rentersKeyboardsService.genderKeyboard,
-      this.rentersHandlersService.routerGender,
+      this.landlordsHandlersService.firstTipRouter,
+
       this.rentersHandlersService.routerFilters,
+      this.rentersHandlersService.composer,
+
+      this.landlordsHandlersService.objectFormRouter,
 
       this.rentersObjectsKeyboardsService.payContactsMenu,
       this.rentersObjectsHandlersService.composer,
+
+      this.landlordRentersHandlersService.composer,
+
+      this.adminHandlersService.composer,
     ];
   }
 }

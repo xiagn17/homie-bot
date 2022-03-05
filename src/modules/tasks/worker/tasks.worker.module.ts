@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from '../../logger/logger.module';
-import { FlowXoModule } from '../../flow-xo/flow-xo.module';
 import { TasksRepository } from '../repositories/tasks.repository';
 import { LandlordRenterMatchesModule } from '../../api/landlord-renter-matches/landlord-renter-matches.module';
+import { LandlordObjectsModule } from '../../api/landlord-objects/landlord-objects.module';
 import { TasksWorkerService } from './tasks.worker.service';
-import { TasksLandlordNotificationsWorkerService } from './tasks-landlord-notifications.worker.service';
-import { TasksAdminApproveObjectWorkerService } from './tasks-admin-approve-object.worker.service';
+import { TasksLandlordNotificationsWorkerService } from './actions/tasks-landlord-notifications.worker.service';
+import { TasksAdminApproveObjectWorkerService } from './actions/tasks-admin-approve-object.worker.service';
+import { TasksNewObjectRenterPushWorkerService } from './actions/tasks-new-object-renter-push-worker.service';
 
 @Module({
   imports: [
@@ -17,12 +18,13 @@ import { TasksAdminApproveObjectWorkerService } from './tasks-admin-approve-obje
 
     // for workers features
     LandlordRenterMatchesModule,
-    FlowXoModule,
+    LandlordObjectsModule,
   ],
   providers: [
     TasksWorkerService,
     TasksLandlordNotificationsWorkerService,
     TasksAdminApproveObjectWorkerService,
+    TasksNewObjectRenterPushWorkerService,
   ],
   exports: [],
 })

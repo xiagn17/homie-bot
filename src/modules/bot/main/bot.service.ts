@@ -4,7 +4,6 @@ import { apiThrottler } from '@grammyjs/transformer-throttler';
 import { limit } from '@grammyjs/ratelimiter';
 import { hydrate } from '@grammyjs/hydrate';
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { hydrateReply, parseMode } from '@grammyjs/parse-mode';
 import { LoggerService } from '../../logger/logger.service';
 import { SessionStorageService } from '../session-storage/session-storage.service';
@@ -12,18 +11,19 @@ import { RedisConnectorService } from '../../redis-connector/redis-connector.ser
 import { getSessionKey } from '../session-storage/helpers/get-session-key.helper';
 import { MyContext } from './interfaces/bot.interface';
 import { BotMiddlewaresService } from './middlewares/bot-middlewares.service';
+import { BotInstanceService } from './instance/bot-instance.service';
 
 @Injectable()
 export class BotService implements OnModuleInit {
-  private bot: Bot<MyContext>;
+  public bot: Bot<MyContext>;
 
   constructor(
     private logger: LoggerService,
-    private configService: ConfigService,
     private redisConnectorService: RedisConnectorService,
 
     private sessionStorageService: SessionStorageService,
     private botMiddlewaresService: BotMiddlewaresService,
+    private botInstanceService: BotInstanceService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -33,8 +33,7 @@ export class BotService implements OnModuleInit {
   }
 
   private async initialize(): Promise<void> {
-    const token = this.configService.get('bot.token');
-    this.bot = new Bot<MyContext>(token);
+    this.bot = this.botInstanceService.bot;
 
     this.logger.info('Starting the bot...');
 
@@ -74,7 +73,7 @@ export class BotService implements OnModuleInit {
   }
 
   private setConfig(): void {
-    const throttler = apiThrottler({ out: { maxConcurrent: 1, minTime: 500 } });
+    const throttler = apiThrottler({ out: { maxConcurrent: 1, minTime: 700 } });
     this.bot.api.config.use(parseMode('HTML')).use(throttler);
   }
 

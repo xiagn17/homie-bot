@@ -12,7 +12,8 @@ export interface ApiChangeRenterStatusOfObject extends TelegramUserType {
 }
 
 export interface ApiChangeLandlordStatusOfObject {
-  landlordObjectId: string;
+  chatId?: string;
+  landlordObjectId?: string;
   renterId: string;
   landlordStatus: MatchStatusEnumType.resolved | MatchStatusEnumType.rejected;
 }

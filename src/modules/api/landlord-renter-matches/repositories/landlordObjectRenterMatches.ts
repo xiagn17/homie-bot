@@ -13,10 +13,6 @@ interface NextLandlordObjectRawDataType {
   landlordObjectId: string;
 }
 
-interface NextRenterRawDataType {
-  renterId: string;
-}
-
 @EntityRepository(LandlordObjectRenterMatchEntity)
 export class LandlordObjectRenterMatchesRepository extends Repository<LandlordObjectRenterMatchEntity> {
   createMatchesForObject(
@@ -97,42 +93,9 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
         JOIN renter_matches USING (landlord_object_id)
         WHERE t_landlordObjects.landlord_object_id = renter_matches.landlord_object_id
           AND t_landlordObjects.archived_at IS NULL
+          AND t_landlordObjects.updated_at > now() - (interval '2 days')
         ORDER BY t_landlordObjects.created_at
         LIMIT 1
-    `);
-    // todo !!! вернуть назад перед мержем в мастер
-    //  AND t_landlordObjects.updated_at > now() - (interval '2 days')
-    return result[0]?.landlordObjectId;
-  }
-
-  async getNextRenterIdForLandlord(landlordObjectId: string): Promise<string | undefined> {
-    const result: [NextRenterRawDataType] | [] = await this.query(`
-        SELECT
-            renter_id as "renterId"
-        FROM landlord_object_renter_matches
-        WHERE landlord_object_id = '${landlordObjectId}'
-          AND renter_status = '${MatchStatusEnumType.resolved}'
-          AND paid = false
-          AND landlord_status = '${MatchStatusEnumType.processing}'
-        ORDER BY updated_at
-        LIMIT 1
-    `);
-
-    return result[0]?.renterId;
-  }
-
-  async getObjectIdWithUnresolvedRenters(chatId: string): Promise<string | undefined> {
-    const result: NextLandlordObjectRawDataType[] = await this.query(`
-        SELECT
-            landlord_objects.landlord_object_id as "landlordObjectId"
-        FROM landlord_objects
-        INNER JOIN telegram_users tu on landlord_objects.telegram_user_id = tu.telegram_user_id
-        INNER JOIN landlord_object_renter_matches lorm on landlord_objects.landlord_object_id = lorm.landlord_object_id
-        WHERE tu.chat_id = '${chatId}'
-          AND renter_status = '${MatchStatusEnumType.resolved}'
-          AND landlord_status = '${MatchStatusEnumType.processing}'
-          AND landlord_objects.archived_at IS NULL
-        ORDER BY landlord_objects.updated_at
     `);
 
     return result[0]?.landlordObjectId;
@@ -181,19 +144,6 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
       .set({
         updatedAt: new Date(),
         paid: true,
-      })
-      .where('renterId = :renterId AND landlordObjectId = :landlordObjectId', {
-        renterId: renterId,
-        landlordObjectId: landlordObjectId,
-      })
-      .execute();
-  }
-
-  async setRenterLastInLandlordQueue(renterId: string, landlordObjectId: string): Promise<void> {
-    await this.createQueryBuilder()
-      .update(LandlordObjectRenterMatchEntity)
-      .set({
-        updatedAt: new Date(),
       })
       .where('renterId = :renterId AND landlordObjectId = :landlordObjectId', {
         renterId: renterId,

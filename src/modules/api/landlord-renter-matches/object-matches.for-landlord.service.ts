@@ -1,21 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoggerService } from '../../logger/logger.service';
 import { RenterEntity } from '../renters/entities/Renter.entity';
 import { RentersRepository } from '../renters/repositories/renters.repository';
-import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import {
   LandlordObjectEntity,
   PreferredGenderEnumType,
 } from '../landlord-objects/entities/LandlordObject.entity';
 import { GenderEnumType } from '../renters/interfaces/renters.type';
-import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
 import { RentersService } from '../renters/renters.service';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
+import { LandlordObjectsRepository } from '../landlord-objects/repositories/landlord-objects.repository';
+import {
+  BROADCAST_LANDLORD_CONTACTS_TO_APPROVED_RENTER_EVENT_NAME,
+  BroadcastLandlordContactsToApprovedRenterEvent,
+} from '../../bot/broadcast/events/broadcast-landlord-contacts-approved-renter.event';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
-import { ChangeLandlordStatusOfObjectDto } from './dto/ChangeLandlordStatusOfObjectDto';
-import { SetRenterLastInLandlordQueueDto } from './dto/SetRenterLastInLandlordQueue.dto';
-import { MatchStatusEnumType } from './interfaces/landlord-renter-matches.types';
+import {
+  ApiChangeLandlordStatusOfObject,
+  MatchStatusEnumType,
+} from './interfaces/landlord-renter-matches.types';
 
 @Injectable()
 export class ObjectMatchesForLandlordService {
@@ -23,22 +28,12 @@ export class ObjectMatchesForLandlordService {
     private logger: LoggerService,
     private entityManager: EntityManager,
 
-    private flowXoService: FlowXoService,
-    private landlordObjectsService: LandlordObjectsService,
     private rentersService: RentersService,
+
     private tasksSchedulerService: TasksSchedulerService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     this.logger.setContext(this.constructor.name);
-  }
-
-  public async getObjectWithUnresolvedRenterMatches(chatId: string): Promise<LandlordObjectEntity | null> {
-    const landlordObjectId = await this.entityManager
-      .getCustomRepository(LandlordObjectRenterMatchesRepository)
-      .getObjectIdWithUnresolvedRenters(chatId);
-    if (!landlordObjectId) {
-      return null;
-    }
-    return this.landlordObjectsService.getLandlordObject(landlordObjectId);
   }
 
   public async matchObjectToRenters(landlordObject: LandlordObjectEntity): Promise<void> {
@@ -62,55 +57,50 @@ export class ObjectMatchesForLandlordService {
     if (!renterIdsToSendNotification.length) {
       return;
     }
-    await this.sendPushObjectToRenters(renterIdsToSendNotification);
-  }
-
-  public async getNextRenter(landlordObjectId: string): Promise<RenterEntity | null> {
-    const landlordObject = await this.landlordObjectsService.getLandlordObject(landlordObjectId);
-    const renterId = await this.entityManager
-      .getCustomRepository(LandlordObjectRenterMatchesRepository)
-      .getNextRenterIdForLandlord(landlordObject.id);
-    if (!renterId) {
-      return null;
-    }
-
-    return this.rentersService.getRenter(renterId);
+    await this.sendPushObjectToRenters(renterIdsToSendNotification, landlordObject.id);
   }
 
   public async changeLandlordStatusOfObject(
-    landlordStatusOfObjectDto: ChangeLandlordStatusOfObjectDto,
+    landlordStatusOfObjectDto: ApiChangeLandlordStatusOfObject,
   ): Promise<void> {
-    await this.entityManager
-      .getCustomRepository(LandlordObjectRenterMatchesRepository)
-      .changeLandlordStatus(
-        landlordStatusOfObjectDto.renterId,
-        landlordStatusOfObjectDto.landlordObjectId,
-        landlordStatusOfObjectDto.landlordStatus,
-      );
+    await this.entityManager.transaction(async entityManager => {
+      // считаем что или chatId или landlordObjectId доступен
+      const object = ((landlordStatusOfObjectDto.chatId &&
+        (
+          await entityManager
+            .getCustomRepository(LandlordObjectsRepository)
+            .getByChatId(landlordStatusOfObjectDto.chatId)
+        )[0]) ??
+        (landlordStatusOfObjectDto.landlordObjectId &&
+          (await entityManager
+            .getCustomRepository(LandlordObjectsRepository)
+            .getFullObject(landlordStatusOfObjectDto.landlordObjectId)))) as LandlordObjectEntity;
 
-    if (landlordStatusOfObjectDto.landlordStatus === MatchStatusEnumType.resolved) {
-      const renter = await this.rentersService.getRenter(landlordStatusOfObjectDto.renterId);
-      const landlordObject = await this.landlordObjectsService.getLandlordObject(
-        landlordStatusOfObjectDto.landlordObjectId,
-      );
+      await entityManager
+        .getCustomRepository(LandlordObjectRenterMatchesRepository)
+        .changeLandlordStatus(
+          landlordStatusOfObjectDto.renterId,
+          object.id,
+          landlordStatusOfObjectDto.landlordStatus,
+        );
 
-      await this.flowXoService.notificationLandlordContactsToRenter(landlordObject, renter.telegramUser);
-    }
-  }
-
-  public async setRenterLastInLandlordQueue(
-    setRenterLastInLandlordQueueDto: SetRenterLastInLandlordQueueDto,
-  ): Promise<void> {
-    await this.entityManager
-      .getCustomRepository(LandlordObjectRenterMatchesRepository)
-      .setRenterLastInLandlordQueue(
-        setRenterLastInLandlordQueueDto.renterId,
-        setRenterLastInLandlordQueueDto.landlordObjectId,
-      );
+      if (landlordStatusOfObjectDto.landlordStatus === MatchStatusEnumType.resolved) {
+        const renter = await this.rentersService.getRenter(landlordStatusOfObjectDto.renterId, entityManager);
+        await this.eventEmitter.emitAsync(
+          BROADCAST_LANDLORD_CONTACTS_TO_APPROVED_RENTER_EVENT_NAME,
+          new BroadcastLandlordContactsToApprovedRenterEvent({
+            object: object,
+            chatId: renter.telegramUser.chatId,
+          }),
+        );
+      }
+    });
   }
 
   public async getPaidContacts(renterId: string, landlordObjectId: string): Promise<LandlordObjectEntity> {
-    const landlordObject = await this.landlordObjectsService.getLandlordObject(landlordObjectId);
+    const landlordObject = await this.entityManager
+      .getCustomRepository(LandlordObjectsRepository)
+      .getFullObject(landlordObjectId);
     await this.entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .markAsPaidMatch(renterId, landlordObjectId);
@@ -128,14 +118,17 @@ export class ObjectMatchesForLandlordService {
     return landlordObject;
   }
 
-  private async sendPushObjectToRenters(renterIds: string[]): Promise<void> {
+  private async sendPushObjectToRenters(renterIds: string[], landlordObjectId: string): Promise<void> {
     const rentersDataForSending = await this.entityManager
       .getCustomRepository(RentersRepository)
       .getRentersChatId(renterIds);
-    const sending = rentersDataForSending.map(data =>
-      this.flowXoService.notificationNewLandlordObjectToRenter(data),
+    const setTasks = rentersDataForSending.map(data =>
+      this.tasksSchedulerService.setPushNewObjectToRenter({
+        landlordObjectId: landlordObjectId,
+        chatId: data.chatId,
+      }),
     );
-    await Promise.all(sending);
+    await Promise.all(setTasks);
   }
 
   private async findMatchesForObject(

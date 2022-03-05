@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn
 
 import { TelegramUserEntity } from '../../telegram-bot/entities/TelegramUser.entity';
 import { LocationsEnum, ObjectTypeEnum } from '../../renters/entities/RenterFilters.entity';
-import { LandlordObjectDetailsInterface } from '../interfaces/landlord-object-details.interface';
+import { LandlordObjectDetails } from '../interfaces/landlord-object-details.interface';
 import { LandlordObjectRoomBedInfoInterface } from '../interfaces/landlord-object-room-bed-info.interface';
 import { LandlordObjectApartmentsInfoInterface } from '../interfaces/landlord-object-apartments-info.interface';
 import { LandlordObjectPhotoEntity } from './LandlordObjectPhoto.entity';
@@ -78,13 +78,16 @@ export class LandlordObjectEntity {
   roomsNumber: string;
 
   @Column({ name: 'details', type: 'jsonb' })
-  details: LandlordObjectDetailsInterface;
+  details: LandlordObjectDetails;
 
   @Column({ name: 'apartments_info', type: 'jsonb' })
   apartmentsInfo: LandlordObjectApartmentsInfoInterface | null;
 
   @Column({ name: 'room_bed_info', type: 'jsonb' })
   roomBedInfo: LandlordObjectRoomBedInfoInterface | null;
+
+  @Column({ name: 'place_on_sites', type: 'boolean' })
+  placeOnSites: boolean;
 
   @Column({ name: 'is_admin', type: 'boolean' })
   isAdmin: boolean;

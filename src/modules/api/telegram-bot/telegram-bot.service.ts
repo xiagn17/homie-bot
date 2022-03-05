@@ -51,4 +51,10 @@ export class TelegramBotService {
     const subAdminUsername = this.configService.get('subAdminUsername');
     return this.entityManager.getCustomRepository(TelegramUsersRepository).findByUsername(subAdminUsername);
   }
+
+  public async isUserAdmin(chatId: string): Promise<boolean> {
+    const { chatId: adminChatId } = await this.getAdmin();
+    const { chatId: subAdminChatId } = await this.getSubAdmin();
+    return adminChatId === chatId || subAdminChatId === chatId;
+  }
 }

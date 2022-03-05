@@ -45,6 +45,14 @@ export class TasksRepository extends Repository<TaskEntity> {
       .getMany();
   }
 
+  getTodoNewObjectToRenter(): Promise<TaskEntity[]> {
+    return this.getTodoQuery()
+      .andWhere('task.type = :type', {
+        type: TaskTypeEnumInterface.new_object_pushes_to_renters,
+      })
+      .getMany();
+  }
+
   private getTodoQuery(): SelectQueryBuilder<TaskEntity> {
     return this.createQueryBuilder('task')
       .where('task.completedAt IS NULL')

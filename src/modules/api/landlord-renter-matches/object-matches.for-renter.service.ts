@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoggerService } from '../../logger/logger.service';
 import { RenterEntity } from '../renters/entities/Renter.entity';
 import { LandlordObjectsRepository } from '../landlord-objects/repositories/landlord-objects.repository';
@@ -9,11 +10,16 @@ import {
 } from '../landlord-objects/entities/LandlordObject.entity';
 import { GenderEnumType } from '../renters/interfaces/renters.type';
 import { RentersRepository } from '../renters/repositories/renters.repository';
-import { FlowXoService } from '../../flow-xo/flow-xo.service';
-import { LandlordObjectsService } from '../landlord-objects/landlord-objects.service';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
-import { ApiObjectPreviewInterface } from '../landlord-objects/interfaces/landlord-objects.type';
+import { ApiObjectResponse } from '../landlord-objects/interfaces/landlord-objects.type';
 import { LandlordObjectsSerializer } from '../landlord-objects/landlord-objects.serializer';
+import { RentersSerializer } from '../renters/serializers/renters.serializer';
+import { RenterInfosSerializer } from '../renters/serializers/renter-infos.serializer';
+import { RenterInfoEntity } from '../renters/entities/RenterInfo.entity';
+import {
+  BROADCAST_RENTER_INFO_TO_LANDLORD_EVENT_NAME,
+  BroadcastRenterInfoToLandlordEvent,
+} from '../../bot/broadcast/events/broadcast-renter-info-landlord.event';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';
 import { MatchStatusEnumType } from './interfaces/landlord-renter-matches.types';
@@ -23,12 +29,13 @@ export class ObjectMatchesForRenterService {
   constructor(
     private logger: LoggerService,
     private entityManager: EntityManager,
-    private flowXoService: FlowXoService,
 
-    private landlordObjectsService: LandlordObjectsService,
     private tasksSchedulerService: TasksSchedulerService,
+    private readonly eventEmitter: EventEmitter2,
 
     private landlordObjectsSerializer: LandlordObjectsSerializer,
+    private readonly renterInfosSerializer: RenterInfosSerializer,
+    private readonly rentersSerializer: RentersSerializer,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -62,7 +69,7 @@ export class ObjectMatchesForRenterService {
       .createMatchesForRenter(renter, matchedObjects);
   }
 
-  public async getNextObject(chatId: string): Promise<ApiObjectPreviewInterface | null> {
+  public async getNextObject(chatId: string): Promise<ApiObjectResponse | null> {
     const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
     const landlordObjectId = await this.entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
@@ -71,8 +78,10 @@ export class ObjectMatchesForRenterService {
       return null;
     }
 
-    const landlordObject = await this.landlordObjectsService.getLandlordObject(landlordObjectId);
-    return this.landlordObjectsSerializer.toPreview(landlordObject);
+    const landlordObject = await this.entityManager
+      .getCustomRepository(LandlordObjectsRepository)
+      .getFullObject(landlordObjectId);
+    return this.landlordObjectsSerializer.toResponse(landlordObject);
   }
 
   // тут сразу renterId тоже
@@ -94,9 +103,9 @@ export class ObjectMatchesForRenterService {
       return;
     }
 
-    const landlordObject = await this.landlordObjectsService.getLandlordObject(
-      renterStatusOfObjectDto.landlordObjectId,
-    );
+    const landlordObject = await this.entityManager
+      .getCustomRepository(LandlordObjectsRepository)
+      .getFullObject(renterStatusOfObjectDto.landlordObjectId);
 
     const isPublishedByAdmins = landlordObject.isAdmin;
     if (isPublishedByAdmins) {
@@ -106,7 +115,18 @@ export class ObjectMatchesForRenterService {
       });
       return;
     }
-    await this.flowXoService.notificationNewRenterToLandlord(landlordObject.telegramUser);
+
+    const renterInfo = this.renterInfosSerializer.toFullResponse(
+      renter.renterInfoEntity as RenterInfoEntity,
+      this.rentersSerializer.toFullResponse(renter),
+    );
+    await this.eventEmitter.emitAsync(
+      BROADCAST_RENTER_INFO_TO_LANDLORD_EVENT_NAME,
+      new BroadcastRenterInfoToLandlordEvent({
+        renterInfo: renterInfo,
+        chatId: landlordObject.telegramUser.chatId,
+      }),
+    );
   }
 
   private async findMatchesForRenter(

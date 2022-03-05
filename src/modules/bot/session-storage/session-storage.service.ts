@@ -39,7 +39,10 @@ export class SessionStorageService implements OnModuleInit {
         viewedObjects: 0,
         firstMenuTip: false,
       },
-      landlord: {},
+      landlord: {
+        firstTip: false,
+        objectStepsData: {},
+      },
     };
   }
 }

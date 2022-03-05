@@ -1,66 +1,81 @@
 import { Injectable } from '@nestjs/common';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
+import { ObjectTypeEnum } from '../renters/entities/RenterFilters.entity';
 import { LandlordObjectEntity } from './entities/LandlordObject.entity';
-import { CreateLandlordObjectDto } from './dto/landlord-objects.dto';
-import {
-  ApiLandlordObjectFullResponseType,
-  ApiObjectPreviewInterface,
-} from './interfaces/landlord-objects.type';
+import { ApiLandlordObjectDraft, ApiObjectResponse } from './interfaces/landlord-objects.type';
+import { LandlordObjectRoomBedInfoInterface } from './interfaces/landlord-object-room-bed-info.interface';
+import { LandlordObjectApartmentsInfoInterface } from './interfaces/landlord-object-apartments-info.interface';
 
 interface LandlordObjectData {
-  landlordObjectDto: CreateLandlordObjectDto;
+  landlordObjectDraft: ApiLandlordObjectDraft;
   telegramUser: TelegramUserEntity;
   isAdmin: boolean;
 }
 @Injectable()
 export class LandlordObjectsSerializer {
   mapToDbData(landlordObjectData: LandlordObjectData): Partial<LandlordObjectEntity> {
-    const { landlordObjectDto, telegramUser, isAdmin } = landlordObjectData;
-    return {
-      name: landlordObjectDto.name,
-      address: landlordObjectDto.address,
-      comment: landlordObjectDto.comment,
-      phoneNumber: landlordObjectDto.phoneNumber,
-      preferredGender: landlordObjectDto.preferredGender,
-      price: landlordObjectDto.price,
-      startArrivalDate: landlordObjectDto.startArrivalDate.toISOString(),
-      telegramUserId: telegramUser.id,
+    const { landlordObjectDraft, telegramUser, isAdmin } = landlordObjectData;
+    const base = {
+      name: landlordObjectDraft.name,
+      phoneNumber: landlordObjectDraft.phoneNumber,
+      location: landlordObjectDraft.location,
+      address: landlordObjectDraft.address,
+      preferredGender: landlordObjectDraft.preferredGender,
+      startArrivalDate: landlordObjectDraft.startArrivalDate.toISOString(),
+      price: landlordObjectDraft.price,
+      comment: landlordObjectDraft.comment,
+      objectType: landlordObjectDraft.objectType,
+      roomsNumber: landlordObjectDraft.roomsNumber,
+      details: landlordObjectDraft.details,
+
+      placeOnSites: landlordObjectDraft.placeOnSites,
       isApproved: false,
+      telegramUserId: telegramUser.id,
       isAdmin: isAdmin,
     };
-  }
 
-  toFullResponse(landlordObject: LandlordObjectEntity): ApiLandlordObjectFullResponseType {
+    if (landlordObjectDraft.objectType === ObjectTypeEnum.apartments) {
+      return {
+        ...base,
+        apartmentsInfo: landlordObjectDraft.apartmentsInfo,
+        roomBedInfo: null,
+      };
+    }
     return {
-      id: landlordObject.id,
-      number: landlordObject.number,
-      username: landlordObject.telegramUser.username ?? '',
-      name: landlordObject.name,
-      phoneNumber: landlordObject.phoneNumber,
-      address: landlordObject.address,
-      preferredGender: landlordObject.preferredGender,
-      startArrivalDate: landlordObject.startArrivalDate,
-      price: landlordObject.price,
-      photoIds: JSON.stringify(landlordObject.photos.map(p => p.photoId)),
-      comment: landlordObject.comment,
+      ...base,
+      roomBedInfo: landlordObjectDraft.roomBedInfo,
+      apartmentsInfo: null,
     };
   }
 
-  toPreview(landlordObject: LandlordObjectEntity): ApiObjectPreviewInterface {
-    return {
+  toResponse(landlordObject: LandlordObjectEntity): ApiObjectResponse {
+    const base = {
       id: landlordObject.id,
-      address: landlordObject.address,
-      apartmentsInfo: landlordObject.apartmentsInfo,
-      comment: landlordObject.comment,
-      details: landlordObject.details,
       isAdmin: landlordObject.isAdmin,
       number: landlordObject.number,
-      objectType: landlordObject.objectType,
-      photoIds: landlordObject.photos.map(p => p.photoId),
-      price: landlordObject.price,
-      roomBedInfo: landlordObject.roomBedInfo,
+      isApproved: landlordObject.isApproved,
+      placeOnSites: landlordObject.placeOnSites,
+
       roomsNumber: landlordObject.roomsNumber,
+      details: landlordObject.details,
+      address: landlordObject.address,
+      price: landlordObject.price,
+      photoIds: landlordObject.photos.map(p => p.photoId),
       startArrivalDate: new Date(landlordObject.startArrivalDate).toLocaleDateString().replaceAll('/', '.'),
+      comment: landlordObject.comment,
+    };
+    if (landlordObject.objectType === ObjectTypeEnum.apartments) {
+      return {
+        ...base,
+        objectType: landlordObject.objectType,
+        apartmentsInfo: landlordObject.apartmentsInfo as LandlordObjectApartmentsInfoInterface,
+      };
+    }
+
+    return {
+      ...base,
+      objectType: landlordObject.objectType,
+      roomBedInfo: landlordObject.roomBedInfo as LandlordObjectRoomBedInfoInterface,
     };
   }
 }

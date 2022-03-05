@@ -6,9 +6,11 @@ import { TaskEntity } from '../entities/Task.entity';
 import {
   TaskDataAdminApproveObjectInterface,
   TaskDataLandlordRenewNotificationInterface,
+  TaskDataNewObjectToRenterInterface,
 } from '../interfaces/TaskData.interface';
-import { TasksLandlordNotificationsWorkerService } from './tasks-landlord-notifications.worker.service';
-import { TasksAdminApproveObjectWorkerService } from './tasks-admin-approve-object.worker.service';
+import { TasksLandlordNotificationsWorkerService } from './actions/tasks-landlord-notifications.worker.service';
+import { TasksAdminApproveObjectWorkerService } from './actions/tasks-admin-approve-object.worker.service';
+import { TasksNewObjectRenterPushWorkerService } from './actions/tasks-new-object-renter-push-worker.service';
 
 @Injectable()
 export class TasksWorkerService {
@@ -19,6 +21,7 @@ export class TasksWorkerService {
     private tasksRepository: TasksRepository,
     private tasksLandlordNotificationsWorkerService: TasksLandlordNotificationsWorkerService,
     private tasksAdminApproveObjectWorkerService: TasksAdminApproveObjectWorkerService,
+    private tasksNewObjectRenterPushWorkerService: TasksNewObjectRenterPushWorkerService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -45,20 +48,42 @@ export class TasksWorkerService {
     await this.runTasksInQueues(waitingTasks, action);
   }
 
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  async newObjectsToRenterPushes(): Promise<void> {
+    const waitingTasks =
+      (await this.tasksRepository.getTodoNewObjectToRenter()) as TaskEntity<TaskDataNewObjectToRenterInterface>[];
+
+    const action = this.tasksNewObjectRenterPushWorkerService.processTasksObjectToRenterPush.bind(
+      this.tasksNewObjectRenterPushWorkerService,
+    );
+
+    await this.runTasksInQueues(waitingTasks, action, {
+      tasksNumber: 25,
+      throttle: 1000,
+    });
+  }
+
   private async runTasksInQueues(
     waitingTasks: TaskEntity<any>[],
     action: (chunks: TaskEntity<any>[]) => Promise<void>,
+    options?: {
+      throttle: number;
+      tasksNumber: number;
+    },
   ): Promise<void> {
-    const tasksByChunks = this.reduceTasksByChunks(waitingTasks);
+    const tasksByChunks = this.reduceTasksByChunks(waitingTasks, options?.tasksNumber);
     for (let i = 0; i < tasksByChunks.length; i++) {
       await action(tasksByChunks[i]);
+      if (options?.throttle) {
+        await new Promise(res => setTimeout(res, options.throttle));
+      }
     }
   }
 
-  private reduceTasksByChunks(tasks: TaskEntity[]): TaskEntity[][] {
+  private reduceTasksByChunks(tasks: TaskEntity[], chunkLength?: number): TaskEntity[][] {
     return tasks.reduce<TaskEntity[][]>(
       (acc, cur) => {
-        if (acc[acc.length - 1].length === this.CHUNK_LENGTH) {
+        if (acc[acc.length - 1].length === chunkLength ?? this.CHUNK_LENGTH) {
           acc.push([]);
         }
         acc[acc.length - 1].push(cur);

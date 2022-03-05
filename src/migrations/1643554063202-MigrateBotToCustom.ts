@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import format from 'pg-format';
-import { LandlordObjectDetailsInterface } from '../modules/api/landlord-objects/interfaces/landlord-object-details.interface';
+import { LandlordObjectDetails } from '../modules/api/landlord-objects/interfaces/landlord-object-details.interface';
 import { LandlordObjectRoomBedInfoInterface } from '../modules/api/landlord-objects/interfaces/landlord-object-room-bed-info.interface';
 import { RENTER_DEFAULT_PHOTO } from '../modules/bot/constants/imageUrls';
 
@@ -236,7 +236,8 @@ export class MigrateBotToCustom1643554063202 implements MigrationInterface {
             ADD COLUMN details jsonb NOT NULL DEFAULT '{}'::jsonb,
             ADD COLUMN apartments_info jsonb,
             ADD COLUMN room_bed_info jsonb,
-            ADD COLUMN is_admin boolean NOT NULL DEFAULT false
+            ADD COLUMN is_admin boolean NOT NULL DEFAULT false,
+            ADD COLUMN place_on_sites boolean NOT NULL DEFAULT false
     `);
 
     const objectUpdate = await Promise.all(
@@ -246,7 +247,7 @@ export class MigrateBotToCustom1643554063202 implements MigrationInterface {
         const location =
           o.area === 'Не имеет значения' || o.area === 'Центр (любая ветка)' ? 'Центр' : o.area;
         const roomsNumber = '-';
-        const details: LandlordObjectDetailsInterface = {
+        const details: LandlordObjectDetails = {
           couples: o.show_couples,
           animals: o.show_with_animals,
           kids: false,
@@ -314,7 +315,8 @@ export class MigrateBotToCustom1643554063202 implements MigrationInterface {
             ALTER COLUMN location DROP DEFAULT,
             ALTER COLUMN rooms_number DROP DEFAULT,
             ALTER COLUMN details DROP DEFAULT,
-            ALTER COLUMN is_admin DROP DEFAULT
+            ALTER COLUMN is_admin DROP DEFAULT,
+            ALTER COLUMN place_on_sites DROP DEFAULT
     `);
 
     const botId = String(process.env.TELEGRAM_BOT_ID);

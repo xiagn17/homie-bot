@@ -1,4 +1,4 @@
-export interface LandlordObjectDetailsInterface {
+export interface LandlordObjectDetails {
   couples: boolean;
   animals: boolean;
   kids: boolean;
@@ -8,3 +8,5 @@ export interface LandlordObjectDetailsInterface {
   conditioner: boolean;
   internet: boolean;
 }
+
+export type LandlordObjectDetailsKeys = keyof LandlordObjectDetails;

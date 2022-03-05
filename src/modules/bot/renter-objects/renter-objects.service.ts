@@ -7,6 +7,7 @@ import { RenterObjectsTextsService } from './texts/renter-objects-texts.service'
 import {
   GetContact,
   SendNextObject,
+  SendObjectContact,
   SendObjectRequest,
   SendRenterInfoNotExists,
 } from './interfaces/renter-objects.interface';
@@ -36,12 +37,11 @@ export class RenterObjectsService implements OnModuleInit {
     const session = await ctx.session;
     session.renter.viewedObjects = session.renter.viewedObjects + 1;
 
-    // todo не работает с другим ботом - заменить на id строку перед мержем в мастер
     try {
       await ctx.replyWithMediaGroup(
-        object.photoIds.map(_id => ({
+        object.photoIds.map(id => ({
           type: 'photo',
-          media: `AgACAgIAAxkBAAIDQmICqugicyc3yWpG8YzScKNXI_U3AAJWuTEbZJcQSPGFDfMUOIdJAQADAgADeAADIwQ`,
+          media: id,
         })),
       );
     } catch (e) {
@@ -49,7 +49,7 @@ export class RenterObjectsService implements OnModuleInit {
       await ctx.reply('К сожалению, фотографии не были загружены.');
     }
 
-    const text = this.renterObjectsTextsService.getPreviewObjectText(object);
+    const text = this.renterObjectsTextsService.getObjectText(object);
     const keyboard = this.renterObjectsKeyboardsService.getObjectsKeyboard(object.id, true);
     await ctx.reply(text, {
       reply_markup: keyboard,
@@ -66,17 +66,21 @@ export class RenterObjectsService implements OnModuleInit {
       return false;
     } else {
       const object = await this.renterObjectsApiService.getLandlordContact({ renterId: renter.id, objectId });
-      const contactsText = this.renterObjectsTextsService.getContactObjectText(object);
-      await ctx.reply(`${EMOJI_CELEBRATE}`);
-
-      const tgUsername =
-        !object.isAdmin && object.telegramUser.username ? object.telegramUser.username : undefined;
-      await ctx.reply(contactsText, {
-        reply_markup: this.renterObjectsKeyboardsService.getContactsKeyboard(objectId, true, tgUsername),
-      });
+      await this.sendObjectContact(object, ctx);
 
       return true;
     }
+  };
+
+  sendObjectContact: SendObjectContact = async (object, ctx) => {
+    const contactsText = this.renterObjectsTextsService.getContactObjectText(object);
+    await ctx.reply(`${EMOJI_CELEBRATE}`);
+
+    const tgUsername =
+      !object.isAdmin && object.telegramUser.username ? object.telegramUser.username : undefined;
+    await ctx.reply(contactsText, {
+      reply_markup: this.renterObjectsKeyboardsService.getContactsKeyboard(object.id, true, tgUsername),
+    });
   };
 
   sendRenterInfoNotExists: SendRenterInfoNotExists = async (objectId, ctx) => {

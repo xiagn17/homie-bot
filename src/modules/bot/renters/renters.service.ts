@@ -307,16 +307,17 @@ export class RentersService {
 
   sendRenterInfoMessage: SendRenterInfo = async ctx => {
     const { text, photo, exists } = await this.getRenterInfoWithText(ctx);
+    const keyboard = this.rentersKeyboardsService.renterInfoKeyboard;
     if (!exists) {
       await ctx.replyWithPhoto(photo, {
         caption: this.rentersTextsService.getFirstRenterInfoTip(text),
-        reply_markup: this.rentersKeyboardsService.renterInfoKeyboard,
+        reply_markup: keyboard,
       });
       return;
     }
     await ctx.replyWithPhoto(photo, {
       caption: text,
-      reply_markup: this.rentersKeyboardsService.renterInfoKeyboard,
+      reply_markup: keyboard,
     });
   };
 

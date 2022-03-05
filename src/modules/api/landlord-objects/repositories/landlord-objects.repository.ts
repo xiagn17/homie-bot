@@ -13,20 +13,6 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     return this.findOneOrFail(landlordObjectEntity.id);
   }
 
-  async getNextObjectIdToApprove(): Promise<string | undefined> {
-    const result: [{ landlordObjectId: string }] | [] = await this.query(`
-        SELECT
-            landlord_object_id as "landlordObjectId"
-        FROM landlord_objects
-        WHERE archived_at IS NULL
-          AND is_approved = false
-        ORDER BY created_at
-        LIMIT 1
-    `);
-
-    return result[0]?.landlordObjectId;
-  }
-
   async approveObject(id: string): Promise<void> {
     await this.createQueryBuilder()
       .update()
@@ -100,9 +86,9 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     },
   ): Promise<LandlordObjectEntity[]> {
     const objectsQuery = this.createQueryBuilder('object');
-    // todo !!! вернуть назад перед мержем в мастер
-    //       "(object.isApproved = true AND object.archivedAt IS NULL AND object.updated_at > now() - (interval '2 days'))",
-    objectsQuery.where('(object.isApproved = true AND object.archivedAt IS NULL)');
+    objectsQuery.where(
+      `(object.isApproved = true AND object.archivedAt IS NULL AND object.updated_at > now() - (interval '2 days'))`,
+    );
     objectsQuery.andWhere('object.preferredGender = ANY (:preferredGender)', {
       preferredGender: matchOptions.preferredGender,
     });

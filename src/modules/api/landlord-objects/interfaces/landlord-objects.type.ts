@@ -1,23 +1,36 @@
-import { TelegramUserResposeType, TelegramUserType } from '../../telegram-bot/interfaces/telegram-bot.types';
+import { TelegramUserType } from '../../telegram-bot/interfaces/telegram-bot.types';
 import { PreferredGenderEnumType } from '../entities/LandlordObject.entity';
-import { ObjectTypeEnum } from '../../renters/entities/RenterFilters.entity';
-import { LandlordObjectDetailsInterface } from './landlord-object-details.interface';
+import { LocationsEnum, ObjectTypeEnum } from '../../renters/entities/RenterFilters.entity';
+import { LandlordObjectDetails } from './landlord-object-details.interface';
 import { LandlordObjectRoomBedInfoInterface } from './landlord-object-room-bed-info.interface';
 import { LandlordObjectApartmentsInfoInterface } from './landlord-object-apartments-info.interface';
 
-export interface ApiLandlordObjectType extends TelegramUserType {
+export interface ApiLandlordObjectDraftBase<T = ObjectTypeEnum> extends TelegramUserType {
   name: string;
   phoneNumber: string;
-  address: string;
-  averageAge: number;
-  preferredGender: PreferredGenderEnumType;
-  showCouples: boolean;
-  showWithAnimals: boolean;
+  objectType: T;
   startArrivalDate: Date;
   price: string;
-  comment: string;
+  location: LocationsEnum;
+  address: string;
   photoIds: string[];
+  details: LandlordObjectDetails;
+  comment: string;
+  roomsNumber: string;
+
+  placeOnSites: boolean;
 }
+export type ApiLandlordObjectApartmentsDraft = ApiLandlordObjectDraftBase<ObjectTypeEnum.apartments> & {
+  preferredGender: PreferredGenderEnumType.NO_DIFFERENCE;
+  apartmentsInfo: LandlordObjectApartmentsInfoInterface;
+};
+export type ApiLandlordObjectRoomBedDraft = ApiLandlordObjectDraftBase<
+  ObjectTypeEnum.room | ObjectTypeEnum.bed
+> & {
+  preferredGender: PreferredGenderEnumType;
+  roomBedInfo: LandlordObjectRoomBedInfoInterface;
+};
+export type ApiLandlordObjectDraft = ApiLandlordObjectApartmentsDraft | ApiLandlordObjectRoomBedDraft;
 
 export interface ApiLandlordObjectControlType {
   id: string;
@@ -27,32 +40,26 @@ export interface ApiLandlordObjectControlType {
 export type ApiLandlordObjectRenewType = TelegramUserType;
 export type ApiLandlordObjectArchiveType = TelegramUserType;
 
-export interface ApiLandlordObjectFullResponseType extends TelegramUserResposeType {
-  id: string;
-  number: number;
-  name: string;
-  phoneNumber: string;
-  address: string;
-  preferredGender: PreferredGenderEnumType;
-  startArrivalDate: string;
-  price: string;
-  photoIds: string;
-  comment: string;
-}
-
-export interface ApiObjectPreviewInterface {
+export interface ApiObjectResponseBase<T = ObjectTypeEnum> {
   id: string;
   isAdmin: boolean;
+  isApproved: boolean;
   number: number;
-  objectType: ObjectTypeEnum;
-  roomsNumber: string;
-  details: LandlordObjectDetailsInterface;
-  roomBedInfo: LandlordObjectRoomBedInfoInterface | null;
-  apartmentsInfo: LandlordObjectApartmentsInfoInterface | null;
+  placeOnSites: boolean;
 
+  objectType: T;
+  roomsNumber: string;
+  details: LandlordObjectDetails;
   address: string;
   price: string;
   photoIds: string[];
   startArrivalDate: string;
   comment: string;
 }
+type ApiObjectApartmentsResponse = ApiObjectResponseBase<ObjectTypeEnum.apartments> & {
+  apartmentsInfo: LandlordObjectApartmentsInfoInterface;
+};
+type ApiObjectRoomBedResponse = ApiObjectResponseBase<ObjectTypeEnum.room | ObjectTypeEnum.bed> & {
+  roomBedInfo: LandlordObjectRoomBedInfoInterface;
+};
+export type ApiObjectResponse = ApiObjectApartmentsResponse | ApiObjectRoomBedResponse;

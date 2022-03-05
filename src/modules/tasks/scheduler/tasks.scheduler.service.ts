@@ -5,6 +5,7 @@ import { TaskTypeEnumInterface } from '../interfaces/TaskTypeEnum.interface';
 import {
   TaskDataAdminApproveObjectInterface,
   TaskDataLandlordRenewNotificationInterface,
+  TaskDataNewObjectToRenterInterface,
 } from '../interfaces/TaskData.interface';
 
 const ONE_DAY_TIMESTAMP = 24 * 60 * 60 * 1000;
@@ -42,5 +43,11 @@ export class TasksSchedulerService {
     await this.tasksRepository.delete({
       data: { renterId: data.renterId, landlordObjectId: data.landlordObjectId },
     });
+  }
+
+  async setPushNewObjectToRenter(data: TaskDataNewObjectToRenterInterface): Promise<void> {
+    const type = TaskTypeEnumInterface.new_object_pushes_to_renters;
+    const date = new Date();
+    await this.tasksRepository.createAndSave(type, date, data);
   }
 }

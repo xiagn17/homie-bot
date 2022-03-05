@@ -154,4 +154,19 @@ export class RentersTextsService {
     }
     return mainText;
   }
+
+  // todo заглушка
+  getSuccessfulPaidContactsText(contactsNumber: number): string {
+    return `Вы успешно приобрели ${contactsNumber} контактов, теперь вы можете "Получить контакт" под любым объектом`;
+  }
+
+  // todo заглушка
+  getSuccessfulPrivateHelperText(): string {
+    return `Вы успешно приобрели услугу Личного помощника, в скором времени с вами свяжутся. А чтобы не тянуть - уведомите нашего модератора сразу @homie_admin`;
+  }
+
+  // todo заглушка
+  getSuccessfulPrivateHelperToAdminText(username: string | null): string {
+    return `Купили Личного помощника.\nUsername - ${username ?? '???'}`;
+  }
 }

@@ -1,12 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { Connection, EntityManager } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoggerService } from '../../logger/logger.service';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { BusinessAnalyticsFieldsEnumType } from '../analytics/interfaces/analytics.type';
 import { ObjectMatchesForRenterService } from '../landlord-renter-matches/object-matches.for-renter.service';
-import { FlowXoService } from '../../flow-xo/flow-xo.service';
 import { TelegramUsersRepository } from '../telegram-bot/repositories/telegramUsers.repository';
+import {
+  BROADCAST_PAID_PRIVATE_HELPER_TO_ADMIN_EVENT_NAME,
+  BroadcastPaidPrivateHelperToAdminEvent,
+} from '../../bot/broadcast/events/broadcast-paid-private-helper-admin.event';
+import {
+  BROADCAST_PAID_PRIVATE_HELPER_TO_BUYER_EVENT_NAME,
+  BroadcastPaidPrivateHelperToBuyerEvent,
+} from '../../bot/broadcast/events/broadcast-paid-private-helper-buyer.event';
+import {
+  BROADCAST_PAID_CONTACTS_TO_BUYER_EVENT_NAME,
+  BroadcastPaidContactsToBuyerEvent,
+} from '../../bot/broadcast/events/broadcast-paid-contacts-buyer.event';
+import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { RentersRepository } from './repositories/renters.repository';
 import { RenterEntity } from './entities/Renter.entity';
 import { RentersSerializer } from './serializers/renters.serializer';
@@ -34,10 +47,12 @@ export class RentersService {
     private rentersSerializer: RentersSerializer,
     private renterInfosSerializer: RenterInfosSerializer,
     private renterFiltersSerializer: RenterFiltersSerializer,
-    private flowXoService: FlowXoService,
 
     private objectMatchesForRenterService: ObjectMatchesForRenterService,
     private analyticsService: AnalyticsService,
+    private readonly telegramBotService: TelegramBotService,
+
+    private readonly eventEmitter: EventEmitter2,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -159,10 +174,13 @@ export class RentersService {
     const telegramUser = await entityManager
       .getCustomRepository(TelegramUsersRepository)
       .findOneOrFail({ id: telegramUserId });
-    await this.flowXoService.notificationPaidContacts({
-      chatId: telegramUser.chatId,
-      botId: telegramUser.botId,
-    });
+    await this.eventEmitter.emitAsync(
+      BROADCAST_PAID_CONTACTS_TO_BUYER_EVENT_NAME,
+      new BroadcastPaidContactsToBuyerEvent({
+        contactsNumber: count,
+        chatId: telegramUser.chatId,
+      }),
+    );
   }
 
   public async addPrivateHelper(telegramUserId: string, entityManager: EntityManager): Promise<void> {
@@ -170,12 +188,20 @@ export class RentersService {
     const telegramUser = await entityManager
       .getCustomRepository(TelegramUsersRepository)
       .findOneOrFail({ id: telegramUserId });
-    console.log(telegramUser);
-    // todo push купившему + админу с никнеймом
-    // await this.flowXoService.notificationPaidContacts({
-    //   chatId: telegramUser.chatId,
-    //   botId: telegramUser.botId,
-    // });
+    await this.eventEmitter.emitAsync(
+      BROADCAST_PAID_PRIVATE_HELPER_TO_BUYER_EVENT_NAME,
+      new BroadcastPaidPrivateHelperToBuyerEvent({
+        chatId: telegramUser.chatId,
+      }),
+    );
+    const adminEntity = await this.telegramBotService.getAdmin();
+    await this.eventEmitter.emitAsync(
+      BROADCAST_PAID_PRIVATE_HELPER_TO_ADMIN_EVENT_NAME,
+      new BroadcastPaidPrivateHelperToAdminEvent({
+        username: telegramUser.username,
+        chatId: adminEntity.chatId,
+      }),
+    );
   }
 
   public async removeContact(renterId: string): Promise<void> {
