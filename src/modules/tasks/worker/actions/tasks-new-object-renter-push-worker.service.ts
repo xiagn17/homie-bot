@@ -43,7 +43,7 @@ export class TasksNewObjectRenterPushWorkerService {
           BROADCAST_NEW_OBJECT_TO_RENTER_EVENT_NAME,
           new BroadcastNewObjectToRenterPushEvent({
             object: object,
-            chatId: landlordObject.telegramUser.chatId,
+            chatId: taskData.chatId,
           }),
         );
 
