@@ -73,7 +73,7 @@ export class BotService implements OnModuleInit {
   }
 
   private setConfig(): void {
-    const throttler = apiThrottler({ out: { maxConcurrent: 1, minTime: 700 } });
+    const throttler = apiThrottler({ out: { maxConcurrent: 1, minTime: 800 } });
     this.bot.api.config.use(parseMode('HTML')).use(throttler);
   }
 
