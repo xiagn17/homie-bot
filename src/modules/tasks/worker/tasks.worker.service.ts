@@ -34,7 +34,10 @@ export class TasksWorkerService {
     const action = this.tasksLandlordNotificationsWorkerService.processTasksLandlordNotifications.bind(
       this.tasksLandlordNotificationsWorkerService,
     );
-    await this.runTasksInQueues(waitingTasks, action);
+    await this.runTasksInQueues(waitingTasks, action, {
+      tasksNumber: 25,
+      throttle: 1000,
+    });
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
@@ -45,7 +48,10 @@ export class TasksWorkerService {
     const action = this.tasksAdminApproveObjectWorkerService.processTasksAdminApproveObject.bind(
       this.tasksAdminApproveObjectWorkerService,
     );
-    await this.runTasksInQueues(waitingTasks, action);
+    await this.runTasksInQueues(waitingTasks, action, {
+      tasksNumber: 25,
+      throttle: 1000,
+    });
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
