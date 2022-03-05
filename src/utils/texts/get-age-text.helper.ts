@@ -1,4 +1,4 @@
-export function getRenterInfoAgeText(age: number): string {
+export function getAgeText(age: number): string {
   if (age === 11 || age === 12 || age === 13 || age === 14) {
     return `${age} лет`;
   }

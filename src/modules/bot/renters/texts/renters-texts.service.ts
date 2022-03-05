@@ -22,8 +22,8 @@ import {
 } from '../../constants/emoji';
 import { GENDER_TEXT_MAP, OBJECT_TYPE_TEXT_MAP } from '../../constants/texts';
 import { LOCATIONS_PHOTO } from '../../constants/imageUrls';
+import { getAgeText } from '../../../../utils/texts/get-age-text.helper';
 import { getLifestyleRow } from './helpers/renter-info-lifestyle.helper';
-import { getRenterInfoAgeText } from './helpers/renter-info-age.helper';
 
 @Injectable()
 export class RentersTextsService {
@@ -117,7 +117,7 @@ export class RentersTextsService {
     const defaultResponse = '???';
     const name = renterInfo?.name ?? defaultResponse;
     const age = renterInfo?.birthdayYear
-      ? getRenterInfoAgeText(new Date().getFullYear() - renterInfo.birthdayYear)
+      ? getAgeText(new Date().getFullYear() - renterInfo.birthdayYear)
       : `${defaultResponse} лет`;
     const gender = renterInfo?.gender ? GENDER_TEXT_MAP[renterInfo.gender] : defaultResponse;
     const socials = renterInfo?.socials ?? defaultResponse;

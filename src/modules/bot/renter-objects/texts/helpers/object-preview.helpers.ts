@@ -7,6 +7,7 @@ import {
   EMOJI_NEIGHBORHOODS,
   EMOJI_SUBWAY,
 } from '../../../constants/emoji';
+import { getAgeText } from '../../../../../utils/texts/get-age-text.helper';
 
 export function getSecondRow(object: ApiObjectResponse): string {
   if (object.objectType === ObjectTypeEnum.apartments) {
@@ -24,7 +25,7 @@ export function getFiveRow(object: ApiObjectResponse): string {
     return '\n';
   }
   const peopleNumber = object.roomBedInfo.livingPeopleNumber;
-  const age = object.roomBedInfo.averageAge;
+  const age = getAgeText(object.roomBedInfo.averageAge);
   return `${EMOJI_NEIGHBORHOODS} <i>Соседи</i>: ${peopleNumber} чел., сред. возр. ~${age} лет` + '\n';
 }
 
