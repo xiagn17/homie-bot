@@ -22,6 +22,7 @@ import { EMOJI_CELEBRATE } from '../constants/emoji';
 import { RenterObjectsTextsService } from '../renter-objects/texts/renter-objects-texts.service';
 import { RentersObjectsKeyboardsService } from '../renter-objects/keyboards/renters-objects-keyboards.service';
 import { LandlordsKeyboardsService } from '../landlords/keyboards/landlords-keyboards.service';
+import { RenterObjectsApiService } from '../renter-objects/api/renter-objects-api.service';
 
 interface ForwardOptions {
   chatId: string;
@@ -46,6 +47,7 @@ export class BroadcastService implements OnModuleInit {
 
     private readonly renterObjectsTextsService: RenterObjectsTextsService,
     private readonly renterObjectsKeyboardsService: RentersObjectsKeyboardsService,
+    private readonly renterObjectsApiService: RenterObjectsApiService,
   ) {}
 
   onModuleInit(): void {
@@ -143,7 +145,9 @@ export class BroadcastService implements OnModuleInit {
       await this.sendMessage(chatId, 'К сожалению, фотографии не были загружены.');
     }
 
-    const text = this.renterObjectsTextsService.getObjectText(object);
+    const renter = await this.renterObjectsApiService.getRenterEntityOfUser(chatId);
+    const ableContacts = renter.settings.ableContacts;
+    const text = this.renterObjectsTextsService.getObjectText(object, ableContacts);
     const keyboard = this.renterObjectsKeyboardsService.getObjectsKeyboard(object.id, true);
     await this.sendMessage(chatId, text, {
       reply_markup: keyboard,

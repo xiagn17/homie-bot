@@ -49,7 +49,9 @@ export class RenterObjectsService implements OnModuleInit {
       await ctx.reply('К сожалению, фотографии не были загружены.');
     }
 
-    const text = this.renterObjectsTextsService.getObjectText(object);
+    const renter = await this.renterObjectsApiService.getRenterEntityOfUser(chatId);
+    const ableContacts = renter.settings.ableContacts;
+    const text = this.renterObjectsTextsService.getObjectText(object, ableContacts);
     const keyboard = this.renterObjectsKeyboardsService.getObjectsKeyboard(object.id, true);
     await ctx.reply(text, {
       reply_markup: keyboard,

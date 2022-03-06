@@ -4,6 +4,7 @@ import { LandlordObjectEntity } from '../../../api/landlord-objects/entities/Lan
 import {
   EMOJI_GREEN_BOOM,
   EMOJI_HOLMS_WOMAN,
+  EMOJI_KEY,
   EMOJI_LIGHTNING,
   EMOJI_MEDAL,
   EMOJI_PLUS,
@@ -14,8 +15,9 @@ import { getDefaultObjectText } from './helpers/object-preview.helpers';
 
 @Injectable()
 export class RenterObjectsTextsService {
-  getObjectText(object: ApiObjectResponse): string {
-    return getDefaultObjectText(object);
+  getObjectText(object: ApiObjectResponse, ableContacts: number): string {
+    const contactsAble = `${EMOJI_KEY} <i>Доступно контактов:</i> ${ableContacts}`;
+    return getDefaultObjectText(object) + '\n' + contactsAble;
   }
 
   getObjectsEnded(): string {
