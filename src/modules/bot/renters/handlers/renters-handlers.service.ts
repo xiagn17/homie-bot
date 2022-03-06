@@ -340,7 +340,10 @@ export class RentersHandlersService implements OnModuleInit {
     const infoStepsData = session.renter.infoStepsData ?? {};
     if (action === 'submit' && infoStepsData.photo) {
       await this.rentersService.updateRenterPhoto(infoStepsData.photo, ctx);
-      return;
+
+      const session = await ctx.session;
+      session.renter.infoStepUpdate = false;
+      session.renter.infoStep = undefined;
     }
   };
 
