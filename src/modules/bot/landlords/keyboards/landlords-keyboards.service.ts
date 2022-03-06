@@ -176,7 +176,9 @@ export class LandlordsKeyboardsService {
   async getLandlordObjectFormPlaceOnSitesKeyboard(ctx: MyContext): Promise<InlineKeyboard> {
     const session = await ctx.session;
     const placeOnSites = !!session.landlord.objectStepsData.placeOnSites;
-    const text = placeOnSites ? `${EMOJI_CHECK} Согласен` : `${EMOJI_NOT_AGREE} Не согласен`;
+    const text = placeOnSites
+      ? `${EMOJI_CHECK} Согласен / Не согласен`
+      : `Согласен / ${EMOJI_NOT_AGREE} Не согласен`;
     return new InlineKeyboard()
       .text(text, `${KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX}change`)
       .row()
