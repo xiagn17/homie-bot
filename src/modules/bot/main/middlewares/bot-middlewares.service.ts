@@ -51,6 +51,7 @@ export class BotMiddlewaresService {
       this.rentersHandlersService.composer,
 
       this.landlordsHandlersService.objectFormRouter,
+      this.landlordsHandlersService.composer,
 
       this.rentersObjectsKeyboardsService.payContactsMenu,
       this.rentersObjectsHandlersService.composer,
