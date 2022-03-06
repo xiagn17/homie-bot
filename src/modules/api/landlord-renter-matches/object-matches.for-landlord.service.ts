@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoggerService } from '../../logger/logger.service';
-import { RenterEntity } from '../renters/entities/Renter.entity';
-import { RentersRepository } from '../renters/repositories/renters.repository';
+import { RenterIdsDataRaw, RentersRepository } from '../renters/repositories/renters.repository';
 import {
   LandlordObjectEntity,
   PreferredGenderEnumType,
@@ -50,7 +49,7 @@ export class ObjectMatchesForLandlordService {
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .createMatchesForObject(landlordObject, matchedRenters);
 
-    const matchedRentersIds = matchedRenters.map(r => r.id);
+    const matchedRentersIds = matchedRenters.map(r => r.renterId);
     await this.sendNewObjectToRenters(matchedRentersIds, landlordObject.id);
   }
 
@@ -138,7 +137,7 @@ export class ObjectMatchesForLandlordService {
   private async findMatchesForObject(
     landlordObject: LandlordObjectEntity,
     entityManager: EntityManager = this.entityManager,
-  ): Promise<RenterEntity[]> {
+  ): Promise<RenterIdsDataRaw[]> {
     let gender: GenderEnumType | null = null;
     if (landlordObject.preferredGender !== PreferredGenderEnumType.NO_DIFFERENCE) {
       gender =

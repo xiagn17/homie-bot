@@ -3,11 +3,11 @@ import { EntityManager } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoggerService } from '../../logger/logger.service';
 import { RenterEntity } from '../renters/entities/Renter.entity';
-import { LandlordObjectsRepository } from '../landlord-objects/repositories/landlord-objects.repository';
 import {
-  LandlordObjectEntity,
-  PreferredGenderEnumType,
-} from '../landlord-objects/entities/LandlordObject.entity';
+  LandlordObjectIdsDataRaw,
+  LandlordObjectsRepository,
+} from '../landlord-objects/repositories/landlord-objects.repository';
+import { PreferredGenderEnumType } from '../landlord-objects/entities/LandlordObject.entity';
 import { GenderEnumType } from '../renters/interfaces/renters.type';
 import { RentersRepository } from '../renters/repositories/renters.repository';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
@@ -99,6 +99,10 @@ export class ObjectMatchesForRenterService {
         renterStatusOfObjectDto.renterStatus,
       );
 
+    await this.tasksSchedulerService.removePushNewObjectToRenter({
+      landlordObjectId: renterStatusOfObjectDto.landlordObjectId,
+      chatId: renterStatusOfObjectDto.chatId,
+    });
     if (renterStatusOfObjectDto.renterStatus === MatchStatusEnumType.rejected) {
       return;
     }
@@ -132,7 +136,7 @@ export class ObjectMatchesForRenterService {
   private async findMatchesForRenter(
     renter: RenterEntity,
     entityManager: EntityManager = this.entityManager,
-  ): Promise<LandlordObjectEntity[]> {
+  ): Promise<LandlordObjectIdsDataRaw[]> {
     const preferredGender =
       renter.gender === GenderEnumType.MALE
         ? [PreferredGenderEnumType.MALE, PreferredGenderEnumType.NO_DIFFERENCE]

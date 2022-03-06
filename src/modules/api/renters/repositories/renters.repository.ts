@@ -9,6 +9,9 @@ interface RenterChatIdDataRaw {
   chatId: string;
   botId: string;
 }
+export interface RenterIdsDataRaw {
+  renterId: string;
+}
 
 @EntityRepository(RenterEntity)
 export class RentersRepository extends Repository<RenterEntity> {
@@ -62,27 +65,20 @@ export class RentersRepository extends Repository<RenterEntity> {
       objectType: ObjectTypeEnum;
       price: number;
     },
-  ): Promise<RenterEntity[]> {
-    const rentersQuery = this.createQueryBuilder('renter');
-
-    rentersQuery.innerJoin(
-      'renter.renterFiltersEntity',
-      'filters',
-      `((filters.priceRangeStart = NULL) OR (filters.priceRangeEnd = NULL) OR (filters.priceRangeStart <= :price AND filters.priceRangeEnd >= :price))
-       AND (coalesce(array_length(filters.locations, 1), 0) = 0 OR :location = ANY(filters.locations::location_type[]))
-       AND (coalesce(array_length(filters.object_type, 1), 0) = 0) OR :objectType = ANY(filters.object_type::object_type[])`,
-      {
-        price: matchOptions.price,
-        location: matchOptions.location,
-        objectType: matchOptions.objectType,
-      },
-    );
-    if (matchOptions.gender) {
-      rentersQuery.where('renter.gender = :gender', {
-        gender: matchOptions.gender,
-      });
-    }
-
-    return rentersQuery.getMany();
+  ): Promise<RenterIdsDataRaw[]> {
+    const genderWhere = matchOptions.gender
+      ? `
+        AND r.gender = '${matchOptions.gender}'
+        `
+      : '';
+    const query: string = `
+        SELECT r.renter_id as "renterId" FROM renters r
+            INNER JOIN renter_filters rf on r.renter_id = rf.renter_id
+        WHERE ((rf.price_range_start IS NULL) OR (rf.price_range_end IS NULL) OR (rf.price_range_start <= ${matchOptions.price} AND rf.price_range_end >= ${matchOptions.price}))
+          AND (coalesce(array_length(rf.locations::location_type[], 1), 0) = 0 OR '${matchOptions.location}' = ANY(rf.locations::location_type[]))
+          AND (coalesce(array_length(rf.object_type::object_type[], 1), 0) = 0 OR '${matchOptions.objectType}' = ANY(rf.object_type::object_type[]))
+        ${genderWhere}
+    `;
+    return this.query(query);
   }
 }

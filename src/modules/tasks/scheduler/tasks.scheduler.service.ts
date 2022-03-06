@@ -41,7 +41,8 @@ export class TasksSchedulerService {
 
   async removeAdminApproveObject(data: TaskDataAdminApproveObjectInterface): Promise<void> {
     await this.tasksRepository.delete({
-      data: { renterId: data.renterId, landlordObjectId: data.landlordObjectId },
+      type: TaskTypeEnumInterface.admin_approve,
+      data: data,
     });
   }
 
@@ -53,5 +54,12 @@ export class TasksSchedulerService {
     const type = TaskTypeEnumInterface.new_object_pushes_to_renters;
     const date = new Date();
     await this.tasksRepository.createAndSave(type, date, data);
+  }
+
+  async removePushNewObjectToRenter(data: TaskDataNewObjectToRenterInterface): Promise<void> {
+    await this.tasksRepository.delete({
+      type: TaskTypeEnumInterface.new_object_pushes_to_renters,
+      data: data,
+    });
   }
 }

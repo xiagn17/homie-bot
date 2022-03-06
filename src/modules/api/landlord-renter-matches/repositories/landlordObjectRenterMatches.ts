@@ -3,6 +3,8 @@ import { RenterEntity } from '../../renters/entities/Renter.entity';
 import { LandlordObjectRenterMatchEntity } from '../entities/LandlordObjectRenterMatch.entity';
 import { LandlordObjectEntity } from '../../landlord-objects/entities/LandlordObject.entity';
 import { MatchStatusEnumType } from '../interfaces/landlord-renter-matches.types';
+import { RenterIdsDataRaw } from '../../renters/repositories/renters.repository';
+import { LandlordObjectIdsDataRaw } from '../../landlord-objects/repositories/landlord-objects.repository';
 
 interface NextLandlordObjectRawDataType {
   landlordObjectId: string;
@@ -12,10 +14,10 @@ interface NextLandlordObjectRawDataType {
 export class LandlordObjectRenterMatchesRepository extends Repository<LandlordObjectRenterMatchEntity> {
   createMatchesForObject(
     landlordObject: LandlordObjectEntity,
-    renters: RenterEntity[],
+    renters: RenterIdsDataRaw[],
   ): Promise<InsertResult> {
     const insertValues: DeepPartial<LandlordObjectRenterMatchEntity>[] = renters.map(r => ({
-      renterId: r.id,
+      renterId: r.renterId,
       landlordObjectId: landlordObject.id,
       renterStatus: MatchStatusEnumType.processing,
       paid: false,
@@ -28,11 +30,11 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
 
   createMatchesForRenter(
     renter: RenterEntity,
-    landlordObjects: LandlordObjectEntity[],
+    landlordObjects: LandlordObjectIdsDataRaw[],
   ): Promise<InsertResult> {
     const insertValues: DeepPartial<LandlordObjectRenterMatchEntity>[] = landlordObjects.map(lo => ({
       renterId: renter.id,
-      landlordObjectId: lo.id,
+      landlordObjectId: lo.landlordObjectId,
       renterStatus: MatchStatusEnumType.processing,
       paid: false,
       landlordStatus: null,

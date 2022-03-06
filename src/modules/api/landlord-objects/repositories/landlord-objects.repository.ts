@@ -3,6 +3,10 @@ import { LandlordObjectEntity, PreferredGenderEnumType } from '../entities/Landl
 import { RenterEntity } from '../../renters/entities/Renter.entity';
 import { LocationsEnum, ObjectTypeEnum } from '../../renters/entities/RenterFilters.entity';
 
+export interface LandlordObjectIdsDataRaw {
+  landlordObjectId: string;
+}
+
 @EntityRepository(LandlordObjectEntity)
 export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> {
   async createWithRelations(
@@ -84,41 +88,42 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       priceRange: [number, number] | null;
       excludedObjectIds: string[];
     },
-  ): Promise<LandlordObjectEntity[]> {
-    const objectsQuery = this.createQueryBuilder('object');
-    objectsQuery.where(
-      `(object.isApproved = true AND object.archivedAt IS NULL AND object.updated_at > now() - (interval '2 days'))`,
-    );
-    objectsQuery.andWhere('object.preferredGender = ANY (:preferredGender)', {
-      preferredGender: matchOptions.preferredGender,
-    });
+  ): Promise<LandlordObjectIdsDataRaw[]> {
+    const preferredGenderString = matchOptions.preferredGender.join(', ');
+    let query: string = `
+        SELECT o.landlord_object_id as "landlordObjectId" FROM landlord_objects o
+        WHERE (o.is_approved = true AND o.archived_at IS NULL AND o.updated_at > now() - (interval '2 days'))
+            AND o.preferred_gender = ANY ('{${preferredGenderString}}')
+    `;
 
     if (matchOptions.excludedObjectIds.length) {
-      objectsQuery.andWhere('(object.id NOT IN (:...excludedObjectIds))', {
-        excludedObjectIds: matchOptions.excludedObjectIds,
-      });
+      const excludedObjectIdsString = matchOptions.excludedObjectIds.join(`', '`);
+      const text = `
+          AND o.landlord_object_id NOT IN ('${excludedObjectIdsString}')
+      `;
+      query += text;
     }
     if (matchOptions.priceRange) {
-      objectsQuery.andWhere(
-        '(object.price::int >= :priceRangeStart AND object.price::int <= :priceRangeEnd)',
-        {
-          priceRangeStart: matchOptions.priceRange[0],
-          priceRangeEnd: matchOptions.priceRange[1],
-        },
-      );
+      const text = `
+          AND (o.price::int >= ${matchOptions.priceRange[0]} AND o.price::int <= ${matchOptions.priceRange[1]})
+      `;
+      query += text;
     }
-
     if (matchOptions.objectTypes?.length) {
-      objectsQuery.andWhere('object.objectType = ANY (:types)', {
-        types: matchOptions.objectTypes,
-      });
+      const objectTypesString = matchOptions.objectTypes.join(', ');
+      const text = `
+          AND o.object_type = ANY ('{${objectTypesString}}')
+      `;
+      query += text;
     }
     if (matchOptions.locations?.length) {
-      objectsQuery.andWhere('object.location = ANY (:locations)', {
-        locations: matchOptions.locations,
-      });
+      const locationsString = matchOptions.locations.join(', ');
+      const text = `
+          AND o.location = ANY ('{${locationsString}}')
+      `;
+      query += text;
     }
 
-    return objectsQuery.getMany();
+    return this.query(query);
   }
 }
