@@ -39,6 +39,7 @@ import {
   KEYBOARD_OBJECT_FORM_PREFERRED_GENDER_PREFIX,
   KEYBOARD_OBJECT_FORM_ROOM_BED_PEOPLE_NUMBER_PREFIX,
   KEYBOARD_OBJECT_FORM_ROOMS_NUMBER_PREFIX,
+  KEYBOARD_OBJECT_FORM_START_ARRIVAL_DATE_PREFIX,
   KEYBOARD_RENEW_OBJECT_PREFIX,
   LandlordsKeyboardsService,
 } from '../keyboards/landlords-keyboards.service';
@@ -197,7 +198,15 @@ export class LandlordsHandlersService {
   };
 
   private onObjectFormStartArrivalDate: HandlerObjectFormStartArrivalDateQuestion = async ctx => {
-    const startArrivalDate = getDateFromString(ctx.message?.text);
+    const isNowFromButton = getDataFromCallbackQuery<'now'>(
+      KEYBOARD_OBJECT_FORM_START_ARRIVAL_DATE_PREFIX,
+      ctx.callbackQuery?.data,
+    );
+    const nowDate = new Date().toLocaleDateString();
+    const startArrivalDate = isNowFromButton
+      ? getDateFromString(nowDate)
+      : getDateFromString(ctx.message?.text);
+
     if (!startArrivalDate) {
       await this.landlordsService.sendObjectFormStartArrivalDateQuestion(ctx);
       return;

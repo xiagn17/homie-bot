@@ -36,6 +36,7 @@ export const KEYBOARD_OBJECT_FORM_ROOMS_NUMBER_PREFIX = 'object_form_rooms_numbe
 export const KEYBOARD_OBJECT_FORM_ROOM_BED_PEOPLE_NUMBER_PREFIX = 'object_form_people_number_';
 export const KEYBOARD_OBJECT_FORM_PREFERRED_GENDER_PREFIX = 'object_form_preferred_gender_';
 export const KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX = 'object_form_place_on_sites_';
+export const KEYBOARD_OBJECT_FORM_START_ARRIVAL_DATE_PREFIX = 'kb_objectFormStartDate_';
 
 export const KEYBOARD_RENEW_OBJECT_PREFIX = 'kb_renewObject_';
 
@@ -183,6 +184,13 @@ export class LandlordsKeyboardsService {
       .text(text, `${KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX}change`)
       .row()
       .text(`Подтвердить`, `${KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX}submit`);
+  }
+
+  getLandlordObjectFormStartArrivalDateKeyboard(): InlineKeyboard {
+    return new InlineKeyboard().text(
+      'В ближайшее время',
+      `${KEYBOARD_OBJECT_FORM_START_ARRIVAL_DATE_PREFIX}now`,
+    );
   }
 
   getObjectRenewKeyboard(objectId: string): InlineKeyboard {

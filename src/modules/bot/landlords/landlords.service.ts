@@ -81,7 +81,9 @@ export class LandlordsService {
   public sendObjectFormStartArrivalDateQuestion: SendObjectFormStartArrivalDateQuestion = async ctx => {
     const session = await ctx.session;
     session.landlord.objectStep = 'startArrivalDate';
-    await ctx.reply(this.landlordsTextsService.getObjectFormStartArrivalDateText());
+    await ctx.reply(this.landlordsTextsService.getObjectFormStartArrivalDateText(), {
+      reply_markup: this.landlordsKeyboardsService.getLandlordObjectFormStartArrivalDateKeyboard(),
+    });
   };
 
   public sendObjectFormPriceQuestion: SendObjectFormPriceQuestion = async ctx => {
