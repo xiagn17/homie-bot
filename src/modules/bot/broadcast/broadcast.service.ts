@@ -79,6 +79,16 @@ export class BroadcastService implements OnModuleInit {
     });
   }
 
+  async sendInterestedRenterToLandlord(
+    renterInfo: ApiRenterFullInfo,
+    { chatId }: ForwardOptions,
+  ): Promise<void> {
+    const text = this.rentersTextsService.getRenterInfoInterestedText(renterInfo);
+    await this.sendPhoto(chatId, renterInfo.photo, {
+      caption: text,
+    });
+  }
+
   async sendLandlordContactsToApprovedRenter(
     object: LandlordObjectEntity,
     { chatId }: ForwardOptions,

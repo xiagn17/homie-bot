@@ -19,6 +19,7 @@ import {
   EMOJI_PHOTOS,
   EMOJI_PHOTOS_LIMIT,
   EMOJI_PROFESSION,
+  EMOJI_STAR,
 } from '../../constants/emoji';
 import { GENDER_TEXT_MAP, OBJECT_TYPE_TEXT_MAP } from '../../constants/texts';
 import { LOCATIONS_PHOTO } from '../../constants/imageUrls';
@@ -138,6 +139,12 @@ export class RentersTextsService {
       `\n` +
       `${EMOJI_GLOBUS} <b>telegram:</b> ${username}\n`
     );
+  }
+
+  getRenterInfoInterestedText(renterInfo?: ApiRenterFullInfo): string {
+    const mainText = this.getRenterInfoText(renterInfo);
+
+    return `${EMOJI_STAR} <b>ОЧЕНЬ ЗАИНТЕРЕСОВАН (купил контакт)</b>` + '\n\n' + mainText;
   }
 
   getFirstRenterInfoTip(text: string): string {

@@ -129,6 +129,15 @@ export class RentersService {
     return renterInfo && this.renterInfosSerializer.toFullResponse(renterInfo, renter);
   }
 
+  async getRenterInfoById(renterId: string): Promise<ApiRenterFullInfo | undefined> {
+    const renter = await this.connection.getCustomRepository(RentersRepository).getFullRenter(renterId);
+    const renterResponse = this.rentersSerializer.toFullResponse(renter);
+    const renterInfo = await this.connection
+      .getCustomRepository(RenterInfosRepository)
+      .findOne({ renterId: renter.id });
+    return renterInfo && this.renterInfosSerializer.toFullResponse(renterInfo, renterResponse);
+  }
+
   async updateRenterFilters(renterFiltersDto: UpdateRenterFiltersDto): Promise<ApiRenterFilters> {
     return this.connection.transaction(async entityManager => {
       await entityManager

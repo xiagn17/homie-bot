@@ -16,6 +16,10 @@ import {
   BROADCAST_LANDLORD_CONTACTS_TO_APPROVED_RENTER_EVENT_NAME,
   BroadcastLandlordContactsToApprovedRenterEvent,
 } from '../../bot/broadcast/events/broadcast-landlord-contacts-approved-renter.event';
+import {
+  BROADCAST_INTERESTED_RENTER_TO_LANDLORD_EVENT_NAME,
+  BroadcastInterestedRenterToLandlordEvent,
+} from '../../bot/broadcast/events/broadcast-interested-renter-landlord.event';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import {
   ApiChangeLandlordStatusOfObject,
@@ -111,6 +115,17 @@ export class ObjectMatchesForLandlordService {
         renterId: renterId,
         landlordObjectId: landlordObjectId,
       });
+    } else {
+      const renterInfo = await this.rentersService.getRenterInfoById(renterId);
+      if (renterInfo) {
+        await this.eventEmitter.emitAsync(
+          BROADCAST_INTERESTED_RENTER_TO_LANDLORD_EVENT_NAME,
+          new BroadcastInterestedRenterToLandlordEvent({
+            renterInfo: renterInfo,
+            chatId: landlordObject.telegramUser.chatId,
+          }),
+        );
+      }
     }
 
     // todo push отправлять лендлорду "о высокой заинтересованности" сообщение
