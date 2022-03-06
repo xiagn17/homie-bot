@@ -13,6 +13,11 @@ import {
 import { BotKeyboardsService, KEYBOARD_USER_TYPE_PREFIX } from '../keyboards/bot-keyboards.service';
 import { getDataFromCallbackQuery } from '../../helpers/getDataFromCallbackQuery';
 import { TelegramUserType } from '../../session-storage/interfaces/session-storage.interface';
+import { MainMenuService } from '../../main-menu/main-menu.service';
+import {
+  clearTemporaryPropertiesLandlordHelper,
+  clearTemporaryPropertiesRenterHelper,
+} from '../../session-storage/helpers/clear-temp-properties.helper';
 
 const ROUTE_USER_TYPE = 'route-userType';
 @Injectable()
@@ -29,6 +34,8 @@ export class BotHandlersService implements OnModuleInit {
 
     private readonly botKeyboardsService: BotKeyboardsService,
     private readonly botApiService: BotApiService,
+
+    private readonly mainMenuService: MainMenuService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -44,7 +51,6 @@ export class BotHandlersService implements OnModuleInit {
       return;
     }
 
-    // todo text
     const text =
       '💢 Уверен, что хочешь поменять свой статус?\n' + 'После этого действия все мои настройки изменятся.';
     await ctx.editMessageText(text, {
@@ -55,11 +61,17 @@ export class BotHandlersService implements OnModuleInit {
   public onFinalUserTypeHandler: HandlerOnUserType = async (type, ctx, next) => {
     ctx.menu.close();
     await this.chooseUserType(type, ctx, next);
+    await this.mainMenuService.getMenu(ctx);
   };
 
   public chooseUserType: ChooseUserType = async (type, ctx, next) => {
     const session = await ctx.session;
     session.type = type;
+    if (type === TelegramUserType.renter) {
+      clearTemporaryPropertiesLandlordHelper(session);
+    } else if (type === TelegramUserType.landlord) {
+      clearTemporaryPropertiesRenterHelper(session);
+    }
 
     await next();
   };
