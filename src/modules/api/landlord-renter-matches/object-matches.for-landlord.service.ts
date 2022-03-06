@@ -51,17 +51,7 @@ export class ObjectMatchesForLandlordService {
       .createMatchesForObject(landlordObject, matchedRenters);
 
     const matchedRentersIds = matchedRenters.map(r => r.id);
-    const countOfUnprocessedObjectsByRenters = await this.entityManager
-      .getCustomRepository(LandlordObjectRenterMatchesRepository)
-      .getCountOfUnprocessedObjectsByRenters(matchedRentersIds);
-    const renterIdsToSendNotification = countOfUnprocessedObjectsByRenters
-      .filter(obj => obj.count === 1)
-      .map(obj => obj.renterId);
-
-    if (!renterIdsToSendNotification.length) {
-      return;
-    }
-    await this.sendPushObjectToRenters(renterIdsToSendNotification, landlordObject.id);
+    await this.sendNewObjectToRenters(matchedRentersIds, landlordObject.id);
   }
 
   public async changeLandlordStatusOfObject(
@@ -128,12 +118,11 @@ export class ObjectMatchesForLandlordService {
       }
     }
 
-    // todo push отправлять лендлорду "о высокой заинтересованности" сообщение
     await this.rentersService.removeContact(renterId);
     return landlordObject;
   }
 
-  private async sendPushObjectToRenters(renterIds: string[], landlordObjectId: string): Promise<void> {
+  private async sendNewObjectToRenters(renterIds: string[], landlordObjectId: string): Promise<void> {
     const rentersDataForSending = await this.entityManager
       .getCustomRepository(RentersRepository)
       .getRentersChatId(renterIds);

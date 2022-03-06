@@ -46,6 +46,10 @@ export class TasksSchedulerService {
   }
 
   async setPushNewObjectToRenter(data: TaskDataNewObjectToRenterInterface): Promise<void> {
+    const isExistsOtherObjectPush = await this.tasksRepository.isExistsOtherObjectPushToRenter(data.chatId);
+    if (isExistsOtherObjectPush) {
+      return;
+    }
     const type = TaskTypeEnumInterface.new_object_pushes_to_renters;
     const date = new Date();
     await this.tasksRepository.createAndSave(type, date, data);

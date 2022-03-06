@@ -4,11 +4,6 @@ import { LandlordObjectRenterMatchEntity } from '../entities/LandlordObjectRente
 import { LandlordObjectEntity } from '../../landlord-objects/entities/LandlordObject.entity';
 import { MatchStatusEnumType } from '../interfaces/landlord-renter-matches.types';
 
-interface CountOfUnprocessedObjectsByRentersRawDataType {
-  renterId: string;
-  count: number;
-}
-
 interface NextLandlordObjectRawDataType {
   landlordObjectId: string;
 }
@@ -45,21 +40,6 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
     }));
 
     return this.createQueryBuilder().insert().values(insertValues).execute();
-  }
-
-  getCountOfUnprocessedObjectsByRenters(
-    renterIds: string[],
-  ): Promise<CountOfUnprocessedObjectsByRentersRawDataType[]> {
-    const renterIdsString: string = renterIds.join("', '");
-    return this.query(
-      `
-        SELECT renter_id as "renterId", COUNT(match_id)::integer AS "count" FROM landlord_object_renter_matches
-        WHERE renter_id IN ('${renterIdsString}')
-        AND renter_status = '${MatchStatusEnumType.processing}'
-        AND paid = false
-        GROUP BY renter_id;
-    `,
-    ) as Promise<CountOfUnprocessedObjectsByRentersRawDataType[]>;
   }
 
   async deleteUnprocessedObjectsForRenter(renterId: string): Promise<void> {
