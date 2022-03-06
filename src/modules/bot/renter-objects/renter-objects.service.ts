@@ -56,6 +56,11 @@ export class RenterObjectsService implements OnModuleInit {
     await ctx.reply(text, {
       reply_markup: keyboard,
     });
+
+    await this.renterObjectsApiService.markObjectAsNotInterested({
+      objectId: object.id,
+      chatId: chatId,
+    });
   };
 
   getPaidContact: GetContact = async (objectId, ctx) => {

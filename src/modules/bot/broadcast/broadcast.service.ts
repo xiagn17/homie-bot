@@ -149,9 +149,18 @@ export class BroadcastService implements OnModuleInit {
     const ableContacts = renter.settings.ableContacts;
     const text = this.renterObjectsTextsService.getObjectText(object, ableContacts);
     const keyboard = this.renterObjectsKeyboardsService.getObjectsKeyboard(object.id, true);
-    await this.sendMessage(chatId, text, {
-      reply_markup: keyboard,
-    });
+    await this.sendMessage(
+      chatId,
+      text,
+      {
+        reply_markup: keyboard,
+      },
+      undefined,
+      this.renterObjectsApiService.markObjectAsNotInterested.bind(this.renterObjectsApiService, {
+        objectId: object.id,
+        chatId: chatId,
+      }),
+    );
   }
 
   private async sendMessage(
@@ -159,9 +168,14 @@ export class BroadcastService implements OnModuleInit {
     text: string,
     other?: Other<RawApi, 'sendMessage', 'text'>,
     signal?: AbortSignal,
+    onSuccess?: () => Promise<void>,
   ): Promise<import('@grammyjs/types/message').Message.TextMessage | void> {
     try {
-      return await this.api.sendMessage(chat_id, text, other, signal);
+      const msg = await this.api.sendMessage(chat_id, text, other, signal);
+      if (onSuccess) {
+        await onSuccess();
+      }
+      return msg;
     } catch (e) {
       console.log(
         e?.error_code === 403 ? `user ${chat_id} blocked the bot` : 'unknown error while sending message',

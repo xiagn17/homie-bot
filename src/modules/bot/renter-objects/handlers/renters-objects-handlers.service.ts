@@ -90,9 +90,6 @@ export class RentersObjectsHandlersService implements OnModuleInit {
       reply_markup: this.renterObjectsKeyboardsService.getObjectsKeyboard(objectId, false),
     });
 
-    const chatId = ctx.from?.id?.toString() as string;
-    await this.renterObjectsApiService.markObjectAsNotInterested({ objectId, chatId });
-
     await this.renterObjectsService.sendNextObject(ctx);
   };
 
