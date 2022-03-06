@@ -1,5 +1,4 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { InlineKeyboardButton } from '@grammyjs/types';
 import { EMOJI_CELEBRATE } from '../constants/emoji';
 import { RentersObjectsKeyboardsService } from './keyboards/renters-objects-keyboards.service';
 import { RenterObjectsApiService } from './api/renter-objects-api.service';
@@ -100,11 +99,6 @@ export class RenterObjectsService implements OnModuleInit {
     const chatId = ctx.from?.id.toString() as string;
     await this.renterObjectsApiService.markObjectAsInterested({ objectId: objectId, chatId: chatId });
     const isAdminObject = await this.renterObjectsApiService.getIsObjectAdmin(objectId);
-
-    const keyboardToObjectMessage = ctx.msg?.reply_markup?.inline_keyboard.filter(k =>
-      k[0].text.includes('Получить контакт'),
-    ) as InlineKeyboardButton[][];
-    await ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: keyboardToObjectMessage } });
 
     const text = isAdminObject
       ? this.renterObjectsTextsService.getSendRequestAdminObjectText()

@@ -34,7 +34,7 @@ export interface RenterFilledInfoStepsData extends RenterInfoStepsData {
   photo: string;
 }
 export type RenterInfoStep = keyof RenterInfoStepsData;
-export type RenterInfoFillFrom = 'object' | 'menu';
+export type RenterInfoFillFrom = 'menu' | string;
 export interface RenterSessionData {
   infoStepsData: RenterInfoStepsData;
   infoStep?: RenterInfoStep;

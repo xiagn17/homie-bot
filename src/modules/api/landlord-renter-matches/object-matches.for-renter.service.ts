@@ -91,6 +91,16 @@ export class ObjectMatchesForRenterService {
     const renter = await this.entityManager
       .getCustomRepository(RentersRepository)
       .getByChatId(renterStatusOfObjectDto.chatId);
+    const match = await this.entityManager
+      .getCustomRepository(LandlordObjectRenterMatchesRepository)
+      .findOne({
+        renterId: renter.id,
+        landlordObjectId: renterStatusOfObjectDto.landlordObjectId,
+      });
+    if (match?.renterStatus === MatchStatusEnumType.resolved) {
+      return;
+    }
+
     await this.entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .changeRenterStatus(

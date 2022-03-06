@@ -5,6 +5,7 @@ import { GenderEnumType } from '../../../api/renters/interfaces/renters.type';
 import {
   EMOJI_ATTENTION,
   EMOJI_CAT,
+  EMOJI_CELEBRATE,
   EMOJI_COMMENT,
   EMOJI_FILTER,
   EMOJI_GENDER,
@@ -175,5 +176,9 @@ export class RentersTextsService {
   // todo заглушка
   getSuccessfulPrivateHelperToAdminText(username: string | null): string {
     return `Купили Личного помощника.\nUsername - ${username ?? '???'}`;
+  }
+
+  getSuccessfulFilledInfoAfterObjectRequestText(): string {
+    return `${EMOJI_CELEBRATE} <b>Супер!</b> Ты заполнил анкету, отправляю твой запрос по объекту...`;
   }
 }

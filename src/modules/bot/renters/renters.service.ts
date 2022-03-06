@@ -232,9 +232,14 @@ export class RentersService {
       return;
     }
 
-    if (session.renter.infoFillFrom === 'object') {
-      await this.renterObjectsService.sendNextObject(ctx);
-    } else if (session.renter.infoFillFrom === 'menu') {
+    const infoFillFrom =
+      session.renter.infoFillFrom === 'menu' ? 'menu' : session.renter.infoFillFrom?.split('_')[0];
+    if (infoFillFrom === 'object') {
+      const objectId = session.renter.infoFillFrom?.split('_')[1] as string;
+
+      await ctx.reply(this.rentersTextsService.getSuccessfulFilledInfoAfterObjectRequestText());
+      setTimeout(() => this.renterObjectsService.sendObjectRequest(objectId, ctx), 1000);
+    } else if (infoFillFrom === 'menu') {
       await this.sendRenterInfoMessage(ctx);
     }
   };

@@ -84,7 +84,7 @@ export class RentersHandlersService implements OnModuleInit {
 
     this.composer.callbackQuery(/^info_fill_/, async ctx => {
       const data = ctx.callbackQuery.data;
-      const from = data.split('info_fill_')[1] as RenterInfoFillFrom;
+      const from: RenterInfoFillFrom = data.split('info_fill_')[1];
       await this.onFillInfoHandler(from, ctx);
       await ctx.answerCallbackQuery();
     });

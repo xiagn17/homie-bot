@@ -69,6 +69,11 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     }
 
     await this.renterObjectsService.sendObjectRequest(objectId, ctx);
+
+    const keyboardToObjectMessage = ctx.msg?.reply_markup?.inline_keyboard.filter(k =>
+      k[0].text.includes('Получить контакт'),
+    ) as InlineKeyboardButton[][];
+    await ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: keyboardToObjectMessage } });
   };
 
   private onGetContactHandler: HandlerGetContact = async (objectId, ctx) => {

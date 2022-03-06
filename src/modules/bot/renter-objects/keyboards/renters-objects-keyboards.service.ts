@@ -23,7 +23,7 @@ export class RentersObjectsKeyboardsService {
 
   getNoInfoKeyboard(objectId: string): InlineKeyboard {
     return new InlineKeyboard()
-      .text(`${EMOJI_COMMENT} Заполнить`, `info_fill_object`)
+      .text(`${EMOJI_COMMENT} Заполнить`, `info_fill_object_${objectId}`)
       .row()
       .text(`${EMOJI_KEY} Получить контакт`, `after_contact_${objectId}`);
   }
