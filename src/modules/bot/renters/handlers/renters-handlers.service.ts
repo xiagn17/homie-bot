@@ -434,6 +434,15 @@ export class RentersHandlersService implements OnModuleInit {
 
   onCallbackLifestyleKeyboard: HandlerOnLifestyle = async (changedField, ctx) => {
     const session = await ctx.session;
+    const infoStepsData = session.renter.infoStepsData ?? {};
+    infoStepsData.lifestyle = infoStepsData.lifestyle ?? {
+      dogCat: false,
+      smallAnimals: false,
+      dontSmoke: false,
+      dontDrink: false,
+      kids: false,
+      workRemotely: false,
+    };
 
     if (changedField === 'create') {
       return this.rentersService.sendProfessionQuestion(ctx);
@@ -445,15 +454,7 @@ export class RentersHandlersService implements OnModuleInit {
       session.renter.infoStepUpdate = false;
       return this.rentersService.updateRenterLifestyle(ctx);
     }
-    const infoStepsData = session.renter.infoStepsData ?? {};
-    infoStepsData.lifestyle = infoStepsData.lifestyle ?? {
-      dogCat: false,
-      smallAnimals: false,
-      dontSmoke: false,
-      dontDrink: false,
-      kids: false,
-      workRemotely: false,
-    };
+
     infoStepsData.lifestyle[changedField] = !infoStepsData.lifestyle[changedField];
 
     await ctx.editMessageReplyMarkup({
