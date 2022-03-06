@@ -67,11 +67,8 @@ export class BotHandlersService implements OnModuleInit {
   public chooseUserType: ChooseUserType = async (type, ctx, next) => {
     const session = await ctx.session;
     session.type = type;
-    if (type === TelegramUserType.renter) {
-      clearTemporaryPropertiesLandlordHelper(session);
-    } else if (type === TelegramUserType.landlord) {
-      clearTemporaryPropertiesRenterHelper(session);
-    }
+    clearTemporaryPropertiesLandlordHelper(session);
+    clearTemporaryPropertiesRenterHelper(session);
 
     await next();
   };
