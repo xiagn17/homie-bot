@@ -64,21 +64,29 @@ export class RentersRepository extends Repository<RenterEntity> {
       location: LocationsEnum;
       objectType: ObjectTypeEnum;
       price: number;
+      excludedRenterIds: string[];
     },
   ): Promise<RenterIdsDataRaw[]> {
-    const genderWhere = matchOptions.gender
-      ? `
-        AND r.gender = '${matchOptions.gender}'
-        `
-      : '';
-    const query: string = `
+    let query: string = `
         SELECT r.renter_id as "renterId" FROM renters r
             INNER JOIN renter_filters rf on r.renter_id = rf.renter_id
         WHERE ((rf.price_range_start IS NULL) OR (rf.price_range_end IS NULL) OR (rf.price_range_start <= ${matchOptions.price} AND rf.price_range_end >= ${matchOptions.price}))
           AND (coalesce(array_length(rf.locations::location_type[], 1), 0) = 0 OR '${matchOptions.location}' = ANY(rf.locations::location_type[]))
           AND (coalesce(array_length(rf.object_type::object_type[], 1), 0) = 0 OR '${matchOptions.objectType}' = ANY(rf.object_type::object_type[]))
-        ${genderWhere}
     `;
+    if (matchOptions.gender) {
+      const text = `
+          AND r.gender = '${matchOptions.gender}'
+      `;
+      query += text;
+    }
+    if (matchOptions.excludedRenterIds.length) {
+      const excludedObjectIdsString = matchOptions.excludedRenterIds.join(`', '`);
+      const text = `
+          AND r.renter_id NOT IN ('${excludedObjectIdsString}')
+      `;
+      query += text;
+    }
     return this.query(query);
   }
 }

@@ -64,6 +64,20 @@ export class TasksRepository extends Repository<TaskEntity> {
     return result[0].exists;
   }
 
+  async removeObjectTasksAfterStop(landlordObjectId: string): Promise<void> {
+    const types = [
+      TaskTypeEnumInterface.new_object_pushes_to_renters,
+      TaskTypeEnumInterface.landlord_notification,
+    ];
+    const query = `
+        DELETE FROM tasks
+        WHERE data ->> 'landlordObjectId' = '${landlordObjectId}'
+        AND completed_at IS NULL
+        AND (type = '${types[0]}' OR type = '${types[1]}')
+    `;
+    await this.query(query);
+  }
+
   private getTodoQuery(): SelectQueryBuilder<TaskEntity> {
     return this.createQueryBuilder('task')
       .where('task.completedAt IS NULL')

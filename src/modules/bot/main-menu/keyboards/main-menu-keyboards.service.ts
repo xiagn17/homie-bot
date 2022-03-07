@@ -19,6 +19,7 @@ import {
   EMOJI_INFO,
   EMOJI_LOOPA,
   EMOJI_NEXT,
+  EMOJI_NOT_AGREE,
   EMOJI_STATUS,
   EMOJI_SUPPORT,
   EMOJI_WOMAN_HAND,
@@ -28,6 +29,7 @@ import { BotKeyboardsService } from '../../main/keyboards/bot-keyboards.service'
 import { LandlordsKeyboardsService } from '../../landlords/keyboards/landlords-keyboards.service';
 import { RentersKeyboardsService } from '../../renters/keyboards/renters-keyboards.service';
 import { TelegramUserType } from '../../session-storage/interfaces/session-storage.interface';
+import { HandlerOnLandlordObjectStopResume } from '../../landlords/interfaces/landlords-handlers.interface';
 
 @Injectable()
 export class MainMenuKeyboardsService {
@@ -52,10 +54,11 @@ export class MainMenuKeyboardsService {
     },
     landlordHandlers: {
       onLandlordObject: HandlerOnLandlordObject;
+      onLandlordObjectStopResume: HandlerOnLandlordObjectStopResume;
     },
   ): void {
     const { onNextObject, onSendFilters, onSendRenterInfo } = renterHandlers;
-    const { onLandlordObject } = landlordHandlers;
+    const { onLandlordObject, onLandlordObjectStopResume } = landlordHandlers;
 
     this.mainMenuKeyboard = new Menu<MyContext>('keyboard-mainMenu')
       .dynamic(async (mainCtx, range) => {
@@ -82,7 +85,9 @@ export class MainMenuKeyboardsService {
           range.text(objectText, onLandlordObject).row();
 
           if (hasObject && isApproved) {
-            range.text(`${EMOJI_CHECK} Поиск активен`);
+            const isActive = !object?.stoppedAt;
+            const text = isActive ? `${EMOJI_CHECK} Поиск активен` : `${EMOJI_NOT_AGREE} Поиск остановлен`;
+            range.text(text, onLandlordObjectStopResume.bind(this, isActive));
             return;
           } else if (hasObject) {
             return;

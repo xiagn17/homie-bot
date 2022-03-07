@@ -54,6 +54,7 @@ export class LandlordObjectsSerializer {
       isAdmin: landlordObject.isAdmin,
       number: landlordObject.number,
       isApproved: landlordObject.isApproved,
+      stoppedAt: landlordObject.stoppedAt,
       placeOnSites: landlordObject.placeOnSites,
 
       roomsNumber: landlordObject.roomsNumber,

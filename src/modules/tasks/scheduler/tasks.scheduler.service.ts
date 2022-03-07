@@ -24,13 +24,17 @@ export class TasksSchedulerService {
     const type = TaskTypeEnumInterface.landlord_notification;
     const date = customDate ?? new Date(Date.now() + ONE_DAY_TIMESTAMP);
     const prevTask = await this.tasksRepository.findOne({
-      where: { data: { landlordObjectId: data.landlordObjectId }, completedAt: null },
+      where: { type: type, data: { landlordObjectId: data.landlordObjectId }, completedAt: null },
     });
     if (!prevTask) {
       await this.tasksRepository.createAndSave(type, date, data);
       return;
     }
     await this.tasksRepository.update(prevTask.id, { scheduledFor: date });
+  }
+
+  async removeTasksAfterStopObject(landlordObjectId: string): Promise<void> {
+    await this.tasksRepository.removeObjectTasksAfterStop(landlordObjectId);
   }
 
   async setAdminApproveObject(data: TaskDataAdminApproveObjectInterface, customDate?: Date): Promise<void> {

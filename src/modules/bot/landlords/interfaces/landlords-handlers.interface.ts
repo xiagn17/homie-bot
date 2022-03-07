@@ -1,6 +1,7 @@
 import { NextFunction } from 'grammy';
 import { Middleware } from 'grammy/out/composer';
 import { Filter } from 'grammy/out/filter';
+import { MenuFlavor } from '@grammyjs/menu/out/menu';
 import { MyContext } from '../../main/interfaces/bot.interface';
 
 export type HandlerLandlordOnFirstTip = (ctx: MyContext, next: NextFunction) => Promise<void>;
@@ -24,3 +25,9 @@ export type HandlerObjectFormCommentQuestion = (ctx: MyContext) => Promise<void>
 export type HandlerObjectFormPlaceOnSitesQuestion = (ctx: MyContext) => Promise<void>;
 
 export type HandlerObjectRenewCallback = Middleware<Filter<MyContext, 'callback_query:data'>>;
+
+export type HandlerOnLandlordObjectStopResume = (
+  isActive: boolean,
+  ctx: Filter<MyContext, 'callback_query:data'> & MenuFlavor,
+  next: NextFunction,
+) => Promise<void>;

@@ -19,7 +19,11 @@ export class LandlordsApiService {
   }
 
   stopSearchObject(chatId: string): Promise<void> {
-    return this.landlordObjectsService.archiveObject({ chatId });
+    return this.landlordObjectsService.stopObject({ chatId });
+  }
+
+  resumeSearchObject(chatId: string): Promise<void> {
+    return this.landlordObjectsService.resumeObject({ chatId });
   }
 
   renewObject(chatId: string): Promise<string> {

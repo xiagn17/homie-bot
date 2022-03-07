@@ -68,8 +68,8 @@ export class LandlordObjectEntity {
   @Column({ name: 'updated_at', type: 'timestamptz' })
   readonly updatedAt: Date | null;
 
-  @Column({ name: 'archived_at', type: 'timestamptz' })
-  readonly archivedAt: Date | null;
+  @Column({ name: 'stopped_at', type: 'timestamptz' })
+  readonly stoppedAt: Date | null;
 
   @Column({ name: 'object_type', type: 'enum', enum: ObjectTypeEnum })
   objectType: ObjectTypeEnum;

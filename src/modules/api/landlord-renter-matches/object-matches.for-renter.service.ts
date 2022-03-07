@@ -40,13 +40,16 @@ export class ObjectMatchesForRenterService {
     this.logger.setContext(this.constructor.name);
   }
 
-  public async matchRenterToObjects(renter: RenterEntity): Promise<void> {
-    const matchedObjects = await this.findMatchesForRenter(renter);
+  public async matchRenterToObjects(
+    renter: RenterEntity,
+    entityManager: EntityManager = this.entityManager,
+  ): Promise<void> {
+    const matchedObjects = await this.findMatchesForRenter(renter, entityManager);
     if (!matchedObjects.length) {
       return;
     }
 
-    await this.entityManager
+    await entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .createMatchesForRenter(renter, matchedObjects);
   }
@@ -59,14 +62,7 @@ export class ObjectMatchesForRenterService {
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .deleteUnprocessedObjectsForRenter(renter.id);
 
-    const matchedObjects = await this.findMatchesForRenter(renter, entityManager);
-    if (!matchedObjects.length) {
-      return;
-    }
-
-    await entityManager
-      .getCustomRepository(LandlordObjectRenterMatchesRepository)
-      .createMatchesForRenter(renter, matchedObjects);
+    await this.matchRenterToObjects(renter, entityManager);
   }
 
   public async getNextObject(chatId: string): Promise<ApiObjectResponse | null> {

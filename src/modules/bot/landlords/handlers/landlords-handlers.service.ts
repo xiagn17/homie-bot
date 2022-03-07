@@ -26,6 +26,7 @@ import {
   HandlerObjectFormRoomsNumberQuestion,
   HandlerObjectFormStartArrivalDateQuestion,
   HandlerObjectRenewCallback,
+  HandlerOnLandlordObjectStopResume,
 } from '../interfaces/landlords-handlers.interface';
 import { LandlordsTextsService } from '../texts/landlords-texts.service';
 import { LandlordsService } from '../landlords.service';
@@ -134,6 +135,16 @@ export class LandlordsHandlersService {
 
   public onFillLandlordObjectFormHandler: HandlerLandlordObjectForm = async ctx => {
     await this.landlordsService.sendObjectFormNameQuestion(ctx);
+  };
+
+  public onLandlordObjectStopResume: HandlerOnLandlordObjectStopResume = async (isActive, ctx, _next) => {
+    const chatId = ctx.from.id.toString();
+    if (isActive) {
+      await this.landlordsApiService.stopSearchObject(chatId);
+    } else {
+      await this.landlordsApiService.resumeSearchObject(chatId);
+    }
+    ctx.menu.update();
   };
 
   private onShowFirstTipHandler: HandlerLandlordOnFirstTip = async (ctx, _next) => {

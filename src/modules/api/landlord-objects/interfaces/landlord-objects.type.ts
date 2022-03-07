@@ -39,11 +39,13 @@ export interface ApiLandlordObjectControlType {
 
 export type ApiLandlordObjectRenewType = TelegramUserType;
 export type ApiLandlordObjectArchiveType = TelegramUserType;
+export type ApiLandlordObjectResumeType = TelegramUserType;
 
 export interface ApiObjectResponseBase<T = ObjectTypeEnum> {
   id: string;
   isAdmin: boolean;
   isApproved: boolean;
+  stoppedAt: Date | null;
   number: number;
   placeOnSites: boolean;
 

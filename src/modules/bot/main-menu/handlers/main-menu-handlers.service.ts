@@ -105,6 +105,7 @@ export class MainMenuHandlersService implements OnModuleInit {
       },
       {
         onLandlordObject: this.onLandlordObject,
+        onLandlordObjectStopResume: this.landlordsHandlersService.onLandlordObjectStopResume,
       },
     );
   }

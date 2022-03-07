@@ -48,6 +48,14 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
     await this.delete({ renterId: renterId, renterStatus: MatchStatusEnumType.processing, paid: false });
   }
 
+  async deleteUnprocessedRentersForObject(landlordObjectId: string): Promise<void> {
+    await this.delete({
+      landlordObjectId: landlordObjectId,
+      renterStatus: MatchStatusEnumType.processing,
+      paid: false,
+    });
+  }
+
   async getAllObjectIdsForRenter(renterId: string): Promise<string[]> {
     const data: { landlordObjectId: string }[] = await this.query(`
         SELECT landlord_object_id as "landlordObjectId"
@@ -55,6 +63,15 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
             WHERE renter_id = '${renterId}'
     `);
     return data.map(({ landlordObjectId }) => landlordObjectId);
+  }
+
+  async getAllRenterIdsForObject(landlordObjectId: string): Promise<string[]> {
+    const data: { renterId: string }[] = await this.query(`
+        SELECT renter_id as "renterId"
+            FROM landlord_object_renter_matches
+            WHERE landlord_object_id = '${landlordObjectId}'
+    `);
+    return data.map(({ renterId }) => renterId);
   }
 
   async getNextObjectIdForRenter(renterId: string): Promise<string | undefined> {
@@ -74,7 +91,6 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
         FROM landlord_objects t_landlordObjects
         JOIN renter_matches USING (landlord_object_id)
         WHERE t_landlordObjects.landlord_object_id = renter_matches.landlord_object_id
-          AND t_landlordObjects.archived_at IS NULL
           AND t_landlordObjects.updated_at > now() - (interval '2 days')
         ORDER BY t_landlordObjects.created_at
         LIMIT 1

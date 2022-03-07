@@ -27,6 +27,6 @@ export class LandlordRentersApiService {
   }
 
   stopSearchObject(chatId: string): Promise<void> {
-    return this.landlordObjectsService.archiveObject({ chatId });
+    return this.landlordObjectsService.stopObject({ chatId });
   }
 }

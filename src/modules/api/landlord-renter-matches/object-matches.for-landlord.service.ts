@@ -39,13 +39,16 @@ export class ObjectMatchesForLandlordService {
     this.logger.setContext(this.constructor.name);
   }
 
-  public async matchObjectToRenters(landlordObject: LandlordObjectEntity): Promise<void> {
-    const matchedRenters = await this.findMatchesForObject(landlordObject);
+  public async matchObjectToRenters(
+    landlordObject: LandlordObjectEntity,
+    entityManager: EntityManager = this.entityManager,
+  ): Promise<void> {
+    const matchedRenters = await this.findMatchesForObject(landlordObject, entityManager);
     if (!matchedRenters.length) {
       return;
     }
 
-    await this.entityManager
+    await entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .createMatchesForObject(landlordObject, matchedRenters);
 
@@ -59,11 +62,9 @@ export class ObjectMatchesForLandlordService {
     await this.entityManager.transaction(async entityManager => {
       // считаем что или chatId или landlordObjectId доступен
       const object = ((landlordStatusOfObjectDto.chatId &&
-        (
-          await entityManager
-            .getCustomRepository(LandlordObjectsRepository)
-            .getByChatId(landlordStatusOfObjectDto.chatId)
-        )[0]) ??
+        (await entityManager
+          .getCustomRepository(LandlordObjectsRepository)
+          .getByChatId(landlordStatusOfObjectDto.chatId))) ??
         (landlordStatusOfObjectDto.landlordObjectId &&
           (await entityManager
             .getCustomRepository(LandlordObjectsRepository)
@@ -145,11 +146,16 @@ export class ObjectMatchesForLandlordService {
           ? GenderEnumType.MALE
           : GenderEnumType.FEMALE;
     }
+    const excludedRenterIds = await entityManager
+      .getCustomRepository(LandlordObjectRenterMatchesRepository)
+      .getAllRenterIdsForObject(landlordObject.id);
+
     const matchOptions = {
       gender: gender,
       location: landlordObject.location,
       objectType: landlordObject.objectType,
       price: Number(landlordObject.price),
+      excludedRenterIds: excludedRenterIds,
     };
     return entityManager
       .getCustomRepository(RentersRepository)

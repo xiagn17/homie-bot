@@ -28,14 +28,18 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       .execute();
   }
 
-  async archiveObject(id: string): Promise<void> {
+  async stopObject(id: string): Promise<void> {
     await this.createQueryBuilder()
       .update()
       .set({
-        archivedAt: new Date(),
+        stoppedAt: new Date(),
       })
       .where('id = :id', { id })
       .execute();
+  }
+
+  async deleteObject(id: string): Promise<void> {
+    await this.delete(id);
   }
 
   getFullObject(landlordObjectId: string): Promise<LandlordObjectEntity> {
@@ -48,17 +52,17 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     return this.getWithRelationsQb(landlordObjectQb).getOneOrFail();
   }
 
-  async getByChatId(chatId: string): Promise<LandlordObjectEntity[]> {
-    const renterQb = this.createQueryBuilder('landlordObject')
-      .where('telegramUser.chatId = :chatId', {
-        chatId: chatId,
-      })
-      .andWhere('landlordObject.archivedAt IS NULL');
+  async getByChatId(chatId: string): Promise<LandlordObjectEntity> {
+    const renterQb = this.createQueryBuilder('landlordObject').where('telegramUser.chatId = :chatId', {
+      chatId: chatId,
+    });
     const landlordObjectEntities = await this.getWithRelationsQb(renterQb).getMany();
-    if (!landlordObjectEntities[0]) {
+
+    const object = landlordObjectEntities[0];
+    if (!object) {
       throw new EntityNotFoundError(LandlordObjectEntity, { chatId });
     }
-    return landlordObjectEntities;
+    return object;
   }
 
   async renewObject(id: string): Promise<void> {
@@ -66,6 +70,7 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       .update()
       .set({
         updatedAt: new Date(),
+        stoppedAt: null,
       })
       .where('id = :id', { id })
       .execute();
@@ -92,7 +97,7 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     const preferredGenderString = matchOptions.preferredGender.join(', ');
     let query: string = `
         SELECT o.landlord_object_id as "landlordObjectId" FROM landlord_objects o
-        WHERE (o.is_approved = true AND o.archived_at IS NULL AND o.updated_at > now() - (interval '2 days'))
+        WHERE (o.is_approved = true AND o.stopped_at IS NULL AND o.updated_at > now() - (interval '2 days'))
             AND o.preferred_gender = ANY ('{${preferredGenderString}}')
     `;
 

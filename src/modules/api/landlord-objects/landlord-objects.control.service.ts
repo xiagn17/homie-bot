@@ -48,7 +48,7 @@ export class LandlordObjectsControlService {
     if (!approveLandlordObjectDto.isApproved) {
       await this.connection
         .getCustomRepository(LandlordObjectsRepository)
-        .archiveObject(approveLandlordObjectDto.id);
+        .deleteObject(approveLandlordObjectDto.id);
     }
 
     await this.connection
