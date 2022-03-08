@@ -11,7 +11,7 @@ export class AdminService {
     if (validate !== VALIDATE_STRING) {
       return 'У вас нет доступа';
     }
-    const objects = await this.landlordObjectsService.getAllObjects();
+    const objects = await this.landlordObjectsService.getLatestObjects();
 
     const htmlObjects = objects.map(o => {
       const mainText = getDefaultObjectText(o);
