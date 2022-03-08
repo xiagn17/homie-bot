@@ -100,12 +100,14 @@ export class LandlordObjectsService {
     return entityManager.getCustomRepository(LandlordObjectsRepository).getFullObject(id);
   }
 
-  getAllObjects(): Promise<LandlordObjectEntity[]> {
-    return this.connection.getCustomRepository(LandlordObjectsRepository).find({
+  async getAllObjects(): Promise<ApiObjectResponse[]> {
+    const objects = await this.connection.getCustomRepository(LandlordObjectsRepository).find({
       order: {
         number: 'DESC',
       },
+      relations: ['photos'],
     });
+    return objects.map(o => this.landlordObjectsSerializer.toResponse(o));
   }
 
   async renewObject(renewLandlordObjectDto: RenewLandlordObjectDto): Promise<string> {
