@@ -29,7 +29,7 @@ export function getFiveRow(object: ApiObjectResponse): string {
   }
   const peopleNumber = object.roomBedInfo.livingPeopleNumber;
   const age = getAgeText(object.roomBedInfo.averageAge);
-  return `${EMOJI_NEIGHBORHOODS} <i>Соседи</i>: ${peopleNumber} чел., сред. возр. ~${age} лет` + '\n';
+  return `${EMOJI_NEIGHBORHOODS} <i>Соседи</i>: ${peopleNumber} чел., сред. возр. ~${age}` + '\n';
 }
 
 export function getDetailsRow(object: ApiObjectResponse): string {
