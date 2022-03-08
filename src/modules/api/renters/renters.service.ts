@@ -3,8 +3,6 @@ import { Connection, EntityManager } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoggerService } from '../../logger/logger.service';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
-import { AnalyticsService } from '../analytics/analytics.service';
-import { BusinessAnalyticsFieldsEnumType } from '../analytics/interfaces/analytics.type';
 import { ObjectMatchesForRenterService } from '../landlord-renter-matches/object-matches.for-renter.service';
 import { TelegramUsersRepository } from '../telegram-bot/repositories/telegramUsers.repository';
 import {
@@ -49,7 +47,6 @@ export class RentersService {
     private renterFiltersSerializer: RenterFiltersSerializer,
 
     private objectMatchesForRenterService: ObjectMatchesForRenterService,
-    private analyticsService: AnalyticsService,
     private readonly telegramBotService: TelegramBotService,
 
     private readonly eventEmitter: EventEmitter2,
@@ -95,10 +92,6 @@ export class RentersService {
       return manager.getCustomRepository(RentersRepository).getFullRenter(renterId);
     });
 
-    await this.analyticsService.changeStatus({
-      chatId: renterDto.chatId,
-      field: BusinessAnalyticsFieldsEnumType.end_fill_renter_info,
-    });
     await this.objectMatchesForRenterService.matchRenterToObjects(renter);
 
     return renter;
