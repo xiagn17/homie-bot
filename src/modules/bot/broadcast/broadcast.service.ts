@@ -154,6 +154,7 @@ export class BroadcastService implements OnModuleInit {
       text,
       {
         reply_markup: keyboard,
+        disable_web_page_preview: true,
       },
       undefined,
       this.renterObjectsApiService.markObjectAsNotInterested.bind(this.renterObjectsApiService, {

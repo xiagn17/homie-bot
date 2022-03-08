@@ -54,6 +54,7 @@ export class RenterObjectsService implements OnModuleInit {
     const keyboard = this.renterObjectsKeyboardsService.getObjectsKeyboard(object.id, true);
     await ctx.reply(text, {
       reply_markup: keyboard,
+      disable_web_page_preview: true,
     });
 
     await this.renterObjectsApiService.markObjectAsNotInterested({

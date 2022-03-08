@@ -5,6 +5,7 @@ import { LandlordObjectEntity } from './entities/LandlordObject.entity';
 import { ApiLandlordObjectDraft, ApiObjectResponse } from './interfaces/landlord-objects.type';
 import { LandlordObjectRoomBedInfoInterface } from './interfaces/landlord-object-room-bed-info.interface';
 import { LandlordObjectApartmentsInfoInterface } from './interfaces/landlord-object-apartments-info.interface';
+import { OBJECT_ACTIVE_TIME_TIMESTAMP } from './constants/landlord-object-active-time.constant';
 
 interface LandlordObjectData {
   landlordObjectDraft: ApiLandlordObjectDraft;
@@ -49,12 +50,16 @@ export class LandlordObjectsSerializer {
   }
 
   toResponse(landlordObject: LandlordObjectEntity): ApiObjectResponse {
+    const isObjectActive =
+      !landlordObject.stoppedAt &&
+      !!landlordObject.updatedAt &&
+      new Date().getTime() - OBJECT_ACTIVE_TIME_TIMESTAMP < new Date(landlordObject.updatedAt).getTime();
     const base = {
       id: landlordObject.id,
       isAdmin: landlordObject.isAdmin,
       number: landlordObject.number,
       isApproved: landlordObject.isApproved,
-      stoppedAt: landlordObject.stoppedAt,
+      isActive: isObjectActive,
       placeOnSites: landlordObject.placeOnSites,
 
       roomsNumber: landlordObject.roomsNumber,

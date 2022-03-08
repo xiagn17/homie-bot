@@ -45,7 +45,7 @@ export interface ApiObjectResponseBase<T = ObjectTypeEnum> {
   id: string;
   isAdmin: boolean;
   isApproved: boolean;
-  stoppedAt: Date | null;
+  isActive: boolean;
   number: number;
   placeOnSites: boolean;
 

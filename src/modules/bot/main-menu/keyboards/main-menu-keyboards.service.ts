@@ -85,7 +85,7 @@ export class MainMenuKeyboardsService {
           range.text(objectText, onLandlordObject).row();
 
           if (hasObject && isApproved) {
-            const isActive = !object?.stoppedAt;
+            const isActive = !!object?.isActive;
             const text = isActive ? `${EMOJI_CHECK} Поиск активен` : `${EMOJI_NOT_AGREE} Поиск остановлен`;
             range.text(text, onLandlordObjectStopResume.bind(this, isActive));
             return;

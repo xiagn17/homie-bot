@@ -5,6 +5,7 @@ import { LandlordObjectEntity } from '../../landlord-objects/entities/LandlordOb
 import { MatchStatusEnumType } from '../interfaces/landlord-renter-matches.types';
 import { RenterIdsDataRaw } from '../../renters/repositories/renters.repository';
 import { LandlordObjectIdsDataRaw } from '../../landlord-objects/repositories/landlord-objects.repository';
+import { OBJECT_ACTIVE_TIME_DAYS } from '../../landlord-objects/constants/landlord-object-active-time.constant';
 
 interface NextLandlordObjectRawDataType {
   landlordObjectId: string;
@@ -91,7 +92,7 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
         FROM landlord_objects t_landlordObjects
         JOIN renter_matches USING (landlord_object_id)
         WHERE t_landlordObjects.landlord_object_id = renter_matches.landlord_object_id
-          AND t_landlordObjects.updated_at > now() - (interval '2 days')
+          AND t_landlordObjects.updated_at > now() - (interval '${OBJECT_ACTIVE_TIME_DAYS} days')
         ORDER BY t_landlordObjects.created_at
         LIMIT 1
     `);

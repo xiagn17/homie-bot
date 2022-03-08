@@ -15,7 +15,7 @@ export function getSecondRow(object: ApiObjectResponse): string {
     const allFloors = floors.split('/')[1];
     const objectFloor = floors.split('/')[0];
     if (object.roomsNumber === 'Студия') {
-      return `<b>СТУДИЯ</b>, ${objectFloor} ЭТАЖ (из ${allFloors})`;
+      return `<b>СТУДИЯ, ${objectFloor} ЭТАЖ (из ${allFloors})</b>`;
     }
     return `<b>${object.roomsNumber}к КВАРТИРА, ${objectFloor} ЭТАЖ (из ${allFloors})</b>`;
   }
@@ -33,6 +33,9 @@ export function getFiveRow(object: ApiObjectResponse): string {
 }
 
 export function getDetailsRow(object: ApiObjectResponse): string {
+  if (object.isAdmin) {
+    return '';
+  }
   let outerString = '';
   outerString += getDetailText(`С парой`, object.details.couples) + ' | ';
   outerString += getDetailText(`С животными`, object.details.animals) + ' | ';
@@ -42,7 +45,7 @@ export function getDetailsRow(object: ApiObjectResponse): string {
   outerString += getDetailText(`С детьми`, object.details.kids) + ' | ';
   outerString += getDetailText(`Кондиционер`, object.details.conditioner) + ' | ';
   outerString += getDetailText(`Интернет`, object.details.internet);
-  return outerString;
+  return outerString + '\n\n';
 }
 
 function getDetailText(detail: string, notCross: boolean): string {
@@ -58,7 +61,7 @@ export function getDefaultObjectText(object: ApiObjectResponse): string {
   const thirdRow = `${EMOJI_SUBWAY} <i>Метро</i>: ${object.address}` + '\n';
   const fourRow = `${EMOJI_MONEY} <i>Стоимость</i>: ${object.price}` + '\n';
   const fiveRow = getFiveRow(object) + '\n';
-  const detailsRow = getDetailsRow(object) + '\n\n';
+  const detailsRow = getDetailsRow(object);
   const arrivalRow = `${EMOJI_CLOCK} <i>Заезд</i>: с ${object.startArrivalDate}` + '\n';
   const commentRow = `${EMOJI_COMMENT} <i>Комментарий</i>: ${object.comment}` + '\n';
   return firstRow + secondRow + thirdRow + fourRow + fiveRow + detailsRow + arrivalRow + commentRow;

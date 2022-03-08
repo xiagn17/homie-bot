@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ApiObjectResponse } from '../../../api/landlord-objects/interfaces/landlord-objects.type';
 import { LandlordObjectEntity } from '../../../api/landlord-objects/entities/LandlordObject.entity';
 import {
+  EMOJI_CHECK,
   EMOJI_GREEN_BOOM,
   EMOJI_HOLMS_WOMAN,
   EMOJI_KEY,
@@ -17,7 +18,9 @@ import { getDefaultObjectText } from './helpers/object-preview.helpers';
 export class RenterObjectsTextsService {
   getObjectText(object: ApiObjectResponse, ableContacts: number): string {
     const contactsAble = `${EMOJI_KEY} <i>Доступно контактов:</i> ${ableContacts}`;
-    return getDefaultObjectText(object) + '\n' + contactsAble;
+    const validatedByRobot = `${EMOJI_CHECK} <i><a href="https://telegra.ph/Provereno-robotommoderatorom-02-20">Проверено роботом</a></i>`;
+    const report = ` / <i><a href='https://t.me/homie_admin'>Пожаловаться</a></i>`;
+    return getDefaultObjectText(object) + '\n' + validatedByRobot + report + '\n' + contactsAble;
   }
 
   getObjectsEnded(): string {

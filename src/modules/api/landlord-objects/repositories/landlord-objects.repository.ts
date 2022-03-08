@@ -2,6 +2,7 @@ import { EntityNotFoundError, EntityRepository, Repository, SelectQueryBuilder }
 import { LandlordObjectEntity, PreferredGenderEnumType } from '../entities/LandlordObject.entity';
 import { RenterEntity } from '../../renters/entities/Renter.entity';
 import { LocationsEnum, ObjectTypeEnum } from '../../renters/entities/RenterFilters.entity';
+import { OBJECT_ACTIVE_TIME_DAYS } from '../constants/landlord-object-active-time.constant';
 
 export interface LandlordObjectIdsDataRaw {
   landlordObjectId: string;
@@ -101,7 +102,7 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     const preferredGenderString = matchOptions.preferredGender.join(', ');
     let query: string = `
         SELECT o.landlord_object_id as "landlordObjectId" FROM landlord_objects o
-        WHERE (o.is_approved = true AND o.stopped_at IS NULL AND o.updated_at > now() - (interval '2 days'))
+        WHERE (o.is_approved = true AND o.stopped_at IS NULL AND o.updated_at > now() - (interval '${OBJECT_ACTIVE_TIME_DAYS} days'))
             AND o.preferred_gender = ANY ('{${preferredGenderString}}')
     `;
 
