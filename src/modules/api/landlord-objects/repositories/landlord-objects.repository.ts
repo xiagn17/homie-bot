@@ -53,9 +53,13 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
   }
 
   async getByChatId(chatId: string): Promise<LandlordObjectEntity> {
-    const renterQb = this.createQueryBuilder('landlordObject').where('telegramUser.chatId = :chatId', {
-      chatId: chatId,
-    });
+    const renterQb = this.createQueryBuilder('landlordObject')
+      .where('telegramUser.chatId = :chatId', {
+        chatId: chatId,
+      })
+      .orderBy({
+        number: 'DESC',
+      });
     const landlordObjectEntities = await this.getWithRelationsQb(renterQb).getMany();
 
     const object = landlordObjectEntities[0];
