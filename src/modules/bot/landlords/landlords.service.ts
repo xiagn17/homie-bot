@@ -59,6 +59,7 @@ export class LandlordsService {
   public sendObjectFormNameQuestion: SendObjectFormNameQuestion = async ctx => {
     const session = await ctx.session;
     session.landlord.objectStep = 'name';
+    session.landlord.objectStepsData = {};
     await ctx.reply(this.landlordsTextsService.getObjectFormNameText());
   };
 
