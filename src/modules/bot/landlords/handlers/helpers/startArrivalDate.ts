@@ -13,7 +13,8 @@ export const getDateFromString = (stringDate?: string): Date | null => {
   if (!validateStartArrivalDate(stringDate) || !execed) {
     return null;
   }
-  const separator = execed[4];
+  const separator = execed[4] || execed[2];
+
   if (!separator) {
     console.error('no separator in date ' + stringDate);
     return null;
