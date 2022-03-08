@@ -59,3 +59,4 @@ export const EMOJI_RED = '🔴';
 export const EMOJI_STOP = '⏸';
 export const EMOJI_OK = '👌🏻';
 export const EMOJI_DINAMITE = '🧨';
+export const EMOJI_SUPER = '👍🏻';

@@ -99,11 +99,13 @@ export class RenterObjectsService implements OnModuleInit {
   sendObjectRequest: SendObjectRequest = async (objectId, ctx) => {
     const chatId = ctx.from?.id.toString() as string;
     await this.renterObjectsApiService.markObjectAsInterested({ objectId: objectId, chatId: chatId });
-    const isAdminObject = await this.renterObjectsApiService.getIsObjectAdmin(objectId);
+    const object = await this.renterObjectsApiService.getObject(objectId);
+    const isAdminObject = object.isAdmin;
+    const objectNumber = object.number;
 
     const text = isAdminObject
-      ? this.renterObjectsTextsService.getSendRequestAdminObjectText()
-      : this.renterObjectsTextsService.getSendRequestText();
+      ? this.renterObjectsTextsService.getSendRequestAdminObjectText(objectNumber)
+      : this.renterObjectsTextsService.getSendRequestText(objectNumber);
     const keyboard = this.renterObjectsKeyboardsService.getSendRequestKeyboard(objectId, true);
     await ctx.reply(text, {
       reply_markup: keyboard,

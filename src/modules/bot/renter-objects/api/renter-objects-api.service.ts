@@ -30,9 +30,8 @@ export class RenterObjectsApiService {
     return this.objectMatchesForRenterService.getNextObject(chatId);
   }
 
-  async getIsObjectAdmin(objectId: string): Promise<boolean> {
-    const object = await this.landlordObjectsService.getLandlordObject(objectId);
-    return object.isAdmin;
+  async getObject(objectId: string): Promise<LandlordObjectEntity> {
+    return this.landlordObjectsService.getLandlordObject(objectId);
   }
 
   async markObjectAsNotInterested(data: ChangeRenterStatusOfObjectData): Promise<void> {

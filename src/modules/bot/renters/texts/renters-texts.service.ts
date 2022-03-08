@@ -14,6 +14,7 @@ import {
   EMOJI_GLOBUS,
   EMOJI_HI,
   EMOJI_HOUSE_TYPE,
+  EMOJI_KEY,
   EMOJI_LOCATION,
   EMOJI_MONEY,
   EMOJI_PHONE,
@@ -21,6 +22,7 @@ import {
   EMOJI_PHOTOS_LIMIT,
   EMOJI_PROFESSION,
   EMOJI_STAR,
+  EMOJI_SUPER,
 } from '../../constants/emoji';
 import { GENDER_TEXT_MAP, OBJECT_TYPE_TEXT_MAP } from '../../constants/texts';
 import { LOCATIONS_PHOTO } from '../../constants/imageUrls';
@@ -163,17 +165,22 @@ export class RentersTextsService {
     return mainText;
   }
 
-  // todo заглушка
   getSuccessfulPaidContactsText(contactsNumber: number): string {
-    return `Вы успешно приобрели ${contactsNumber} контактов, теперь вы можете "Получить контакт" под любым объектом`;
+    return (
+      `${EMOJI_SUPER} Ты успешно приобрел <b>${contactsNumber} контакт/ов</b>.` +
+      `\n` +
+      `Осталось нажать "${EMOJI_KEY} Получить контакт" под любым объектом!`
+    );
   }
 
-  // todo заглушка
   getSuccessfulPrivateHelperText(): string {
-    return `Вы успешно приобрели услугу Личного помощника, в скором времени с вами свяжутся. А чтобы не тянуть - уведомите нашего модератора сразу @homie_admin`;
+    return (
+      `${EMOJI_SUPER} Ты успешно приобрел услугу <b>Личного помощника</b>!\n` +
+      `В скором времени с тобой свяжется специалист.\n` +
+      `А чтобы не тянуть - можешь смело писать --> @homie_admin`
+    );
   }
 
-  // todo заглушка
   getSuccessfulPrivateHelperToAdminText(username: string | null): string {
     return `Купили Личного помощника.\nUsername - ${username ?? '???'}`;
   }

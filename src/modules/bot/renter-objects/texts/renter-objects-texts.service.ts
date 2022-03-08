@@ -8,6 +8,7 @@ import {
   EMOJI_KEY,
   EMOJI_LIGHTNING,
   EMOJI_MEDAL,
+  EMOJI_MONEY,
   EMOJI_PLUS,
   EMOJI_SEND_REQUEST,
   EMOJI_STAR,
@@ -38,16 +39,18 @@ export class RenterObjectsTextsService {
     );
   }
 
-  getSendRequestText(): string {
+  getSendRequestText(objectNumber: number): string {
     return (
-      `<b>${EMOJI_GREEN_BOOM} Я отправил твою анкету автору</b> объявления! Если он одобрит анкету, я пришлю тебе его контакт.\n` +
+      `#home${objectNumber}\n` +
+      `<b>${EMOJI_GREEN_BOOM} Я отправил твою анкету автору объявления!</b> Если он одобрит анкету, я пришлю тебе его контакт.\n` +
       `\n` +
       `${EMOJI_LIGHTNING}️ <b>Чтобы получить контакт сразу</b> - жми "получить контакт"`
     );
   }
 
-  getSendRequestAdminObjectText(): string {
+  getSendRequestAdminObjectText(objectNumber: number): string {
     return (
+      `#home${objectNumber}\n` +
       `${EMOJI_GREEN_BOOM} <b>Этот объект был проверен и добавлен модераторами.</b> Арендодатель оповещен. Если в течение следующих 8 часов он не зайдет в бота, я автоматически поделюсь контактом <b>со всеми заинтересовавшимися!</b>\n` +
       `\n` +
       `${EMOJI_LIGHTNING}️ <b>Чтобы получить контакт сразу</b> - жми "получить контакт"`
@@ -115,6 +118,7 @@ export class RenterObjectsTextsService {
       `* проверку собственника\n` +
       `* составление договора аренды\n` +
       `\n` +
+      `${EMOJI_MONEY} Предоплата - 1990 ₽ + 2910 ₽ при фактическом заселении.\n` +
       `<a href='https://telegra.ph/Rasskazyvaem-o-tarifah-Homie-02-10'>Подробнее о тарифах Homie.</a>`
     );
   }
