@@ -60,6 +60,7 @@ export class TasksObjectsOutdatedWorkerService extends TasksQueueBaseService {
           .deleteUnprocessedRentersForObject(landlordObject.id);
         await this.tasksSchedulerService.removeTasksAfterStopObject(landlordObject.id);
 
+        return;
         const object = this.landlordObjectsSerializer.toResponse(landlordObject);
         await this.eventEmitter.emitAsync(
           BROADCAST_OBJECT_OUTDATED_TO_LANDLORD_EVENT_NAME,
