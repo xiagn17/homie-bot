@@ -59,7 +59,7 @@ export function getDefaultObjectText(object: ApiObjectResponse): string {
   const firstRow = `#home${object.number}${object.isAdmin ? ' <i>(админ.)</i>' : ''}` + '\n';
   const secondRow = getSecondRow(object) + '\n\n';
   const thirdRow = `${EMOJI_SUBWAY} <i>Метро</i>: ${object.address}` + '\n';
-  const fourRow = `${EMOJI_MONEY} <i>Стоимость</i>: ${object.price}` + '\n';
+  const fourRow = `${EMOJI_MONEY} <i>Стоимость</i>: ${object.price} руб./мес` + '\n';
   const fiveRow = getFiveRow(object) + '\n';
   const detailsRow = getDetailsRow(object);
   const arrivalRow = `${EMOJI_CLOCK} <i>Заезд</i>: с ${object.startArrivalDate}` + '\n';
