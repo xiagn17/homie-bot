@@ -58,7 +58,7 @@ export class RenterObjectsTextsService {
   }
 
   getContactObjectText(object: LandlordObjectEntity): string {
-    const est_kontakt_text = `<b>Есть контакт!</b>\n\n`;
+    const est_kontakt_text = `<b>Есть контакт арендодателя!</b>\n`;
     const object_number_text = `🏡 Посмотреть объявление --> #home${object.number}`;
     const getNameText = (name: string): string => `👋🏻 Имя: ${name}\n`;
     const getContactText = (
