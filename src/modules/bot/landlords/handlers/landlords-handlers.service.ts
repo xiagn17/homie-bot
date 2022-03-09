@@ -473,8 +473,9 @@ export class LandlordsHandlersService {
       const objectData = session.landlord.objectStepsData ?? {};
       objectData.placeOnSites = !objectData.placeOnSites;
 
-      await ctx.editMessageReplyMarkup({
-        reply_markup: await this.landlordsKeyboardsService.getLandlordObjectFormPlaceOnSitesKeyboard(ctx),
+      const text = this.landlordsTextsService.getObjectFormPlaceOnSitesText(objectData.placeOnSites);
+      await ctx.editMessageText(text, {
+        reply_markup: this.landlordsKeyboardsService.getLandlordObjectFormPlaceOnSitesKeyboard(),
       });
     } else if (callbackData === 'submit') {
       await this.landlordsService.submitObjectForm(ctx);

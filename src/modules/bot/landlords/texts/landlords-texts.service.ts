@@ -149,12 +149,14 @@ export class LandlordsTextsService {
     );
   }
 
-  getObjectFormPlaceOnSitesText(): string {
+  getObjectFormPlaceOnSitesText(placeOnSites: boolean): string {
     return (
       `${EMOJI_CELEBRATE} <b>Объявление готово!</b>\n` +
       `Чтобы поиск съемщика проходил быстрее, а количество анкет было больше, мы можем <b>бесплатно</b> разместить ваше объявление на открытых площадках по аренде жилья.\n` +
       `\n` +
-      `${EMOJI_ATTENTION}️ <b>Ваши контакты не увидят</b> пользователи, которых вы не одобрили в этом чате.`
+      `${EMOJI_ATTENTION}️ <b>Ваши контакты не увидят</b> пользователи, которых вы не одобрили в этом чате.\n` +
+      `\n` +
+      `Выбранный статус: <i>${placeOnSites ? 'СОГЛАСЕН' : 'НЕ СОГЛАСЕН'}</i>`
     );
   }
 

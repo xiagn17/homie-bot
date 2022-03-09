@@ -187,10 +187,11 @@ export class LandlordsService {
     const session = await ctx.session;
     session.landlord.objectStep = 'placeOnSites';
     session.landlord.objectStepsData.placeOnSites = true;
+    const placeOnSites = !!session.landlord.objectStepsData.placeOnSites;
 
     await ctx.reply(`${EMOJI_CELEBRATE}`);
-    await ctx.reply(this.landlordsTextsService.getObjectFormPlaceOnSitesText(), {
-      reply_markup: await this.landlordsKeyboardsService.getLandlordObjectFormPlaceOnSitesKeyboard(ctx),
+    await ctx.reply(this.landlordsTextsService.getObjectFormPlaceOnSitesText(placeOnSites), {
+      reply_markup: this.landlordsKeyboardsService.getLandlordObjectFormPlaceOnSitesKeyboard(),
     });
   };
 

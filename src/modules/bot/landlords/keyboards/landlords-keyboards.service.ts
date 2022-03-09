@@ -16,7 +16,6 @@ import {
   EMOJI_GENDER_MAN,
   EMOJI_GENDER_WOMAN,
   EMOJI_NEXT,
-  EMOJI_NOT_AGREE,
   EMOJI_OK,
   EMOJI_ROOMS,
 } from '../../constants/emoji';
@@ -174,16 +173,11 @@ export class LandlordsKeyboardsService {
       );
   }
 
-  async getLandlordObjectFormPlaceOnSitesKeyboard(ctx: MyContext): Promise<InlineKeyboard> {
-    const session = await ctx.session;
-    const placeOnSites = !!session.landlord.objectStepsData.placeOnSites;
-    const text = placeOnSites
-      ? `${EMOJI_CHECK} Согласен / Не согласен`
-      : `Согласен / ${EMOJI_NOT_AGREE} Не согласен`;
+  getLandlordObjectFormPlaceOnSitesKeyboard(): InlineKeyboard {
     return new InlineKeyboard()
-      .text(text, `${KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX}change`)
+      .text(`Изменить статус`, `${KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX}change`)
       .row()
-      .text(`Подтвердить`, `${KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX}submit`);
+      .text(`${EMOJI_CHECK} Подтвердить`, `${KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX}submit`);
   }
 
   getLandlordObjectFormStartArrivalDateKeyboard(): InlineKeyboard {
