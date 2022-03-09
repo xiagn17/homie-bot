@@ -33,7 +33,7 @@ export class TasksObjectsOutdatedWorkerService extends TasksQueueBaseService {
     this.logger.setContext(this.constructor.name);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_30_MINUTES)
   async checkTasks(): Promise<void> {
     const outdatedObjectIds = await this.connection
       .getCustomRepository(LandlordObjectsRepository)
@@ -60,12 +60,6 @@ export class TasksObjectsOutdatedWorkerService extends TasksQueueBaseService {
           .deleteUnprocessedRentersForObject(landlordObject.id);
         await this.tasksSchedulerService.removeTasksAfterStopObject(landlordObject.id);
 
-        if (
-          new Date().getTime() - 1000 * 60 * 60 * 24 * 3 >
-          new Date(landlordObject.updatedAt as Date).getTime()
-        ) {
-          return;
-        }
         const object = this.landlordObjectsSerializer.toResponse(landlordObject);
         await this.eventEmitter.emitAsync(
           BROADCAST_OBJECT_OUTDATED_TO_LANDLORD_EVENT_NAME,
