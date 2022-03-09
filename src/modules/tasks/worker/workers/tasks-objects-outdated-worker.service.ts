@@ -37,7 +37,7 @@ export class TasksObjectsOutdatedWorkerService extends TasksQueueBaseService {
   async checkTasks(): Promise<void> {
     const outdatedObjectIds = await this.connection
       .getCustomRepository(LandlordObjectsRepository)
-      .getLatestOutdatedObjects();
+      .getOutdatedObjects();
 
     const action = this.processTasks.bind(this);
 
@@ -51,16 +51,18 @@ export class TasksObjectsOutdatedWorkerService extends TasksQueueBaseService {
 
     await this.connection.transaction(async entityManager => {
       const processTasks = outdatedObjectIds.map(async ({ landlordObjectId }) => {
+        await entityManager.getCustomRepository(LandlordObjectsRepository).stopObject(landlordObjectId);
+        await entityManager
+          .getCustomRepository(LandlordObjectRenterMatchesRepository)
+          .deleteUnprocessedRentersForObject(landlordObjectId);
+        await this.tasksSchedulerService.removeTasksAfterStopObject(landlordObjectId, entityManager);
+
         const landlordObject = await entityManager
           .getCustomRepository(LandlordObjectsRepository)
           .getFullObject(landlordObjectId);
-
-        await entityManager
-          .getCustomRepository(LandlordObjectRenterMatchesRepository)
-          .deleteUnprocessedRentersForObject(landlordObject.id);
-        await this.tasksSchedulerService.removeTasksAfterStopObject(landlordObject.id);
-
-        return;
+        if (landlordObject.isAdmin) {
+          return;
+        }
         const object = this.landlordObjectsSerializer.toResponse(landlordObject);
         await this.eventEmitter.emitAsync(
           BROADCAST_OBJECT_OUTDATED_TO_LANDLORD_EVENT_NAME,

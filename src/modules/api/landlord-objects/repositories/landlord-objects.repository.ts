@@ -80,12 +80,11 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       .execute();
   }
 
-  getLatestOutdatedObjects(): Promise<LandlordObjectIdsDataRaw[]> {
+  getOutdatedObjects(): Promise<LandlordObjectIdsDataRaw[]> {
     const query: string = `
         SELECT landlord_object_id as "landlordObjectId" FROM landlord_objects
         WHERE
             updated_at < now() - (interval '${OBJECT_ACTIVE_TIME_DAYS} days')
-            AND updated_at > now() - (interval '${OBJECT_ACTIVE_TIME_DAYS + 1} days')
             AND stopped_at is NULL
     `;
     return this.query(query);
