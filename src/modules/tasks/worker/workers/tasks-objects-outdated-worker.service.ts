@@ -37,7 +37,7 @@ export class TasksObjectsOutdatedWorkerService extends TasksQueueBaseService {
   async checkTasks(): Promise<void> {
     const outdatedObjectIds = await this.connection
       .getCustomRepository(LandlordObjectsRepository)
-      .getOutdatedObjects();
+      .getLatestOutdatedObjects();
 
     const action = this.processTasks.bind(this);
 
