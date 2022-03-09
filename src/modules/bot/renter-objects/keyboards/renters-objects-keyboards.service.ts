@@ -11,6 +11,7 @@ import {
   EMOJI_KEY,
   EMOJI_NEXT,
   EMOJI_SEND_REQUEST,
+  EMOJI_STOP,
   EMOJI_WRITE_TO_CONTACT,
 } from '../../constants/emoji';
 import { PaymentItems } from '../../../api/payments/interfaces/payment-item.interface';
@@ -40,9 +41,11 @@ export class RentersObjectsKeyboardsService {
     const keyboard = new InlineKeyboard()
       .text(`${EMOJI_SEND_REQUEST} Отправить запрос`, `request_${objectId}`)
       .row()
-      .text(`${EMOJI_KEY} Получить контакт`, `contact_${objectId}`);
+      .text(`${EMOJI_KEY} Получить контакт`, `contact_${objectId}`)
+      .row()
+      .text(`${EMOJI_STOP} Стоп`, `renter_object_stop`);
     if (withNext) {
-      return keyboard.row().text(`${EMOJI_NEXT} Далее`, `nextObj_${objectId}`);
+      return keyboard.text(`${EMOJI_NEXT} Далее`, `nextObj_${objectId}`);
     }
     return keyboard;
   }

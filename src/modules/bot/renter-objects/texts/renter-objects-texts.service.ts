@@ -9,6 +9,7 @@ import {
   EMOJI_LIGHTNING,
   EMOJI_MEDAL,
   EMOJI_MONEY,
+  EMOJI_OK,
   EMOJI_PLUS,
   EMOJI_SEND_REQUEST,
   EMOJI_STAR,
@@ -121,5 +122,9 @@ export class RenterObjectsTextsService {
       `${EMOJI_MONEY} Предоплата - 1990 ₽ + 2910 ₽ при фактическом заселении.\n` +
       `<a href='https://telegra.ph/Rasskazyvaem-o-tarifah-Homie-02-10'>Подробнее о тарифах Homie.</a>`
     );
+  }
+
+  getStoppedRenterSearchText(): string {
+    return `${EMOJI_OK} Поиск жилья <b>приостановлен.</b>`;
   }
 }

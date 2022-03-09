@@ -101,7 +101,7 @@ export class ObjectMatchesForLandlordService {
 
     const isPublishedByAdmins = landlordObject.isAdmin;
     if (isPublishedByAdmins) {
-      await this.tasksSchedulerService.removeAdminApproveObject({
+      await this.tasksSchedulerService.removeAdminObjectSubmitRenter({
         renterId: renterId,
         landlordObjectId: landlordObjectId,
       });
@@ -157,8 +157,6 @@ export class ObjectMatchesForLandlordService {
       price: Number(landlordObject.price),
       excludedRenterIds: excludedRenterIds,
     };
-    return entityManager
-      .getCustomRepository(RentersRepository)
-      .findMatchesForObjectToRenters(landlordObject, matchOptions);
+    return entityManager.getCustomRepository(RentersRepository).findMatchesForObjectToRenters(matchOptions);
   }
 }

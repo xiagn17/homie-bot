@@ -1,7 +1,6 @@
 import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import { RenterEntity } from '../entities/Renter.entity';
 import { GenderEnumType } from '../interfaces/renters.type';
-import { LandlordObjectEntity } from '../../landlord-objects/entities/LandlordObject.entity';
 import { LocationsEnum, ObjectTypeEnum } from '../entities/RenterFilters.entity';
 
 interface RenterChatIdDataRaw {
@@ -57,20 +56,19 @@ export class RentersRepository extends Repository<RenterEntity> {
     `);
   }
 
-  findMatchesForObjectToRenters(
-    _landlordObject: LandlordObjectEntity,
-    matchOptions: {
-      gender: GenderEnumType | null;
-      location: LocationsEnum;
-      objectType: ObjectTypeEnum;
-      price: number;
-      excludedRenterIds: string[];
-    },
-  ): Promise<RenterIdsDataRaw[]> {
+  findMatchesForObjectToRenters(matchOptions: {
+    gender: GenderEnumType | null;
+    location: LocationsEnum;
+    objectType: ObjectTypeEnum;
+    price: number;
+    excludedRenterIds: string[];
+  }): Promise<RenterIdsDataRaw[]> {
     let query: string = `
         SELECT r.renter_id as "renterId" FROM renters r
             INNER JOIN renter_filters rf on r.renter_id = rf.renter_id
-        WHERE ((rf.price_range_start IS NULL) OR (rf.price_range_end IS NULL) OR (rf.price_range_start <= ${matchOptions.price} AND rf.price_range_end >= ${matchOptions.price}))
+            INNER JOIN renter_settings rs on r.renter_id = rs.renter_id
+        WHERE rs.in_search = true
+          AND ((rf.price_range_start IS NULL) OR (rf.price_range_end IS NULL) OR (rf.price_range_start <= ${matchOptions.price} AND rf.price_range_end >= ${matchOptions.price}))
           AND (coalesce(array_length(rf.locations::location_type[], 1), 0) = 0 OR '${matchOptions.location}' = ANY(rf.locations::location_type[]))
           AND (coalesce(array_length(rf.object_type::object_type[], 1), 0) = 0 OR '${matchOptions.objectType}' = ANY(rf.object_type::object_type[]))
     `;

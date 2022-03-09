@@ -34,4 +34,24 @@ export class RenterSettingsRepository extends Repository<RenterSettingsEntity> {
     await this.save(renter);
     return renter.ableContacts;
   }
+
+  async stopSearch(renterId: string): Promise<void> {
+    await this.createQueryBuilder()
+      .update()
+      .set({
+        inSearch: false,
+      })
+      .where('renterId = :renterId', { renterId: renterId })
+      .execute();
+  }
+
+  async resumeSearch(renterId: string): Promise<void> {
+    await this.createQueryBuilder()
+      .update()
+      .set({
+        inSearch: true,
+      })
+      .where('renterId = :renterId', { renterId: renterId })
+      .execute();
+  }
 }

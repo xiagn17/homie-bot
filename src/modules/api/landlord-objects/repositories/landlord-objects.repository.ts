@@ -1,6 +1,5 @@
 import { EntityNotFoundError, EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import { LandlordObjectEntity, PreferredGenderEnumType } from '../entities/LandlordObject.entity';
-import { RenterEntity } from '../../renters/entities/Renter.entity';
 import { LocationsEnum, ObjectTypeEnum } from '../../renters/entities/RenterFilters.entity';
 import { OBJECT_ACTIVE_TIME_DAYS } from '../constants/landlord-object-active-time.constant';
 
@@ -89,16 +88,13 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       .innerJoinAndSelect('landlordObject.photos', 'photos');
   }
 
-  findMatchesForRenterToObjects(
-    _renter: RenterEntity,
-    matchOptions: {
-      preferredGender: PreferredGenderEnumType[];
-      locations: LocationsEnum[] | null;
-      objectTypes: ObjectTypeEnum[] | null;
-      priceRange: [number, number] | null;
-      excludedObjectIds: string[];
-    },
-  ): Promise<LandlordObjectIdsDataRaw[]> {
+  findMatchesForRenterToObjects(matchOptions: {
+    preferredGender: PreferredGenderEnumType[];
+    locations: LocationsEnum[] | null;
+    objectTypes: ObjectTypeEnum[] | null;
+    priceRange: [number, number] | null;
+    excludedObjectIds: string[];
+  }): Promise<LandlordObjectIdsDataRaw[]> {
     const preferredGenderString = matchOptions.preferredGender.join(', ');
     let query: string = `
         SELECT o.landlord_object_id as "landlordObjectId" FROM landlord_objects o

@@ -18,6 +18,7 @@ import {
   BroadcastPaidContactsToBuyerEvent,
 } from '../../bot/broadcast/events/broadcast-paid-contacts-buyer.event';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
+import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
 import { RentersRepository } from './repositories/renters.repository';
 import { RenterEntity } from './entities/Renter.entity';
 import { RentersSerializer } from './serializers/renters.serializer';
@@ -48,6 +49,7 @@ export class RentersService {
 
     private objectMatchesForRenterService: ObjectMatchesForRenterService,
     private readonly telegramBotService: TelegramBotService,
+    private readonly tasksSchedulerService: TasksSchedulerService,
 
     private readonly eventEmitter: EventEmitter2,
   ) {
@@ -208,5 +210,15 @@ export class RentersService {
 
   public async removeContact(renterId: string): Promise<void> {
     await this.connection.getCustomRepository(RenterSettingsRepository).removeContact(renterId);
+  }
+
+  // todo на конце updated_at по хорошему у обьекта надо стирать все метчи + уведомление лендлорду о конце
+  // по крону вытягивать все обьекты по updated_at и без stopped_at и пробегать по ним
+  public async stopSearch(chatId: string): Promise<void> {
+    await this.connection.transaction(async entityManager => {
+      const renter = await entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
+      await entityManager.getCustomRepository(RenterSettingsRepository).stopSearch(renter.id);
+      await this.tasksSchedulerService.removeTasksAfterStopRenter(renter.id, entityManager);
+    });
   }
 }

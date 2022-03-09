@@ -20,6 +20,7 @@ import {
   BROADCAST_RENTER_INFO_TO_LANDLORD_EVENT_NAME,
   BroadcastRenterInfoToLandlordEvent,
 } from '../../bot/broadcast/events/broadcast-renter-info-landlord.event';
+import { RenterSettingsRepository } from '../renters/repositories/renter-settings.repository';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';
 import { MatchStatusEnumType } from './interfaces/landlord-renter-matches.types';
@@ -67,6 +68,12 @@ export class ObjectMatchesForRenterService {
 
   public async getNextObject(chatId: string): Promise<ApiObjectResponse | null> {
     const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
+    const isRenterStoppedSearch = !renter.renterSettingsEntity.inSearch;
+    if (isRenterStoppedSearch) {
+      await this.entityManager.getCustomRepository(RenterSettingsRepository).resumeSearch(renter.id);
+      await this.matchRenterToObjects(renter);
+    }
+
     const landlordObjectId = await this.entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .getNextObjectIdForRenter(renter.id);
@@ -119,7 +126,7 @@ export class ObjectMatchesForRenterService {
 
     const isPublishedByAdmins = landlordObject.isAdmin;
     if (isPublishedByAdmins) {
-      await this.tasksSchedulerService.setAdminApproveObject({
+      await this.tasksSchedulerService.setAdminObjectSubmitRenter({
         renterId: renter.id,
         landlordObjectId: landlordObject.id,
       });
@@ -169,6 +176,6 @@ export class ObjectMatchesForRenterService {
 
     return entityManager
       .getCustomRepository(LandlordObjectsRepository)
-      .findMatchesForRenterToObjects(renter, matchOptions);
+      .findMatchesForRenterToObjects(matchOptions);
   }
 }

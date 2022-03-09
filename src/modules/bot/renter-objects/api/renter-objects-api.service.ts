@@ -62,4 +62,8 @@ export class RenterObjectsApiService {
   async isInfoExists(chatId: string): Promise<boolean> {
     return this.rentersService.isRenterInfoExists(chatId);
   }
+
+  stopSearch(chatId: string): Promise<void> {
+    return this.rentersService.stopSearch(chatId);
+  }
 }

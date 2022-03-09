@@ -6,10 +6,12 @@ import { RenterObjectsService } from '../renter-objects.service';
 import {
   HandlerGetContact,
   HandlerGetNextObject,
+  HandlerRenterStopSearch,
   HandlerSendRequest,
 } from '../interfaces/renter-objects-handlers.interface';
 import { RenterObjectsApiService } from '../api/renter-objects-api.service';
 import { RentersObjectsKeyboardsService } from '../keyboards/renters-objects-keyboards.service';
+import { RenterObjectsTextsService } from '../texts/renter-objects-texts.service';
 import UrlButton = InlineKeyboardButton.UrlButton;
 
 @Injectable()
@@ -20,6 +22,7 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     private readonly renterObjectsService: RenterObjectsService,
     private readonly renterObjectsApiService: RenterObjectsApiService,
     private readonly renterObjectsKeyboardsService: RentersObjectsKeyboardsService,
+    private readonly renterObjectsTextsService: RenterObjectsTextsService,
   ) {}
 
   onModuleInit(): void {
@@ -57,6 +60,10 @@ export class RentersObjectsHandlersService implements OnModuleInit {
       const data = ctx.callbackQuery.data;
       const objectId = data.split('contacts_nextObj_')[1];
       await this.onGetNextObjectPaidContactsHandler(objectId, ctx);
+      await ctx.answerCallbackQuery();
+    });
+    this.composer.callbackQuery(/^renter_object_stop/, async ctx => {
+      await this.onRenterStopSearchHandler(ctx);
       await ctx.answerCallbackQuery();
     });
   }
@@ -112,5 +119,11 @@ export class RentersObjectsHandlersService implements OnModuleInit {
       reply_markup: this.renterObjectsKeyboardsService.getContactsKeyboard(objectId, false, username),
     });
     await this.renterObjectsService.sendNextObject(ctx);
+  };
+
+  private onRenterStopSearchHandler: HandlerRenterStopSearch = async ctx => {
+    const chatId = ctx.from?.id.toString() as string;
+    await this.renterObjectsApiService.stopSearch(chatId);
+    await ctx.reply(this.renterObjectsTextsService.getStoppedRenterSearchText());
   };
 }

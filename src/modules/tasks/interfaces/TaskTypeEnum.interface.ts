@@ -1,5 +1,5 @@
 export enum TaskTypeEnumInterface {
-  'landlord_notification',
-  'admin_approve',
-  'new_object_pushes_to_renters',
+  'landlord_renew_notification',
+  'admin_object_submit_renter',
+  'new_object_push_to_renters',
 }

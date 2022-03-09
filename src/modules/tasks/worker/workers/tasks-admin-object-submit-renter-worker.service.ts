@@ -1,25 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { LoggerService } from '../../../logger/logger.service';
 import { TasksRepository } from '../../repositories/tasks.repository';
 import { TaskEntity } from '../../entities/Task.entity';
-import { TaskDataAdminApproveObjectInterface } from '../../interfaces/TaskData.interface';
+import { TaskDataAdminObjectSubmitRenterInterface } from '../../interfaces/TaskData.interface';
 import { ObjectMatchesForLandlordService } from '../../../api/landlord-renter-matches/object-matches.for-landlord.service';
 import { MatchStatusEnumType } from '../../../api/landlord-renter-matches/interfaces/landlord-renter-matches.types';
+import { TasksQueueBaseService } from '../tasks-queue-base.service';
 
 @Injectable()
-export class TasksAdminApproveObjectWorkerService {
+export class TasksAdminObjectSubmitRenterWorkerService extends TasksQueueBaseService {
   constructor(
     private logger: LoggerService,
     private connection: Connection,
+
+    private readonly tasksRepository: TasksRepository,
+
     private objectMatchesForLandlordService: ObjectMatchesForLandlordService,
   ) {
+    super();
+    this.THROTTLE_MS = 1000;
+    this.THROTTLE_CHUNK_LENGTH = 25;
+
     this.logger.setContext(this.constructor.name);
   }
 
-  public async processTasksAdminApproveObject(
-    tasks: TaskEntity<TaskDataAdminApproveObjectInterface>[],
-  ): Promise<void> {
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async checkTasks(): Promise<void> {
+    const waitingTasks =
+      (await this.tasksRepository.getTodoAdminObjectSubmitRenter()) as TaskEntity<TaskDataAdminObjectSubmitRenterInterface>[];
+
+    const action = this.processTasks.bind(this);
+    await this.runTasksInQueues(waitingTasks, action);
+  }
+
+  public async processTasks(tasks: TaskEntity<TaskDataAdminObjectSubmitRenterInterface>[]): Promise<void> {
     if (!tasks.length) {
       return;
     }

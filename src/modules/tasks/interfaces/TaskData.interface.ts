@@ -1,13 +1,13 @@
 export type TaskDataInterface =
   | TaskDataLandlordRenewNotificationInterface
-  | TaskDataAdminApproveObjectInterface
+  | TaskDataAdminObjectSubmitRenterInterface
   | TaskDataNewObjectToRenterInterface;
 
 export interface TaskDataLandlordRenewNotificationInterface {
   landlordObjectId: string;
 }
 
-export interface TaskDataAdminApproveObjectInterface {
+export interface TaskDataAdminObjectSubmitRenterInterface {
   landlordObjectId: string;
   renterId: string;
 }

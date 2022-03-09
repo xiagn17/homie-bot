@@ -32,15 +32,15 @@ export class TasksRepository extends Repository<TaskEntity> {
   getTodoLandlordRenewNotification(): Promise<TaskEntity[]> {
     return this.getTodoQuery()
       .andWhere('task.type = :type', {
-        type: TaskTypeEnumInterface.landlord_notification,
+        type: TaskTypeEnumInterface.landlord_renew_notification,
       })
       .getMany();
   }
 
-  getTodoAdminApproveObject(): Promise<TaskEntity[]> {
+  getTodoAdminObjectSubmitRenter(): Promise<TaskEntity[]> {
     return this.getTodoQuery()
       .andWhere('task.type = :type', {
-        type: TaskTypeEnumInterface.admin_approve,
+        type: TaskTypeEnumInterface.admin_object_submit_renter,
       })
       .getMany();
   }
@@ -48,13 +48,13 @@ export class TasksRepository extends Repository<TaskEntity> {
   getTodoNewObjectToRenter(): Promise<TaskEntity[]> {
     return this.getTodoQuery()
       .andWhere('task.type = :type', {
-        type: TaskTypeEnumInterface.new_object_pushes_to_renters,
+        type: TaskTypeEnumInterface.new_object_push_to_renters,
       })
       .getMany();
   }
 
   async isExistsOtherObjectPushToRenter(renterChatId: string): Promise<boolean> {
-    const type = TaskTypeEnumInterface.new_object_pushes_to_renters;
+    const type = TaskTypeEnumInterface.new_object_push_to_renters;
     const result: [{ exists: boolean }] = await this.query(`
         SELECT COUNT(task_id) > 0 as "exists" FROM tasks
         WHERE completed_at IS NULL
@@ -66,14 +66,25 @@ export class TasksRepository extends Repository<TaskEntity> {
 
   async removeObjectTasksAfterStop(landlordObjectId: string): Promise<void> {
     const types = [
-      TaskTypeEnumInterface.new_object_pushes_to_renters,
-      TaskTypeEnumInterface.landlord_notification,
+      TaskTypeEnumInterface.new_object_push_to_renters,
+      TaskTypeEnumInterface.landlord_renew_notification,
     ];
     const query = `
         DELETE FROM tasks
         WHERE data ->> 'landlordObjectId' = '${landlordObjectId}'
         AND completed_at IS NULL
         AND (type = '${types[0]}' OR type = '${types[1]}')
+    `;
+    await this.query(query);
+  }
+
+  async removeRenterTasksAfterStop(renterId: string): Promise<void> {
+    const types = [TaskTypeEnumInterface.new_object_push_to_renters];
+    const query = `
+        DELETE FROM tasks
+        WHERE data ->> 'renterId' = '${renterId}'
+        AND completed_at IS NULL
+        AND type = '${types[0]}'
     `;
     await this.query(query);
   }
