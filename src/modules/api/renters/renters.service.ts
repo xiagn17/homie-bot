@@ -212,8 +212,6 @@ export class RentersService {
     await this.connection.getCustomRepository(RenterSettingsRepository).removeContact(renterId);
   }
 
-  // todo на конце updated_at по хорошему у обьекта надо стирать все метчи + уведомление лендлорду о конце
-  // по крону вытягивать все обьекты по updated_at и без stopped_at и пробегать по ним
   public async stopSearch(chatId: string): Promise<void> {
     await this.connection.transaction(async entityManager => {
       const renter = await entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);

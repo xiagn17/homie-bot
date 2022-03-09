@@ -132,7 +132,7 @@ export class LandlordObjectsService {
       await entityManager
         .getCustomRepository(LandlordObjectRenterMatchesRepository)
         .deleteUnprocessedRentersForObject(landlordObject.id);
-      await this.tasksSchedulerService.removeTasksAfterStopObject(landlordObject.id);
+      await this.tasksSchedulerService.removeTasksAfterStopObject(landlordObject.id, entityManager);
     });
   }
 

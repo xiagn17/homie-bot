@@ -164,6 +164,11 @@ export class BroadcastService implements OnModuleInit {
     );
   }
 
+  async sendObjectOutdatedToLandlord(_object: ApiObjectResponse, { chatId }: ForwardOptions): Promise<void> {
+    const text = this.landlordsTextsService.getStoppedText();
+    await this.sendMessage(chatId, text);
+  }
+
   private async sendMessage(
     chat_id: number | string,
     text: string,

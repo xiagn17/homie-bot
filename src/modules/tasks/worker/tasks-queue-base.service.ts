@@ -7,9 +7,9 @@ export class TasksQueueBaseService {
 
   protected THROTTLE_MS: number = 1000;
 
-  protected async runTasksInQueues(
-    waitingTasks: TaskEntity<any>[],
-    action: (chunks: TaskEntity<any>[]) => Promise<void>,
+  protected async runTasksInQueues<T = TaskEntity<any>>(
+    waitingTasks: T[],
+    action: (chunks: T[]) => Promise<void>,
   ): Promise<void> {
     const tasksByChunks = this.reduceTasksByChunks(waitingTasks);
     for (let i = 0; i < tasksByChunks.length; i++) {
@@ -18,8 +18,8 @@ export class TasksQueueBaseService {
     }
   }
 
-  private reduceTasksByChunks(tasks: TaskEntity[]): TaskEntity[][] {
-    return tasks.reduce<TaskEntity[][]>(
+  private reduceTasksByChunks<T = TaskEntity<any>>(tasks: T[]): T[][] {
+    return tasks.reduce<T[][]>(
       (acc, cur) => {
         if (acc[acc.length - 1].length === this.THROTTLE_CHUNK_LENGTH) {
           acc.push([]);

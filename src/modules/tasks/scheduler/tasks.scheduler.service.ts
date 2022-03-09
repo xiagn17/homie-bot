@@ -71,8 +71,11 @@ export class TasksSchedulerService {
     });
   }
 
-  async removeTasksAfterStopObject(landlordObjectId: string): Promise<void> {
-    await this.tasksRepository.removeObjectTasksAfterStop(landlordObjectId);
+  async removeTasksAfterStopObject(
+    landlordObjectId: string,
+    entityManager: EntityManager = this.entityManager,
+  ): Promise<void> {
+    await entityManager.getCustomRepository(TasksRepository).removeObjectTasksAfterStop(landlordObjectId);
   }
 
   async removeTasksAfterStopRenter(

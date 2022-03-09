@@ -41,6 +41,10 @@ import {
   BROADCAST_INTERESTED_RENTER_TO_LANDLORD_EVENT_NAME,
   BroadcastInterestedRenterToLandlordEvent,
 } from '../events/broadcast-interested-renter-landlord.event';
+import {
+  BROADCAST_OBJECT_OUTDATED_TO_LANDLORD_EVENT_NAME,
+  BroadcastObjectOutdatedPushEvent,
+} from '../events/broadcast-object-outdated.event';
 
 @Injectable()
 export class BroadcastEventsListener {
@@ -112,6 +116,13 @@ export class BroadcastEventsListener {
   @OnEvent(BROADCAST_NEW_OBJECT_TO_RENTER_EVENT_NAME)
   async handleNewObjectToRenterPush(data: BroadcastNewObjectToRenterPushEvent): Promise<void> {
     await this.broadcastService.sendNewObjectToRenter(data.object, {
+      chatId: data.chatId,
+    });
+  }
+
+  @OnEvent(BROADCAST_OBJECT_OUTDATED_TO_LANDLORD_EVENT_NAME)
+  async handleObjectOutdatedToLandlordPush(data: BroadcastObjectOutdatedPushEvent): Promise<void> {
+    await this.broadcastService.sendObjectOutdatedToLandlord(data.object, {
       chatId: data.chatId,
     });
   }
