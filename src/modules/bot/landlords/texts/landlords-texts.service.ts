@@ -34,8 +34,9 @@ import { LOCATIONS_PHOTO } from '../../constants/imageUrls';
 @Injectable()
 export class LandlordsTextsService {
   getFirstTipTexts(usersCount: number): [string, string] {
+    const fakeCount = usersCount + 1000;
     return [
-      `${EMOJI_INFO} Сейчас у нас более <b>${usersCount}</b> активных пользователей, среди них обязательно найдется ваш будущий арендатор.`,
+      `${EMOJI_INFO} Сейчас у нас более <b>${fakeCount}</b> активных пользователей, среди них обязательно найдется ваш будущий арендатор.`,
       `${EMOJI_HANDS} <b>Я возьму на себя работу риэлторов</b> и помогу максимально сократить время на поиск и общение со съемщиками совершенно <b>бесплатно.</b>\n` +
         `\n` +
         `со мной Вы:\n` +
