@@ -9,6 +9,7 @@ export class TelegramBotSerializer {
       username: telegramUserCreateDto.username,
       chatId: telegramUserCreateDto.channel_id,
       botId: telegramUserCreateDto.bot_id,
+      deepLink: telegramUserCreateDto.deepLink,
     };
   }
 }

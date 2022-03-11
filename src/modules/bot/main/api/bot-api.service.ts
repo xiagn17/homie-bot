@@ -5,6 +5,7 @@ import { TelegramBotService } from '../../../api/telegram-bot/telegram-bot.servi
 export interface CreateTelegramUserInterface {
   channel_id: string;
   username: string | null;
+  deepLink: string | null;
 }
 @Injectable()
 export class BotApiService {

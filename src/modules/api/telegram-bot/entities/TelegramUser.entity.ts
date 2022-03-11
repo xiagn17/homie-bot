@@ -16,6 +16,9 @@ export class TelegramUserEntity {
   @Column({ type: 'varchar', name: 'chat_id', nullable: false })
   readonly chatId: string;
 
+  @Column({ type: 'varchar', name: 'deep_link' })
+  readonly deepLink: string | null;
+
   @OneToOne(() => RenterEntity, renter => renter.telegramUser)
   readonly renter: RenterEntity | null;
 

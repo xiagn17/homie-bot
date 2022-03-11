@@ -76,7 +76,12 @@ export class BotHandlersService implements OnModuleInit {
   private onStartCommandHandler: HandlerStartCommand = async (ctx, next) => {
     const chatId = ctx.from?.id?.toString() as string;
     const username = ctx.from?.username as string;
-    await this.botApiService.create({ channel_id: chatId, username: username });
+    const deepLink = ctx.match as string;
+    await this.botApiService.create({
+      channel_id: chatId,
+      username: username,
+      deepLink: deepLink.length ? deepLink : null,
+    });
 
     await ctx.reply('👋🏻');
     await new Promise(res => setTimeout(res, 1000));

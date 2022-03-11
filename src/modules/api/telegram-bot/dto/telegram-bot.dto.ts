@@ -15,6 +15,8 @@ export class TelegramUserCreateDto implements ApiTelegramUserCreateType {
   @IsOptional()
   @Transform(({ value }) => transformStringToNullIfEmpty(value), { toClassOnly: true })
   username: string | null;
+
+  deepLink: string | null;
 }
 
 export class TelegramChatIdDTO implements TelegramUserType {
