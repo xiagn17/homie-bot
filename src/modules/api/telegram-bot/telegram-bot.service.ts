@@ -52,4 +52,8 @@ export class TelegramBotService {
     const { chatId: subAdminChatId } = await this.getSubAdmin();
     return adminChatId === chatId || subAdminChatId === chatId;
   }
+
+  public async getUsersCount(): Promise<number> {
+    return this.entityManager.getCustomRepository(TelegramUsersRepository).getUsersCount();
+  }
 }

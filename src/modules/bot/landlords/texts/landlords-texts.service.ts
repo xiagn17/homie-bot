@@ -14,6 +14,7 @@ import {
   EMOJI_GENDER,
   EMOJI_HANDS,
   EMOJI_HOUSE_TYPE,
+  EMOJI_ID,
   EMOJI_INFO,
   EMOJI_LOCATION,
   EMOJI_MODERATION,
@@ -32,9 +33,9 @@ import { LOCATIONS_PHOTO } from '../../constants/imageUrls';
 
 @Injectable()
 export class LandlordsTextsService {
-  getFirstTipTexts(): [string, string] {
+  getFirstTipTexts(usersCount: number): [string, string] {
     return [
-      `${EMOJI_INFO} Сейчас у нас более <b>1000</b> активных пользователей, среди них обязательно найдется ваш будущий арендатор.`,
+      `${EMOJI_INFO} Сейчас у нас более <b>${usersCount}</b> активных пользователей, среди них обязательно найдется ваш будущий арендатор.`,
       `${EMOJI_HANDS} <b>Я возьму на себя работу риэлторов</b> и помогу максимально сократить время на поиск и общение со съемщиками совершенно <b>бесплатно.</b>\n` +
         `\n` +
         `со мной Вы:\n` +

@@ -30,4 +30,12 @@ export class TelegramUsersRepository extends Repository<TelegramUserEntity> {
   findByUsername(username: string): Promise<TelegramUserEntity> {
     return this.findOneOrFail({ username });
   }
+
+  async getUsersCount(): Promise<number> {
+    const query: string = `
+        SELECT COUNT(telegram_user_id)::int as "count" FROM telegram_users;
+    `;
+    const res: [{ count: number }] = await this.query(query);
+    return res[0].count;
+  }
 }

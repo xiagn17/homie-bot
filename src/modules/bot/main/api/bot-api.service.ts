@@ -17,4 +17,8 @@ export class BotApiService {
     const botId = this.configService.get('bot.id') as string;
     await this.telegramBotService.subscribeUser({ ...data, bot_id: botId });
   }
+
+  async getUsersCount(): Promise<number> {
+    return this.telegramBotService.getUsersCount();
+  }
 }

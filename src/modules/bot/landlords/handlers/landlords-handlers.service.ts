@@ -50,6 +50,7 @@ import { PreferredGenderEnumType } from '../../../api/landlord-objects/entities/
 import { getDataFromCallbackQuery } from '../../helpers/getDataFromCallbackQuery';
 import { MainMenuService } from '../../main-menu/main-menu.service';
 import { LandlordsApiService } from '../api/landlords-api.service';
+import { BotApiService } from '../../main/api/bot-api.service';
 import { getDateFromString } from './helpers/startArrivalDate';
 import { getPrice } from './helpers/price';
 import { getApartmentsFloors } from './helpers/apartmentsFloors';
@@ -106,6 +107,8 @@ export class LandlordsHandlersService {
     private readonly landlordsKeyboardsService: LandlordsKeyboardsService,
     private readonly landlordsApiService: LandlordsApiService,
 
+    private readonly botApiService: BotApiService,
+
     private readonly mainMenuService: MainMenuService,
   ) {
     this.firstTipRouter.route(ROUTE_FIRST_TIP, this.onShowFirstTipHandler);
@@ -151,7 +154,8 @@ export class LandlordsHandlersService {
     const landlordSession = (await ctx.session).landlord;
     landlordSession.firstTip = true;
 
-    const text = this.landlordsTextsService.getFirstTipTexts();
+    const usersCount = await this.botApiService.getUsersCount();
+    const text = this.landlordsTextsService.getFirstTipTexts(usersCount);
     await ctx.reply(text[0]);
     await ctx.reply(text[1]);
     await new Promise(res => setTimeout(res, 6000));
