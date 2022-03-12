@@ -11,6 +11,7 @@ import { LandlordsKeyboardsModule } from '../../landlords/keyboards/landlords-ke
 import { LandlordsHandlersModule } from '../../landlords/handlers/landlords-handlers.module';
 import { BotKeyboardsModule } from '../../main/keyboards/bot-keyboards.module';
 import { BotHandlersModule } from '../../main/handlers/bot-handlers.module';
+import { RentersObjectsHandlersModule } from '../../renter-objects/handlers/renters-objects-handlers.module';
 import { MainMenuHandlersService } from './main-menu-handlers.service';
 
 @Module({
@@ -27,6 +28,8 @@ import { MainMenuHandlersService } from './main-menu-handlers.service';
     LandlordsModule,
     LandlordsKeyboardsModule,
     LandlordsHandlersModule,
+
+    RentersObjectsHandlersModule,
 
     BotKeyboardsModule,
     BotHandlersModule,

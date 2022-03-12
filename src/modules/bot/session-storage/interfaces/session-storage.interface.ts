@@ -35,6 +35,7 @@ export interface RenterFilledInfoStepsData extends RenterInfoStepsData {
 }
 export type RenterInfoStep = keyof RenterInfoStepsData;
 export type RenterInfoFillFrom = 'menu' | string;
+export type RenterInfoRouterSteps = 'find_object';
 export interface RenterSessionData {
   infoStepsData: RenterInfoStepsData;
   infoStep?: RenterInfoStep;
@@ -43,6 +44,8 @@ export interface RenterSessionData {
   viewedObjects: number;
   firstMenuTip: boolean;
   filterStep?: 'priceRange';
+
+  router?: RenterInfoRouterSteps;
 }
 
 export interface LandlordObjectFormStepsData {

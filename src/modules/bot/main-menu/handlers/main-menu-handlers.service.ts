@@ -25,6 +25,7 @@ import { LandlordsKeyboardsService } from '../../landlords/keyboards/landlords-k
 import { LandlordsHandlersService } from '../../landlords/handlers/landlords-handlers.service';
 import { BotKeyboardsService } from '../../main/keyboards/bot-keyboards.service';
 import { BotHandlersService } from '../../main/handlers/bot-handlers.service';
+import { RentersObjectsHandlersService } from '../../renter-objects/handlers/renters-objects-handlers.service';
 
 const ROUTE_MENU_TIP = 'first-menu-tip';
 @Injectable()
@@ -56,6 +57,8 @@ export class MainMenuHandlersService implements OnModuleInit {
     private readonly landlordsService: LandlordsService,
     private readonly landlordsKeyboardsService: LandlordsKeyboardsService,
     private readonly landlordsHandlersService: LandlordsHandlersService,
+
+    private readonly rentersObjectsHandlersService: RentersObjectsHandlersService,
 
     private readonly botKeyboardsService: BotKeyboardsService,
     private readonly botHandlersService: BotHandlersService,
@@ -102,6 +105,7 @@ export class MainMenuHandlersService implements OnModuleInit {
         onNextObject: this.onNextObjectHandler,
         onSendFilters: this.onFiltersHandler,
         onSendRenterInfo: this.onSendRenterInfo,
+        onFindObject: this.rentersObjectsHandlersService.onFindObjectMenuButtonHandler,
       },
       {
         onLandlordObject: this.onLandlordObject,

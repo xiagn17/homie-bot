@@ -51,6 +51,7 @@ export class MainMenuKeyboardsService {
       onNextObject: HandlerOnNextObject;
       onSendFilters: HandlerOnFilters;
       onSendRenterInfo: HandlerOnRenterInfo;
+      onFindObject: HandlerOnFindObjectMenuButton;
     },
     landlordHandlers: {
       onLandlordObject: HandlerOnLandlordObject;
@@ -108,7 +109,7 @@ export class MainMenuKeyboardsService {
         }
 
         if (userType === TelegramUserType.renter) {
-          range.text(`${EMOJI_LOOPA} Поиск по ID`).row();
+          range.text(`${EMOJI_LOOPA} Поиск по ID`, onFindObject).row();
         }
       })
       // eslint-disable-next-line @typescript-eslint/no-empty-function

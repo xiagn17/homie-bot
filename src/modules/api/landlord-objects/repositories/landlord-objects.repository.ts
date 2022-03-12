@@ -52,6 +52,16 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     return this.getWithRelationsQb(landlordObjectQb).getOneOrFail();
   }
 
+  getActiveByNumber(objectNumber: number): Promise<LandlordObjectEntity | undefined> {
+    const landlordObjectQb = this.createQueryBuilder('landlordObject')
+      .where('landlordObject.number = :objectNumber', {
+        objectNumber: objectNumber,
+      })
+      .andWhere('landlordObject.isApproved = true')
+      .andWhere('landlordObject.stoppedAt is NULL');
+    return this.getWithRelationsQb(landlordObjectQb).getOne();
+  }
+
   async getByChatId(chatId: string): Promise<LandlordObjectEntity> {
     const renterQb = this.createQueryBuilder('landlordObject')
       .where('telegramUser.chatId = :chatId', {

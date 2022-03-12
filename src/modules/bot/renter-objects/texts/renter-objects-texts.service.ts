@@ -7,10 +7,12 @@ import {
   EMOJI_HOLMS_WOMAN,
   EMOJI_KEY,
   EMOJI_LIGHTNING,
+  EMOJI_LOOPA,
   EMOJI_MEDAL,
   EMOJI_MONEY,
   EMOJI_OK,
   EMOJI_PLUS,
+  EMOJI_SAD,
   EMOJI_SEND_REQUEST,
   EMOJI_STAR,
 } from '../../constants/emoji';
@@ -126,5 +128,16 @@ export class RenterObjectsTextsService {
 
   getStoppedRenterSearchText(): string {
     return `${EMOJI_OK} Поиск жилья <b>приостановлен.</b>`;
+  }
+
+  getIdInterestedObjectText(): string {
+    return `${EMOJI_LOOPA} Укажи ID заинтересовавшегося объявления.\n` + `\n` + 'Пример: home123';
+  }
+
+  getNotFoundObjectText(): string {
+    return (
+      `${EMOJI_SAD} К сожалению, данное объявление недавно было снято с публикации.\n` +
+      `Но не расстраивайся! Мы обязательно что-нибудь найдем!`
+    );
   }
 }

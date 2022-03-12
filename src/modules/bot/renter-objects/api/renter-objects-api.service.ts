@@ -66,4 +66,8 @@ export class RenterObjectsApiService {
   stopSearch(chatId: string): Promise<void> {
     return this.rentersService.stopSearch(chatId);
   }
+
+  findObject(chatId: string, objectNumber: number): Promise<ApiObjectResponse | null> {
+    return this.objectMatchesForRenterService.findObject(chatId, objectNumber);
+  }
 }

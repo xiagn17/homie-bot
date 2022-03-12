@@ -16,6 +16,8 @@ import {
 } from '../../constants/emoji';
 import { PaymentItems } from '../../../api/payments/interfaces/payment-item.interface';
 
+export const KEYBOARD_RENTER_SEE_OBJECTS_PREFIX = 'kb_renterSeeObjects_';
+
 @Injectable()
 export class RentersObjectsKeyboardsService {
   public payContactsMenu: Menu<MyContext>;
@@ -59,6 +61,10 @@ export class RentersObjectsKeyboardsService {
       keyboard = keyboard.text(`${EMOJI_NEXT} Далее`, `contacts_nextObj_${objectId}`);
     }
     return keyboard;
+  }
+
+  getSeeObjectsKeyboard(): InlineKeyboard {
+    return new InlineKeyboard().text(`${EMOJI_NEXT} Смотреть объявления`, KEYBOARD_RENTER_SEE_OBJECTS_PREFIX);
   }
 
   initPayContactsMenu(privateHelperText: string): void {

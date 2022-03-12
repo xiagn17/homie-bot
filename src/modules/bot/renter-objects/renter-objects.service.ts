@@ -6,6 +6,7 @@ import { RenterObjectsTextsService } from './texts/renter-objects-texts.service'
 import {
   GetContact,
   SendNextObject,
+  SendObject,
   SendObjectContact,
   SendObjectRequest,
   SendRenterInfoNotExists,
@@ -36,6 +37,10 @@ export class RenterObjectsService implements OnModuleInit {
     const session = await ctx.session;
     session.renter.viewedObjects = session.renter.viewedObjects + 1;
 
+    await this.sendObject(object, ctx);
+  };
+
+  sendObject: SendObject = async (object, ctx) => {
     try {
       await ctx.replyWithMediaGroup(
         object.photoIds.map(id => ({
@@ -48,6 +53,7 @@ export class RenterObjectsService implements OnModuleInit {
       await ctx.reply('К сожалению, фотографии не были загружены.');
     }
 
+    const chatId = ctx.from?.id?.toString() as string;
     const renter = await this.renterObjectsApiService.getRenterEntityOfUser(chatId);
     const ableContacts = renter.settings.ableContacts;
     const text = this.renterObjectsTextsService.getObjectText(object, ableContacts);

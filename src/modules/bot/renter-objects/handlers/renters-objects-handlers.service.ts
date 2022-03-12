@@ -1,29 +1,57 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Composer } from 'grammy';
 import { InlineKeyboardButton } from '@grammyjs/types';
+import { Router } from '@grammyjs/router';
 import { MyContext } from '../../main/interfaces/bot.interface';
 import { RenterObjectsService } from '../renter-objects.service';
 import {
   HandlerGetContact,
   HandlerGetNextObject,
+  HandlerOnFindObjectCallback,
+  HandlerOnFindObjectMenuButton,
   HandlerRenterStopSearch,
   HandlerSendRequest,
 } from '../interfaces/renter-objects-handlers.interface';
 import { RenterObjectsApiService } from '../api/renter-objects-api.service';
-import { RentersObjectsKeyboardsService } from '../keyboards/renters-objects-keyboards.service';
+import {
+  KEYBOARD_RENTER_SEE_OBJECTS_PREFIX,
+  RentersObjectsKeyboardsService,
+} from '../keyboards/renters-objects-keyboards.service';
 import { RenterObjectsTextsService } from '../texts/renter-objects-texts.service';
+import {
+  RenterInfoRouterSteps,
+  TelegramUserType,
+} from '../../session-storage/interfaces/session-storage.interface';
+import { getObjectNumber } from './helpers/objectNumber.helper';
 import UrlButton = InlineKeyboardButton.UrlButton;
+
+const ROUTE_FIND_OBJECT_BY_NUMBER: RenterInfoRouterSteps = 'find_object';
 
 @Injectable()
 export class RentersObjectsHandlersService implements OnModuleInit {
-  composer: Composer<MyContext> = new Composer<MyContext>();
+  public composer: Composer<MyContext> = new Composer<MyContext>();
+
+  public router: Router<MyContext> = new Router<MyContext>(async ctx => {
+    const session = await ctx.session;
+    const {
+      type,
+      renter: { router },
+    } = session;
+    if (type !== TelegramUserType.renter) {
+      return undefined;
+    }
+    return router;
+  });
 
   constructor(
     private readonly renterObjectsService: RenterObjectsService,
     private readonly renterObjectsApiService: RenterObjectsApiService,
     private readonly renterObjectsKeyboardsService: RentersObjectsKeyboardsService,
     private readonly renterObjectsTextsService: RenterObjectsTextsService,
-  ) {}
+  ) {
+    this.router.route(ROUTE_FIND_OBJECT_BY_NUMBER, this.onFindObjectCallback);
+    this.composer.use(this.router);
+  }
 
   onModuleInit(): void {
     this.composer.callbackQuery(/^request_/, async ctx => {
@@ -66,7 +94,39 @@ export class RentersObjectsHandlersService implements OnModuleInit {
       await this.onRenterStopSearchHandler(ctx);
       await ctx.answerCallbackQuery();
     });
+    this.composer.callbackQuery(
+      new RegExp(`^${KEYBOARD_RENTER_SEE_OBJECTS_PREFIX}`),
+      this.renterObjectsService.sendNextObject,
+    );
   }
+
+  public onFindObjectMenuButtonHandler: HandlerOnFindObjectMenuButton = async ctx => {
+    const session = await ctx.session;
+    session.renter.router = 'find_object';
+
+    await ctx.reply(this.renterObjectsTextsService.getIdInterestedObjectText());
+  };
+
+  private onFindObjectCallback: HandlerOnFindObjectCallback = async ctx => {
+    const objectNumber = getObjectNumber(ctx.message?.text);
+    if (!objectNumber) {
+      await ctx.reply('Не удалось распознать ID, попробуй ещё раз');
+      return;
+    }
+
+    const chatId = ctx.from?.id.toString() as string;
+    const object = await this.renterObjectsApiService.findObject(chatId, objectNumber);
+    if (object) {
+      await this.renterObjectsService.sendObject(object, ctx);
+    } else {
+      await ctx.reply(this.renterObjectsTextsService.getNotFoundObjectText(), {
+        reply_markup: this.renterObjectsKeyboardsService.getSeeObjectsKeyboard(),
+      });
+    }
+
+    const session = await ctx.session;
+    session.renter.router = undefined;
+  };
 
   private onSendRequestHandler: HandlerSendRequest = async (objectId, ctx) => {
     const infoExists = await this.renterObjectsApiService.isInfoExists(ctx.from?.id.toString() as string);
@@ -126,4 +186,7 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     await this.renterObjectsApiService.stopSearch(chatId);
     await ctx.reply(this.renterObjectsTextsService.getStoppedRenterSearchText());
   };
+
+  // private onSeeObjects:
+  //     await this.renterObjectsService.sendNextObject(ctx);
 }

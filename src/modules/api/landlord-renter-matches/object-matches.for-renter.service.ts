@@ -66,6 +66,37 @@ export class ObjectMatchesForRenterService {
     await this.matchRenterToObjects(renter, entityManager);
   }
 
+  public async findObject(chatId: string, objectNumber: number): Promise<ApiObjectResponse | null> {
+    return this.entityManager.transaction(async entityManager => {
+      const renter = await entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
+      const landlordObject = await entityManager
+        .getCustomRepository(LandlordObjectsRepository)
+        .getActiveByNumber(objectNumber);
+      if (!landlordObject) {
+        return null;
+      }
+
+      const match = await entityManager.getCustomRepository(LandlordObjectRenterMatchesRepository).findOne({
+        landlordObjectId: landlordObject.id,
+        renterId: renter.id,
+      });
+      if (match) {
+        return this.landlordObjectsSerializer.toResponse(landlordObject);
+      }
+
+      const { preferredGenders } = this.getImportantMatchProperties(renter);
+      const genderMatches = preferredGenders.find(pref => pref === landlordObject.preferredGender);
+      if (!genderMatches) {
+        return null;
+      }
+      await entityManager
+        .getCustomRepository(LandlordObjectRenterMatchesRepository)
+        .createMatchesForRenter(renter, [{ landlordObjectId: landlordObject.id }]);
+
+      return this.landlordObjectsSerializer.toResponse(landlordObject);
+    });
+  }
+
   public async getNextObject(chatId: string): Promise<ApiObjectResponse | null> {
     const renter = await this.entityManager.getCustomRepository(RentersRepository).getByChatId(chatId);
     const isRenterStoppedSearch = !renter.renterSettingsEntity.inSearch;
@@ -150,17 +181,14 @@ export class ObjectMatchesForRenterService {
     renter: RenterEntity,
     entityManager: EntityManager = this.entityManager,
   ): Promise<LandlordObjectIdsDataRaw[]> {
-    const preferredGender =
-      renter.gender === GenderEnumType.MALE
-        ? [PreferredGenderEnumType.MALE, PreferredGenderEnumType.NO_DIFFERENCE]
-        : [PreferredGenderEnumType.FEMALE, PreferredGenderEnumType.NO_DIFFERENCE];
+    const { preferredGenders } = this.getImportantMatchProperties(renter);
 
     const excludedObjectIds = await entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .getAllObjectIdsForRenter(renter.id);
 
     const matchOptions = {
-      preferredGender: preferredGender,
+      preferredGender: preferredGenders,
       locations: renter.renterFiltersEntity.locations,
       objectTypes: renter.renterFiltersEntity.objectType,
       priceRange:
@@ -177,5 +205,17 @@ export class ObjectMatchesForRenterService {
     return entityManager
       .getCustomRepository(LandlordObjectsRepository)
       .findMatchesForRenterToObjects(matchOptions);
+  }
+
+  private getImportantMatchProperties(renter: RenterEntity): {
+    preferredGenders: PreferredGenderEnumType[];
+  } {
+    const preferredGenders =
+      renter.gender === GenderEnumType.MALE
+        ? [PreferredGenderEnumType.MALE, PreferredGenderEnumType.NO_DIFFERENCE]
+        : [PreferredGenderEnumType.FEMALE, PreferredGenderEnumType.NO_DIFFERENCE];
+    return {
+      preferredGenders: preferredGenders,
+    };
   }
 }
