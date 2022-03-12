@@ -67,7 +67,7 @@ export class LandlordObjectsSerializer {
       address: landlordObject.address,
       price: landlordObject.price,
       photoIds: landlordObject.photos.map(p => p.photoId),
-      startArrivalDate: new Date(landlordObject.startArrivalDate).toLocaleDateString().replaceAll('/', '.'),
+      startArrivalDate: new Date(landlordObject.startArrivalDate).toLocaleDateString('ru-RU'),
       comment: landlordObject.comment,
     };
     if (landlordObject.objectType === ObjectTypeEnum.apartments) {
