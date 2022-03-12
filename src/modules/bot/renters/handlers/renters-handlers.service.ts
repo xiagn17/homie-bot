@@ -387,7 +387,7 @@ export class RentersHandlersService implements OnModuleInit {
   };
 
   onUpdateSocialsHandler: HandlerOnUpdateSocials = async (socials, ctx) => {
-    if (!socials) {
+    if (!socials || !validateSocials(socials)) {
       await this.rentersService.sendUpdateSocials(ctx);
       return;
     }
