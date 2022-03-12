@@ -30,6 +30,7 @@ import { LandlordsKeyboardsService } from '../../landlords/keyboards/landlords-k
 import { RentersKeyboardsService } from '../../renters/keyboards/renters-keyboards.service';
 import { TelegramUserType } from '../../session-storage/interfaces/session-storage.interface';
 import { HandlerOnLandlordObjectStopResume } from '../../landlords/interfaces/landlords-handlers.interface';
+import { HandlerOnFindObjectMenuButton } from '../../renter-objects/interfaces/renter-objects-handlers.interface';
 
 @Injectable()
 export class MainMenuKeyboardsService {
@@ -58,7 +59,7 @@ export class MainMenuKeyboardsService {
       onLandlordObjectStopResume: HandlerOnLandlordObjectStopResume;
     },
   ): void {
-    const { onNextObject, onSendFilters, onSendRenterInfo } = renterHandlers;
+    const { onNextObject, onSendFilters, onSendRenterInfo, onFindObject } = renterHandlers;
     const { onLandlordObject, onLandlordObjectStopResume } = landlordHandlers;
 
     this.mainMenuKeyboard = new Menu<MyContext>('keyboard-mainMenu')
