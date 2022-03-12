@@ -6,6 +6,7 @@ import { MyContext } from '../../main/interfaces/bot.interface';
 
 export type HandlerLandlordOnFirstTip = (ctx: MyContext, next: NextFunction) => Promise<void>;
 export type HandlerLandlordObjectForm = (ctx: MyContext) => Promise<void>;
+export type HandlerDeleteObject = Middleware<Filter<MyContext, 'callback_query:data'> & MenuFlavor>;
 
 export type HandlerObjectFormNameQuestion = (ctx: MyContext) => Promise<void>;
 export type HandlerObjectFormPhoneNumberQuestion = (ctx: MyContext) => Promise<void>;

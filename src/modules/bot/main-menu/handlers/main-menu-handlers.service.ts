@@ -96,6 +96,7 @@ export class MainMenuHandlersService implements OnModuleInit {
     this.landlordsKeyboardsService.initLandlordObjectFormKeyboard(
       this.mainMenuService.getMenu,
       this.landlordsHandlersService.onFillLandlordObjectFormHandler,
+      this.landlordsHandlersService.onDeleteObjectHandler,
     );
     this.mainMenuKeyboardsService.initMainMenuKeyboard(
       this.onOtherHandler,

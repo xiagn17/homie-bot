@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   EMOJI_ALERT_GATE,
   EMOJI_ATTENTION,
+  EMOJI_BAG,
   EMOJI_BELL,
   EMOJI_CALL_PHONE,
   EMOJI_CAT,
@@ -202,5 +203,9 @@ export class LandlordsTextsService {
 
   getStoppedText(): string {
     return `${EMOJI_OK} Выключил поиск съемщика!`;
+  }
+
+  getDeletedText(): string {
+    return `${EMOJI_BAG} Ваш объект успешно удалён.`;
   }
 }

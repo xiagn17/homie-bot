@@ -7,6 +7,7 @@ import { MyContext } from '../../main/interfaces/bot.interface';
 import {
   EMOJI_APARTMENTS,
   EMOJI_BACK,
+  EMOJI_BAG,
   EMOJI_BEDS,
   EMOJI_CHECK,
   EMOJI_COMMENT,
@@ -20,7 +21,7 @@ import {
   EMOJI_ROOMS,
 } from '../../constants/emoji';
 import { LandlordsApiService } from '../api/landlords-api.service';
-import { HandlerLandlordObjectForm } from '../interfaces/landlords-handlers.interface';
+import { HandlerDeleteObject, HandlerLandlordObjectForm } from '../interfaces/landlords-handlers.interface';
 import { LocationsEnum, ObjectTypeEnum } from '../../../api/renters/entities/RenterFilters.entity';
 import { PreferredGenderEnumType } from '../../../api/landlord-objects/entities/LandlordObject.entity';
 import {
@@ -48,6 +49,7 @@ export class LandlordsKeyboardsService {
   initLandlordObjectFormKeyboard(
     onBackToMainMenu: GetMainMenu,
     onFillObject: HandlerLandlordObjectForm,
+    onDeleteObject: HandlerDeleteObject,
   ): void {
     this.landlordObjectFormKeyboard = new Menu<MyContext>('keyboard-landlordObjectForm')
       .dynamic(async (mainCtx, range) => {
@@ -64,9 +66,17 @@ export class LandlordsKeyboardsService {
           return;
         }
         // range.text('update object');
+        range.submenu(`${EMOJI_BAG} Удалить объект`, 'keyboard-LLObjectDelete');
       })
       .row()
       .text(`${EMOJI_BACK} Меню`, onBackToMainMenu);
+
+    const secondDeletionMenu = new Menu<MyContext>('keyboard-LLObjectDelete')
+      .text('Подтверждаю удаление', onDeleteObject)
+      .row()
+      .back('Отменить');
+
+    this.landlordObjectFormKeyboard.register(secondDeletionMenu);
   }
 
   getPhoneNumberKeyboard(): ReplyKeyboardMarkup {

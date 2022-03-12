@@ -38,8 +38,18 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       .execute();
   }
 
-  async deleteObject(id: string): Promise<void> {
+  async forceDeleteObject(id: string): Promise<void> {
     await this.delete(id);
+  }
+
+  async softDeleteObject(id: string): Promise<void> {
+    await this.createQueryBuilder()
+      .update()
+      .set({
+        deletedAt: new Date(),
+      })
+      .where('id = :id', { id })
+      .execute();
   }
 
   getFullObject(landlordObjectId: string): Promise<LandlordObjectEntity> {
@@ -67,6 +77,7 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       .where('telegramUser.chatId = :chatId', {
         chatId: chatId,
       })
+      .andWhere('landlordObject.deletedAt is NULL')
       .orderBy({
         number: 'DESC',
       });

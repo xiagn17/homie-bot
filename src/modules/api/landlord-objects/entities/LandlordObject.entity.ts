@@ -71,6 +71,9 @@ export class LandlordObjectEntity {
   @Column({ name: 'stopped_at', type: 'timestamptz' })
   readonly stoppedAt: Date | null;
 
+  @Column({ name: 'deleted_at', type: 'timestamptz' })
+  readonly deletedAt: Date | null;
+
   @Column({ name: 'object_type', type: 'enum', enum: ObjectTypeEnum })
   objectType: ObjectTypeEnum;
 

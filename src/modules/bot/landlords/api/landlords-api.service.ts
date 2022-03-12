@@ -31,4 +31,8 @@ export class LandlordsApiService {
       chatId: chatId,
     });
   }
+
+  deleteObject(chatId: string): Promise<void> {
+    return this.landlordObjectsService.deleteObject(chatId);
+  }
 }

@@ -36,10 +36,7 @@ export class LandlordObjectsService {
   }
 
   public async createObject(landlordObjectDraft: ApiLandlordObjectDraft): Promise<LandlordObjectEntity> {
-    const { chatId: adminChatId } = await this.telegramBotService.getAdmin();
-    const { chatId: subAdminChatId } = await this.telegramBotService.getSubAdmin();
-    const isAdmin =
-      adminChatId === landlordObjectDraft.chatId || subAdminChatId === landlordObjectDraft.chatId;
+    const isAdmin = await this.telegramBotService.isUserAdmin(landlordObjectDraft.chatId);
 
     const landlordObject = await this.connection.transaction(async manager => {
       const telegramUser = await manager
@@ -67,7 +64,7 @@ export class LandlordObjectsService {
       );
       await Promise.all(photoEntitiesCreatePromise);
 
-      return this.getLandlordObject(landlordObjectEntity.id, manager);
+      return manager.getCustomRepository(LandlordObjectsRepository).getFullObject(landlordObjectEntity.id);
     });
 
     if (isAdmin) {
@@ -123,17 +120,25 @@ export class LandlordObjectsService {
     return landlordObject.id;
   }
 
-  async stopObject(archiveLandlordObjectDto: ArchiveLandlordObjectDto): Promise<void> {
-    await this.connection.transaction(async entityManager => {
-      const landlordObject = await entityManager
+  async stopObject(
+    archiveLandlordObjectDto: ArchiveLandlordObjectDto,
+    entityManager?: EntityManager,
+  ): Promise<void> {
+    const action = async (manager: EntityManager): Promise<void> => {
+      const landlordObject = await manager
         .getCustomRepository(LandlordObjectsRepository)
         .getByChatId(archiveLandlordObjectDto.chatId);
-      await entityManager.getCustomRepository(LandlordObjectsRepository).stopObject(landlordObject.id);
-      await entityManager
+      await manager.getCustomRepository(LandlordObjectsRepository).stopObject(landlordObject.id);
+      await manager
         .getCustomRepository(LandlordObjectRenterMatchesRepository)
         .deleteUnprocessedRentersForObject(landlordObject.id);
-      await this.tasksSchedulerService.removeTasksAfterStopObject(landlordObject.id, entityManager);
-    });
+      await this.tasksSchedulerService.removeTasksAfterStopObject(landlordObject.id, manager);
+    };
+
+    if (entityManager) {
+      return action(entityManager);
+    }
+    return this.connection.transaction(action);
   }
 
   async resumeObject(landlordObjectResumeDto: ApiLandlordObjectResumeType): Promise<void> {
@@ -143,5 +148,15 @@ export class LandlordObjectsService {
 
     await this.renewObject(landlordObjectResumeDto);
     await this.objectMatchesForLandlordService.matchObjectToRenters(landlordObject);
+  }
+
+  async deleteObject(chatId: string): Promise<void> {
+    await this.connection.transaction(async entityManager => {
+      const landlordObject = await entityManager
+        .getCustomRepository(LandlordObjectsRepository)
+        .getByChatId(chatId);
+      await this.stopObject({ chatId }, entityManager);
+      await entityManager.getCustomRepository(LandlordObjectsRepository).softDeleteObject(landlordObject.id);
+    });
   }
 }

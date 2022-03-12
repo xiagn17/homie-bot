@@ -7,6 +7,7 @@ import {
   TelegramUserType,
 } from '../../session-storage/interfaces/session-storage.interface';
 import {
+  HandlerDeleteObject,
   HandlerLandlordObjectForm,
   HandlerLandlordOnFirstTip,
   HandlerObjectFormAddressQuestion,
@@ -138,6 +139,13 @@ export class LandlordsHandlersService {
 
   public onFillLandlordObjectFormHandler: HandlerLandlordObjectForm = async ctx => {
     await this.landlordsService.sendObjectFormNameQuestion(ctx);
+  };
+
+  public onDeleteObjectHandler: HandlerDeleteObject = async ctx => {
+    const chatId = ctx.from.id.toString();
+    await this.landlordsApiService.deleteObject(chatId);
+    await ctx.reply(this.landlordsTextsService.getDeletedText());
+    setTimeout(() => void this.mainMenuService.getMenu(ctx), 3000);
   };
 
   public onLandlordObjectStopResume: HandlerOnLandlordObjectStopResume = async (isActive, ctx, _next) => {
