@@ -14,10 +14,11 @@ export function getSecondRow(object: ApiObjectResponse): string {
     const floors = object.apartmentsInfo.floors;
     const allFloors = floors.split('/')[1];
     const objectFloor = floors.split('/')[0];
+    const floorsText = object.isAdmin ? '' : `, ${objectFloor} ЭТАЖ (из ${allFloors})`;
     if (object.roomsNumber === 'Студия') {
-      return `<b>СТУДИЯ, ${objectFloor} ЭТАЖ (из ${allFloors})</b>`;
+      return `<b>СТУДИЯ${floorsText}</b>`;
     }
-    return `<b>${object.roomsNumber}к КВАРТИРА, ${objectFloor} ЭТАЖ (из ${allFloors})</b>`;
+    return `<b>${object.roomsNumber}к КВАРТИРА${floorsText}</b>`;
   }
   const type = object.objectType === ObjectTypeEnum.bed ? 'КОЙКО-МЕСТО' : 'КОМНАТА';
   return `<b>${type} В ${object.roomsNumber}к КВ.</b>`;
