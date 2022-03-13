@@ -37,7 +37,7 @@ export class MainMenuHandlersService implements OnModuleInit {
     const renterSession = session.renter;
     const userType = session.type;
     const isTimeToShowMenu =
-      renterSession.viewedObjects === 3 &&
+      renterSession.viewedObjects === 2 &&
       !renterSession.firstMenuTip &&
       userType === TelegramUserType.renter;
     const route1 = isTimeToShowMenu ? ROUTE_MENU_TIP : undefined;
