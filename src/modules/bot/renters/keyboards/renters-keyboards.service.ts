@@ -150,7 +150,7 @@ export class RentersKeyboardsService {
           .text(textBeds, onFiltersObjectTypes.bind(this, ObjectTypeEnum.bed))
           .row()
           // eslint-disable-next-line @typescript-eslint/no-empty-function
-          .back(`${EMOJI_BACK} Назад`, () => {});
+          .back(`Подтвердить`, () => {});
       },
     );
 
@@ -184,7 +184,7 @@ export class RentersKeyboardsService {
           .text(textWest, onFiltersLocation.bind(this, LocationsEnum.west))
           .text(textEast, onFiltersLocation.bind(this, LocationsEnum.east))
           .row()
-          .back(`${EMOJI_BACK} Назад`, onFilters);
+          .back(`Подтвердить`, onFilters);
       },
     );
 
