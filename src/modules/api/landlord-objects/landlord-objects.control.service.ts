@@ -48,7 +48,7 @@ export class LandlordObjectsControlService {
     if (!approveLandlordObjectDto.isApproved) {
       await this.connection
         .getCustomRepository(LandlordObjectsRepository)
-        .forceDeleteObject(approveLandlordObjectDto.id);
+        .softDeleteObject(approveLandlordObjectDto.id);
     }
 
     await this.connection
