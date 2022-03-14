@@ -26,6 +26,7 @@ import { LandlordsHandlersService } from '../../landlords/handlers/landlords-han
 import { BotKeyboardsService } from '../../main/keyboards/bot-keyboards.service';
 import { BotHandlersService } from '../../main/handlers/bot-handlers.service';
 import { RentersObjectsHandlersService } from '../../renter-objects/handlers/renters-objects-handlers.service';
+import { clearTemporaryPropertiesInSession } from '../../session-storage/helpers/clear-temp-properties.helper';
 
 const ROUTE_MENU_TIP = 'first-menu-tip';
 @Injectable()
@@ -116,6 +117,8 @@ export class MainMenuHandlersService implements OnModuleInit {
   }
 
   onGetMenuHandler: HandlerOnGetMenu = async ctx => {
+    const session = await ctx.session;
+    clearTemporaryPropertiesInSession(session);
     await this.mainMenuService.getMenu(ctx);
   };
 

@@ -48,10 +48,7 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     private readonly renterObjectsApiService: RenterObjectsApiService,
     private readonly renterObjectsKeyboardsService: RentersObjectsKeyboardsService,
     private readonly renterObjectsTextsService: RenterObjectsTextsService,
-  ) {
-    this.router.route(ROUTE_FIND_OBJECT_BY_NUMBER, this.onFindObjectCallback);
-    this.composer.use(this.router);
-  }
+  ) {}
 
   onModuleInit(): void {
     this.composer.callbackQuery(/^request_/, async ctx => {
@@ -98,6 +95,9 @@ export class RentersObjectsHandlersService implements OnModuleInit {
       new RegExp(`^${KEYBOARD_RENTER_SEE_OBJECTS_PREFIX}`),
       this.renterObjectsService.sendNextObject,
     );
+
+    this.router.route(ROUTE_FIND_OBJECT_BY_NUMBER, this.onFindObjectCallback);
+    this.composer.use(this.router);
   }
 
   public onFindObjectMenuButtonHandler: HandlerOnFindObjectMenuButton = async ctx => {
