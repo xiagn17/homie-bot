@@ -14,7 +14,6 @@ import { BotKeyboardsService, KEYBOARD_USER_TYPE_PREFIX } from '../keyboards/bot
 import { getDataFromCallbackQuery } from '../../helpers/getDataFromCallbackQuery';
 import { TelegramUserType } from '../../session-storage/interfaces/session-storage.interface';
 import { MainMenuService } from '../../main-menu/main-menu.service';
-import { clearTemporaryPropertiesInSession } from '../../session-storage/helpers/clear-temp-properties.helper';
 
 const ROUTE_USER_TYPE = 'route-userType';
 @Injectable()
@@ -64,7 +63,6 @@ export class BotHandlersService implements OnModuleInit {
   public chooseUserType: ChooseUserType = async (type, ctx, next) => {
     const session = await ctx.session;
     session.type = type;
-    clearTemporaryPropertiesInSession(session);
 
     await next();
   };
