@@ -225,10 +225,8 @@ export class LandlordsHandlersService {
       KEYBOARD_OBJECT_FORM_START_ARRIVAL_DATE_PREFIX,
       ctx.callbackQuery?.data,
     );
-    const nowDate = new Date().toLocaleDateString();
-    const startArrivalDate = isNowFromButton
-      ? getDateFromString(nowDate)
-      : getDateFromString(ctx.message?.text);
+    const nowDate = new Date();
+    const startArrivalDate = isNowFromButton ? nowDate : getDateFromString(ctx.message?.text);
 
     if (!startArrivalDate) {
       await this.landlordsService.sendObjectFormStartArrivalDateQuestion(ctx);

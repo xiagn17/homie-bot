@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
 import { ObjectTypeEnum } from '../renters/entities/RenterFilters.entity';
+import { RU_LOCALE } from '../../../utils/locales';
 import { LandlordObjectEntity } from './entities/LandlordObject.entity';
 import { ApiLandlordObjectDraft, ApiObjectResponse } from './interfaces/landlord-objects.type';
 import { LandlordObjectRoomBedInfoInterface } from './interfaces/landlord-object-room-bed-info.interface';
@@ -67,7 +68,7 @@ export class LandlordObjectsSerializer {
       address: landlordObject.address,
       price: landlordObject.price,
       photoIds: landlordObject.photos.map(p => p.photoId),
-      startArrivalDate: new Date(landlordObject.startArrivalDate).toLocaleDateString('ru-RU'),
+      startArrivalDate: new Date(landlordObject.startArrivalDate).toLocaleDateString(RU_LOCALE),
       comment: landlordObject.comment,
     };
     if (landlordObject.objectType === ObjectTypeEnum.apartments) {
