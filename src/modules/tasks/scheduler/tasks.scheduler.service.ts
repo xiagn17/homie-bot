@@ -25,17 +25,18 @@ export class TasksSchedulerService {
   async setTaskLandlordRenewNotification(
     data: TaskDataLandlordRenewNotificationInterface,
     customDate?: Date,
+    entityManager: EntityManager = this.entityManager,
   ): Promise<void> {
     const type = TaskTypeEnumInterface.landlord_renew_notification;
     const date = customDate ?? new Date(Date.now() + ONE_DAY_TIMESTAMP);
-    const prevTask = await this.tasksRepository.findOne({
+    const prevTask = await entityManager.getCustomRepository(TasksRepository).findOne({
       where: { type: type, data: { landlordObjectId: data.landlordObjectId }, completedAt: null },
     });
     if (!prevTask) {
-      await this.tasksRepository.createAndSave(type, date, data);
+      await entityManager.getCustomRepository(TasksRepository).createAndSave(type, date, data);
       return;
     }
-    await this.tasksRepository.update(prevTask.id, { scheduledFor: date });
+    await entityManager.getCustomRepository(TasksRepository).update(prevTask.id, { scheduledFor: date });
   }
 
   async setAdminObjectSubmitRenter(

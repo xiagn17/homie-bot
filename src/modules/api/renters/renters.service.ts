@@ -208,8 +208,11 @@ export class RentersService {
     );
   }
 
-  public async removeContact(renterId: string): Promise<void> {
-    await this.connection.getCustomRepository(RenterSettingsRepository).removeContact(renterId);
+  public async removeContact(
+    renterId: string,
+    entityManager: EntityManager = this.connection.manager,
+  ): Promise<void> {
+    await entityManager.getCustomRepository(RenterSettingsRepository).removeContact(renterId);
   }
 
   public async stopSearch(chatId: string): Promise<void> {

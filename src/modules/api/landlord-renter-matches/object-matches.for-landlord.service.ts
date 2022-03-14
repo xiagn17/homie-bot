@@ -60,7 +60,6 @@ export class ObjectMatchesForLandlordService {
     landlordStatusOfObjectDto: ApiChangeLandlordStatusOfObject,
   ): Promise<void> {
     await this.entityManager.transaction(async entityManager => {
-      // считаем что или chatId или landlordObjectId доступен
       const object = ((landlordStatusOfObjectDto.chatId &&
         (await entityManager
           .getCustomRepository(LandlordObjectsRepository)
@@ -78,6 +77,15 @@ export class ObjectMatchesForLandlordService {
           landlordStatusOfObjectDto.landlordStatus,
         );
 
+      await entityManager.getCustomRepository(LandlordObjectsRepository).renewObject(object.id);
+      await this.tasksSchedulerService.setTaskLandlordRenewNotification(
+        {
+          landlordObjectId: object.id,
+        },
+        undefined,
+        entityManager,
+      );
+
       if (landlordStatusOfObjectDto.landlordStatus === MatchStatusEnumType.resolved) {
         const renter = await this.rentersService.getRenter(landlordStatusOfObjectDto.renterId, entityManager);
         await this.eventEmitter.emitAsync(
@@ -92,12 +100,16 @@ export class ObjectMatchesForLandlordService {
   }
 
   public async getPaidContacts(renterId: string, landlordObjectId: string): Promise<LandlordObjectEntity> {
-    const landlordObject = await this.entityManager
-      .getCustomRepository(LandlordObjectsRepository)
-      .getFullObject(landlordObjectId);
-    await this.entityManager
-      .getCustomRepository(LandlordObjectRenterMatchesRepository)
-      .markAsPaidMatch(renterId, landlordObjectId);
+    const landlordObject = await this.entityManager.transaction(async entityManager => {
+      const landlordObject = await entityManager
+        .getCustomRepository(LandlordObjectsRepository)
+        .getFullObject(landlordObjectId);
+      await entityManager
+        .getCustomRepository(LandlordObjectRenterMatchesRepository)
+        .markAsPaidMatch(renterId, landlordObjectId);
+      await this.rentersService.removeContact(renterId, entityManager);
+      return landlordObject;
+    });
 
     const isPublishedByAdmins = landlordObject.isAdmin;
     if (isPublishedByAdmins) {
@@ -118,7 +130,6 @@ export class ObjectMatchesForLandlordService {
       }
     }
 
-    await this.rentersService.removeContact(renterId);
     return landlordObject;
   }
 

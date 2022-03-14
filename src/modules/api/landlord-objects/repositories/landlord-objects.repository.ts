@@ -22,7 +22,6 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       .update()
       .set({
         isApproved: true,
-        updatedAt: new Date(),
       })
       .where('id = :id', { id })
       .execute();
@@ -36,10 +35,6 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       })
       .where('id = :id', { id })
       .execute();
-  }
-
-  async forceDeleteObject(id: string): Promise<void> {
-    await this.delete(id);
   }
 
   async softDeleteObject(id: string): Promise<void> {

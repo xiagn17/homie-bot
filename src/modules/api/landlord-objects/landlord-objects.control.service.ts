@@ -45,33 +45,41 @@ export class LandlordObjectsControlService {
   }
 
   public async controlApprove(approveLandlordObjectDto: ApproveLandlordObjectDto): Promise<void> {
-    if (!approveLandlordObjectDto.isApproved) {
-      await this.connection
+    return this.connection.transaction(async entityManager => {
+      if (!approveLandlordObjectDto.isApproved) {
+        await entityManager
+          .getCustomRepository(LandlordObjectsRepository)
+          .softDeleteObject(approveLandlordObjectDto.id);
+      }
+
+      await entityManager
         .getCustomRepository(LandlordObjectsRepository)
-        .softDeleteObject(approveLandlordObjectDto.id);
-    }
-
-    await this.connection
-      .getCustomRepository(LandlordObjectsRepository)
-      .approveObject(approveLandlordObjectDto.id);
-
-    const landlordObject = await this.connection
-      .getCustomRepository(LandlordObjectsRepository)
-      .getFullObject(approveLandlordObjectDto.id);
-    await this.objectMatchesForLandlordService.matchObjectToRenters(landlordObject);
-
-    if (!landlordObject.isAdmin) {
-      await this.eventEmitter.emitAsync(
-        BROADCAST_MODERATION_DECISION_TO_LANDLORD_EVENT_NAME,
-        new BroadcastModerationDecisionToLandlordEvent({
-          isApproved: approveLandlordObjectDto.isApproved,
-          chatId: landlordObject.telegramUser.chatId,
-        }),
+        .approveObject(approveLandlordObjectDto.id);
+      await entityManager
+        .getCustomRepository(LandlordObjectsRepository)
+        .renewObject(approveLandlordObjectDto.id);
+      await this.tasksSchedulerService.setTaskLandlordRenewNotification(
+        {
+          landlordObjectId: approveLandlordObjectDto.id,
+        },
+        undefined,
+        entityManager,
       );
 
-      await this.tasksSchedulerService.setTaskLandlordRenewNotification({
-        landlordObjectId: approveLandlordObjectDto.id,
-      });
-    }
+      const landlordObject = await entityManager
+        .getCustomRepository(LandlordObjectsRepository)
+        .getFullObject(approveLandlordObjectDto.id);
+      await this.objectMatchesForLandlordService.matchObjectToRenters(landlordObject, entityManager);
+
+      if (!landlordObject.isAdmin) {
+        await this.eventEmitter.emitAsync(
+          BROADCAST_MODERATION_DECISION_TO_LANDLORD_EVENT_NAME,
+          new BroadcastModerationDecisionToLandlordEvent({
+            isApproved: approveLandlordObjectDto.isApproved,
+            chatId: landlordObject.telegramUser.chatId,
+          }),
+        );
+      }
+    });
   }
 }
