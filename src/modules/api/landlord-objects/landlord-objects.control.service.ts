@@ -55,16 +55,6 @@ export class LandlordObjectsControlService {
       await entityManager
         .getCustomRepository(LandlordObjectsRepository)
         .approveObject(approveLandlordObjectDto.id);
-      await entityManager
-        .getCustomRepository(LandlordObjectsRepository)
-        .renewObject(approveLandlordObjectDto.id);
-      await this.tasksSchedulerService.setTaskLandlordRenewNotification(
-        {
-          landlordObjectId: approveLandlordObjectDto.id,
-        },
-        undefined,
-        entityManager,
-      );
 
       const landlordObject = await entityManager
         .getCustomRepository(LandlordObjectsRepository)
@@ -72,6 +62,17 @@ export class LandlordObjectsControlService {
       await this.objectMatchesForLandlordService.matchObjectToRenters(landlordObject, entityManager);
 
       if (!landlordObject.isAdmin) {
+        await entityManager
+          .getCustomRepository(LandlordObjectsRepository)
+          .renewObject(approveLandlordObjectDto.id);
+        await this.tasksSchedulerService.setTaskLandlordRenewNotification(
+          {
+            landlordObjectId: approveLandlordObjectDto.id,
+          },
+          undefined,
+          entityManager,
+        );
+
         await this.eventEmitter.emitAsync(
           BROADCAST_MODERATION_DECISION_TO_LANDLORD_EVENT_NAME,
           new BroadcastModerationDecisionToLandlordEvent({

@@ -77,14 +77,16 @@ export class ObjectMatchesForLandlordService {
           landlordStatusOfObjectDto.landlordStatus,
         );
 
-      await entityManager.getCustomRepository(LandlordObjectsRepository).renewObject(object.id);
-      await this.tasksSchedulerService.setTaskLandlordRenewNotification(
-        {
-          landlordObjectId: object.id,
-        },
-        undefined,
-        entityManager,
-      );
+      if (!object.isAdmin) {
+        await entityManager.getCustomRepository(LandlordObjectsRepository).renewObject(object.id);
+        await this.tasksSchedulerService.setTaskLandlordRenewNotification(
+          {
+            landlordObjectId: object.id,
+          },
+          undefined,
+          entityManager,
+        );
+      }
 
       if (landlordStatusOfObjectDto.landlordStatus === MatchStatusEnumType.resolved) {
         const renter = await this.rentersService.getRenter(landlordStatusOfObjectDto.renterId, entityManager);
