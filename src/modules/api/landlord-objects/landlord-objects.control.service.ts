@@ -55,6 +55,9 @@ export class LandlordObjectsControlService {
       await entityManager
         .getCustomRepository(LandlordObjectsRepository)
         .approveObject(approveLandlordObjectDto.id);
+      await entityManager
+        .getCustomRepository(LandlordObjectsRepository)
+        .renewObject(approveLandlordObjectDto.id);
 
       const landlordObject = await entityManager
         .getCustomRepository(LandlordObjectsRepository)
@@ -62,9 +65,6 @@ export class LandlordObjectsControlService {
       await this.objectMatchesForLandlordService.matchObjectToRenters(landlordObject, entityManager);
 
       if (!landlordObject.isAdmin) {
-        await entityManager
-          .getCustomRepository(LandlordObjectsRepository)
-          .renewObject(approveLandlordObjectDto.id);
         await this.tasksSchedulerService.setTaskLandlordRenewNotification(
           {
             landlordObjectId: approveLandlordObjectDto.id,
