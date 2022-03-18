@@ -37,5 +37,6 @@ export default (): ConfigurationType => {
         privateHelper: String(process.env.PRIVATE_HELPER_PRICE),
       },
     },
+    googleAnalyticsId: String(process.env.GOOGLE_ANALYTICS_ID),
   };
 };

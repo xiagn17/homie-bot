@@ -52,6 +52,8 @@ import { getDataFromCallbackQuery } from '../../helpers/getDataFromCallbackQuery
 import { MainMenuService } from '../../main-menu/main-menu.service';
 import { LandlordsApiService } from '../api/landlords-api.service';
 import { BotApiService } from '../../main/api/bot-api.service';
+import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
+import { LANDLORD_ACTION, LANDLORD_HELLO_EVENT } from '../../../../utils/google-analytics/events';
 import { getDateFromString } from './helpers/startArrivalDate';
 import { getPrice } from './helpers/price';
 import { getApartmentsFloors } from './helpers/apartmentsFloors';
@@ -166,6 +168,7 @@ export class LandlordsHandlersService {
     const text = this.landlordsTextsService.getFirstTipTexts(usersCount);
     await ctx.reply(text[0]);
     await ctx.reply(text[1]);
+    sendAnalyticsEvent(ctx, LANDLORD_ACTION, LANDLORD_HELLO_EVENT);
     await new Promise(res => setTimeout(res, 6000));
 
     await this.mainMenuService.getMenu(ctx);

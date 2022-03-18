@@ -27,6 +27,8 @@ import { BotKeyboardsService } from '../../main/keyboards/bot-keyboards.service'
 import { BotHandlersService } from '../../main/handlers/bot-handlers.service';
 import { RentersObjectsHandlersService } from '../../renter-objects/handlers/renters-objects-handlers.service';
 import { clearTemporaryPropertiesInSession } from '../../session-storage/helpers/clear-temp-properties.helper';
+import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
+import { RENTER_ACTION, RENTER_NEXT_CLICK_EVENT } from '../../../../utils/google-analytics/events';
 
 const ROUTE_MENU_TIP = 'first-menu-tip';
 @Injectable()
@@ -123,6 +125,7 @@ export class MainMenuHandlersService implements OnModuleInit {
   };
 
   onNextObjectHandler: HandlerOnNextObject = async ctx => {
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_NEXT_CLICK_EVENT);
     await this.renterObjectsService.sendNextObject(ctx);
   };
 

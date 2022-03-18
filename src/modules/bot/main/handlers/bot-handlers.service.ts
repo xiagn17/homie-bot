@@ -14,6 +14,8 @@ import { BotKeyboardsService, KEYBOARD_USER_TYPE_PREFIX } from '../keyboards/bot
 import { getDataFromCallbackQuery } from '../../helpers/getDataFromCallbackQuery';
 import { TelegramUserType } from '../../session-storage/interfaces/session-storage.interface';
 import { MainMenuService } from '../../main-menu/main-menu.service';
+import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
+import { ALL_ACTION, ALL_HELLO_EVENT } from '../../../../utils/google-analytics/events';
 
 const ROUTE_USER_TYPE = 'route-userType';
 @Injectable()
@@ -71,10 +73,11 @@ export class BotHandlersService implements OnModuleInit {
     const chatId = ctx.from?.id?.toString() as string;
     const username = ctx.from?.username as string;
     const deepLink = ctx.match as string;
+    const deepLinkParsed = deepLink.length ? deepLink : null;
     await this.botApiService.create({
       channel_id: chatId,
       username: username,
-      deepLink: deepLink.length ? deepLink : null,
+      deepLink: deepLinkParsed,
     });
 
     await ctx.reply('👋🏻');
@@ -88,9 +91,10 @@ export class BotHandlersService implements OnModuleInit {
       ctx.callbackQuery?.data,
     );
     if (!keyboardData) {
-      await ctx.reply('Вы хотите Найти или Сдать жилье?', {
+      await ctx.reply('Как я могу тебе помочь?', {
         reply_markup: this.botKeyboardsService.getInlineUserTypeKeyboard(),
       });
+      sendAnalyticsEvent(ctx, ALL_ACTION, ALL_HELLO_EVENT);
       return;
     }
 

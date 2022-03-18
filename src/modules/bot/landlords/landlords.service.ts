@@ -3,6 +3,12 @@ import { InputMediaPhoto } from 'grammy/out/platform.node';
 import { OBJECT_DEFAULT_PHOTO } from '../constants/imageUrls';
 import { ObjectTypeEnum } from '../../api/renters/entities/RenterFilters.entity';
 import { EMOJI_CELEBRATE } from '../constants/emoji';
+import { sendAnalyticsEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
+import {
+  LANDLORD_ACTION,
+  LANDLORD_FORM_DONE_EVENT,
+  LANDLORD_FORM_START_EVENT,
+} from '../../../utils/google-analytics/events';
 import {
   SendLandlordObjectForm,
   SendObjectFormAddressQuestion,
@@ -61,6 +67,7 @@ export class LandlordsService {
     session.landlord.objectStep = 'name';
     session.landlord.objectStepsData = {};
     await ctx.reply(this.landlordsTextsService.getObjectFormNameText());
+    sendAnalyticsEvent(ctx, LANDLORD_ACTION, LANDLORD_FORM_START_EVENT);
   };
 
   public sendObjectFormPhoneNumberQuestion: SendObjectFormPhoneNumberQuestion = async ctx => {
@@ -216,6 +223,7 @@ export class LandlordsService {
       } else {
         const text = this.landlordsTextsService.getObjectFormModerationText(object.number);
         await ctx.reply(text);
+        sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_FORM_DONE_EVENT);
       }
     } catch (e) {
       await ctx.reply('Упс, при сохранении произошла ошибка, обратитесь в поддержку или попробуйте еще раз');

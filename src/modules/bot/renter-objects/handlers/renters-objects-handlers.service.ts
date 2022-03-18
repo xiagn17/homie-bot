@@ -24,6 +24,15 @@ import {
 } from '../../session-storage/interfaces/session-storage.interface';
 import { getObjectNumber } from './helpers/objectNumber.helper';
 import UrlButton = InlineKeyboardButton.UrlButton;
+import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
+import {
+  RENTER_ACTION,
+  RENTER_CONTACT_2_CLICK_EVENT,
+  RENTER_CONTACT_CLICK_EVENT,
+  RENTER_LIKE_CLICK_EVENT,
+  RENTER_NEXT_CLICK_EVENT,
+  RENTER_STOP_CLICK_EVENT,
+} from '../../../../utils/google-analytics/events';
 
 const ROUTE_FIND_OBJECT_BY_NUMBER: RenterInfoRouterSteps = 'find_object';
 
@@ -129,6 +138,7 @@ export class RentersObjectsHandlersService implements OnModuleInit {
   };
 
   private onSendRequestHandler: HandlerSendRequest = async (objectId, ctx) => {
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_LIKE_CLICK_EVENT);
     const infoExists = await this.renterObjectsApiService.isInfoExists(ctx.from?.id.toString() as string);
     if (!infoExists) {
       await this.renterObjectsService.sendRenterInfoNotExists(objectId, ctx);
@@ -144,6 +154,7 @@ export class RentersObjectsHandlersService implements OnModuleInit {
   };
 
   private onGetContactHandler: HandlerGetContact = async (objectId, ctx) => {
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_CONTACT_CLICK_EVENT);
     const isContactSent = await this.renterObjectsService.getPaidContact(objectId, ctx);
     if (isContactSent) {
       await ctx.editMessageReplyMarkup({ reply_markup: undefined });
@@ -151,6 +162,7 @@ export class RentersObjectsHandlersService implements OnModuleInit {
   };
 
   private onGetContactAfterHandler: HandlerGetContact = async (objectId, ctx) => {
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_CONTACT_2_CLICK_EVENT);
     const isContactSent = await this.renterObjectsService.getPaidContact(objectId, ctx);
     if (isContactSent) {
       await ctx.editMessageReplyMarkup({ reply_markup: undefined });
@@ -158,6 +170,7 @@ export class RentersObjectsHandlersService implements OnModuleInit {
   };
 
   private onGetNextObjectHandler: HandlerGetNextObject = async (objectId, ctx) => {
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_NEXT_CLICK_EVENT);
     await ctx.editMessageReplyMarkup({
       reply_markup: this.renterObjectsKeyboardsService.getObjectsKeyboard(objectId, false),
     });
@@ -166,6 +179,7 @@ export class RentersObjectsHandlersService implements OnModuleInit {
   };
 
   private onGetNextObjectAfterHandler: HandlerGetNextObject = async (objectId, ctx) => {
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_NEXT_CLICK_EVENT);
     await ctx.editMessageReplyMarkup({
       reply_markup: this.renterObjectsKeyboardsService.getSendRequestKeyboard(objectId, false),
     });
@@ -182,6 +196,7 @@ export class RentersObjectsHandlersService implements OnModuleInit {
   };
 
   private onRenterStopSearchHandler: HandlerRenterStopSearch = async ctx => {
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_STOP_CLICK_EVENT);
     const chatId = ctx.from?.id.toString() as string;
     await this.renterObjectsApiService.stopSearch(chatId);
     await ctx.reply(this.renterObjectsTextsService.getStoppedRenterSearchText());

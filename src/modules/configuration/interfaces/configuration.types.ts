@@ -49,4 +49,5 @@ export interface ConfigurationType {
   subAdminUsername: string;
   bot: BotConfigType;
   payments: PaymentsConfigType;
+  googleAnalyticsId: string;
 }

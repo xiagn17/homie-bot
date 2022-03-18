@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../../logger/logger.service';
+import { sendAnalyticsStartChatEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
 import { TelegramUsersRepository } from './repositories/telegramUsers.repository';
 import { TelegramUserEntity } from './entities/TelegramUser.entity';
 import { TelegramBotSerializer } from './telegram-bot.serializer';
@@ -25,6 +26,7 @@ export class TelegramBotService {
       .getCustomRepository(TelegramUsersRepository)
       .findOne({ chatId: chatId, botId: newWebhookRenter.bot_id });
     if (!isUserExists) {
+      sendAnalyticsStartChatEvent(chatId, newWebhookRenter.deepLink);
       await this.entityManager.getCustomRepository(TelegramUsersRepository).createUser(telegramUserDbData);
       return;
     }

@@ -35,6 +35,8 @@ import { RentersInfoLifestyleInterface } from '../../../api/renters/interfaces/r
 import { RentersKeyboardsService } from '../keyboards/renters-keyboards.service';
 import { RentersTextsService } from '../texts/renters-texts.service';
 import { RentersApiService } from '../api/renters-api.service';
+import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
+import { RENTER_ACTION, RENTER_HELLO_EVENT } from '../../../../utils/google-analytics/events';
 import { validateBirthdayYear } from './helpers/birthdayYear.validate';
 import { validatePhoneNumber } from './helpers/phoneNumber.validate';
 import { validateSocials } from './helpers/socials.validate';
@@ -220,6 +222,7 @@ export class RentersHandlersService implements OnModuleInit {
     await ctx.reply(text, {
       reply_markup: this.rentersKeyboardsService.genderKeyboard,
     });
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_HELLO_EVENT);
   };
 
   onFillInfoHandler: HandlerOnFillInfo = async (from, ctx) => {

@@ -6,6 +6,12 @@ import { HandlerLandlordRenterActions } from '../interfaces/landlord-renters-han
 import { getDataFromCallbackQuery } from '../../helpers/getDataFromCallbackQuery';
 import { LandlordRentersApiService } from '../api/landlord-renters-api.service';
 import { LandlordRentersTextsService } from '../texts/landlord-renters-texts.service';
+import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
+import {
+  LANDLORD_ACTION,
+  LANDLORD_ANKETA_DISLIKE_EVENT,
+  LANDLORD_ANKETA_LIKE_EVENT,
+} from '../../../../utils/google-analytics/events';
 
 @Injectable()
 export class LandlordRentersHandlersService {
@@ -35,10 +41,12 @@ export class LandlordRentersHandlersService {
       const text = this.landlordRentersTextsService.getSubmitRenterText(caption);
       await this.landlordRentersApiService.submitRenter(chatId, renterId);
       await ctx.editMessageCaption({ caption: text });
+      sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_ANKETA_LIKE_EVENT);
     } else if (action === 'decline') {
       const text = this.landlordRentersTextsService.getDeclinedRenterText(caption);
       await this.landlordRentersApiService.declineRenter(chatId, renterId);
       await ctx.editMessageCaption({ caption: text });
+      sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_ANKETA_DISLIKE_EVENT);
     } else if (action === 'stop') {
       const text = caption + '\n';
       await this.landlordRentersApiService.stopSearchObject(chatId);

@@ -23,6 +23,16 @@ import { RenterObjectsTextsService } from '../renter-objects/texts/renter-object
 import { RentersObjectsKeyboardsService } from '../renter-objects/keyboards/renters-objects-keyboards.service';
 import { LandlordsKeyboardsService } from '../landlords/keyboards/landlords-keyboards.service';
 import { RenterObjectsApiService } from '../renter-objects/api/renter-objects-api.service';
+import { sendAnalyticsEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
+import {
+  LANDLORD_ACTION,
+  LANDLORD_ANKETA_CAME_EVENT,
+  LANDLORD_ANKETA_CAME_SUPER_EVENT,
+  LANDLORD_FORM_CONFIRMED_EVENT,
+  RENTER_ACTION,
+  RENTER_CONTACT_BUY_EVENT,
+  RENTER_HELPER_BUY_EVENT,
+} from '../../../utils/google-analytics/events';
 
 interface ForwardOptions {
   chatId: string;
@@ -70,6 +80,9 @@ export class BroadcastService implements OnModuleInit {
   async sendModerationDecisionToLandlord(isApproved: boolean, { chatId }: ForwardOptions): Promise<void> {
     const text = this.landlordsTextsService.getModerationDecisionText(isApproved);
     await this.sendMessage(chatId, text);
+    if (isApproved) {
+      sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_FORM_CONFIRMED_EVENT);
+    }
   }
 
   async sendRenterInfoToLandlord(renterInfo: ApiRenterFullInfo, { chatId }: ForwardOptions): Promise<void> {
@@ -79,6 +92,7 @@ export class BroadcastService implements OnModuleInit {
       caption: text,
       reply_markup: keyboard,
     });
+    sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_ANKETA_CAME_EVENT);
   }
 
   async sendInterestedRenterToLandlord(
@@ -89,6 +103,7 @@ export class BroadcastService implements OnModuleInit {
     await this.sendPhoto(chatId, renterInfo.photo, {
       caption: text,
     });
+    sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_ANKETA_CAME_SUPER_EVENT);
   }
 
   async sendLandlordContactsToApprovedRenter(
@@ -108,11 +123,13 @@ export class BroadcastService implements OnModuleInit {
   async sendSuccessfulPaidContacts(contactsNumber: number, { chatId }: ForwardOptions): Promise<void> {
     const text = this.rentersTextsService.getSuccessfulPaidContactsText(contactsNumber);
     await this.sendMessage(chatId, text);
+    sendAnalyticsEvent(chatId, RENTER_ACTION, RENTER_CONTACT_BUY_EVENT);
   }
 
   async sendSuccessfulPaidPrivateHelper({ chatId }: ForwardOptions): Promise<void> {
     const text = this.rentersTextsService.getSuccessfulPrivateHelperText();
     await this.sendMessage(chatId, text);
+    sendAnalyticsEvent(chatId, RENTER_ACTION, RENTER_HELPER_BUY_EVENT);
   }
 
   async sendSuccessfulPaidPrivateHelperToAdmin(

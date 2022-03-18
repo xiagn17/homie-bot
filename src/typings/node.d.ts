@@ -27,6 +27,8 @@ declare namespace NodeJS {
     FIVE_CONTACTS_PRICE: string;
     PRIVATE_HELPER_PRICE: string;
 
+    GOOGLE_ANALYTICS_ID: string;
+
     ADMIN_USERNAME: string;
     SUBADMIN_USERNAME: string;
   }

@@ -2,6 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { RenterObjectsService } from '../renter-objects/renter-objects.service';
 import { RenterFilledInfoStepsData } from '../session-storage/interfaces/session-storage.interface';
 import { RENTER_DEFAULT_PHOTO } from '../constants/imageUrls';
+import { sendAnalyticsEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
+import {
+  RENTER_ACTION,
+  RENTER_ANKETA_DONE_EVENT,
+  RENTER_ANKETA_Q2_EVENT,
+  RENTER_ANKETA_Q3_EVENT,
+  RENTER_ANKETA_Q4_EVENT,
+  RENTER_ANKETA_Q5_EVENT,
+  RENTER_ANKETA_Q6_EVENT,
+  RENTER_ANKETA_Q7_EVENT,
+  RENTER_ANKETA_Q8_EVENT,
+  RENTER_ANKETA_START_EVENT,
+} from '../../../utils/google-analytics/events';
 import {
   SendAboutQuestion,
   SendBirthdayYearQuestion,
@@ -53,12 +66,14 @@ export class RentersService {
     const session = await ctx.session;
     session.renter.infoStep = 'name';
     await ctx.reply(this.rentersTextsService.getNameQuestionText());
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_ANKETA_START_EVENT);
   };
 
   sendBirthdayYearQuestion: SendBirthdayYearQuestion = async ctx => {
     const session = await ctx.session;
     session.renter.infoStep = 'birthdayYear';
     await ctx.reply(this.rentersTextsService.getBirthdayYearQuestionText());
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_ANKETA_Q2_EVENT);
   };
 
   sendPhoneNumberQuestion: SendPhoneNumberQuestion = async ctx => {
@@ -67,6 +82,7 @@ export class RentersService {
     await ctx.reply(this.rentersTextsService.getPhoneNumberQuestionText(), {
       reply_markup: this.rentersKeyboardsService.getPhoneNumberKeyboard(),
     });
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_ANKETA_Q3_EVENT);
   };
 
   sendSocialsQuestion: SendSocialsQuestion = async ctx => {
@@ -75,6 +91,7 @@ export class RentersService {
     await ctx.reply(this.rentersTextsService.getSocialsQuestionText(), {
       reply_markup: { remove_keyboard: true },
     });
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_ANKETA_Q4_EVENT);
   };
 
   sendLifestyleQuestion: SendLifestyleQuestion = async ctx => {
@@ -83,18 +100,21 @@ export class RentersService {
     await ctx.reply(this.rentersTextsService.getLifestyleQuestionText(), {
       reply_markup: await this.rentersKeyboardsService.getRenterInfoLifestyleKeyboard(ctx),
     });
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_ANKETA_Q5_EVENT);
   };
 
   sendProfessionQuestion: SendProfessionQuestion = async ctx => {
     const session = await ctx.session;
     session.renter.infoStep = 'profession';
     await ctx.reply(this.rentersTextsService.getProfessionQuestionText());
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_ANKETA_Q6_EVENT);
   };
 
   sendAboutQuestion: SendAboutQuestion = async ctx => {
     const session = await ctx.session;
     session.renter.infoStep = 'about';
     await ctx.reply(this.rentersTextsService.getAboutQuestionText());
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_ANKETA_Q7_EVENT);
   };
 
   sendPhotoQuestion: SendPhotoQuestion = async ctx => {
@@ -111,6 +131,7 @@ export class RentersService {
       return;
     }
     await ctx.reply(text);
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_ANKETA_Q8_EVENT);
   };
 
   sendUpdateName: SendUpdateName = async ctx => {
@@ -218,6 +239,7 @@ export class RentersService {
     }
 
     const chatId = ctx.from?.id.toString() as string;
+    sendAnalyticsEvent(chatId, RENTER_ACTION, RENTER_ANKETA_DONE_EVENT);
     const infoData = session.renter.infoStepsData as RenterFilledInfoStepsData;
 
     try {
@@ -238,7 +260,7 @@ export class RentersService {
       const objectId = session.renter.infoFillFrom?.split('_')[1] as string;
 
       await ctx.reply(this.rentersTextsService.getSuccessfulFilledInfoAfterObjectRequestText());
-      setTimeout(() => this.renterObjectsService.sendObjectRequest(objectId, ctx), 1000);
+      setTimeout(() => void this.renterObjectsService.sendObjectRequest(objectId, ctx), 1000);
     } else if (infoFillFrom === 'menu') {
       await this.sendRenterInfoMessage(ctx);
     }

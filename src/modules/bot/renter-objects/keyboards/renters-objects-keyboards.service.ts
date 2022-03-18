@@ -15,6 +15,8 @@ import {
   EMOJI_WRITE_TO_CONTACT,
 } from '../../constants/emoji';
 import { PaymentItems } from '../../../api/payments/interfaces/payment-item.interface';
+import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
+import { RENTER_ACTION, RENTER_HELPER_CLICK_EVENT } from '../../../../utils/google-analytics/events';
 
 export const KEYBOARD_RENTER_SEE_OBJECTS_PREFIX = 'kb_renterSeeObjects_';
 
@@ -79,7 +81,8 @@ export class RentersObjectsKeyboardsService {
         .row()
         .url(`5 контактов - ${prices.fiveContacts} ₽`, fiveContactsUrl)
         .row()
-        .submenu(`${EMOJI_INFO} Личный помошник`, 'menu-payContacts-sub', async ctx => {
+        .submenu(`${EMOJI_INFO} Личный помощник`, 'menu-payContacts-sub', async ctx => {
+          sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_HELPER_CLICK_EVENT);
           await ctx.editMessageText(privateHelperText, {
             disable_web_page_preview: true,
           });
