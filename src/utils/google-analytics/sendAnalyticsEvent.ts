@@ -43,6 +43,7 @@ export const sendAnalyticsEvent = (
 export const sendAnalyticsStartChatEvent = (chatId: string, deepLink: string | null): void => {
   const visitor = createVisitor(chatId);
   if (deepLink) {
+    setSource(visitor, 'ad');
     setCampaign(visitor, deepLink);
   }
   visitor.event(TELEGRAM_CATEGORY, ALL_ACTION, ALL_START_EVENT).send();
