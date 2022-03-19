@@ -50,6 +50,7 @@ export class LandlordObjectsControlService {
         await entityManager
           .getCustomRepository(LandlordObjectsRepository)
           .softDeleteObject(approveLandlordObjectDto.id);
+        return;
       }
 
       await entityManager
