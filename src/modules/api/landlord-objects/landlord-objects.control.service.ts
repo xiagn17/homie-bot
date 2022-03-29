@@ -101,7 +101,7 @@ export class LandlordObjectsControlService {
     const count = await entityManager
       .getCustomRepository(LandlordObjectsRepository)
       .countOfApprovedObjects(referralUserId);
-    const firstApprovedObject = count === 1;
+    const firstApprovedObject = count === 0;
     if (!firstApprovedObject) {
       return;
     }
