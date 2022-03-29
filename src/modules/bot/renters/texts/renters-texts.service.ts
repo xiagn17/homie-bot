@@ -22,6 +22,7 @@ import {
   EMOJI_PHOTOS_LIMIT,
   EMOJI_PROFESSION,
   EMOJI_STAR,
+  EMOJI_STICK,
   EMOJI_SUPER,
 } from '../../constants/emoji';
 import { GENDER_TEXT_MAP, OBJECT_TYPE_TEXT_MAP } from '../../constants/texts';
@@ -142,6 +143,20 @@ export class RentersTextsService {
       `\n` +
       `${EMOJI_GLOBUS} <b>telegram:</b> ${username}\n`
     );
+  }
+
+  getRenterInfoForCopyText(renterInfo?: ApiRenterFullInfo): string {
+    const mainText = this.getRenterInfoText(renterInfo);
+    return (
+      `<code>` +
+      mainText +
+      `\n` +
+      `Сформировано с помощью https://t.me/Homie_robot?start=referral_copy-ank</code>`
+    );
+  }
+
+  getCopyText(): string {
+    return `${EMOJI_STICK} Этот арендодатель еще <b>не увидел твою анкету.</b> Чтобы не тратить время на рассказ о себе, можешь <b>скопировать свою анкету</b>, кликнув на любое место в тексте, и отправить ему.`;
   }
 
   getRenterInfoInterestedText(renterInfo?: ApiRenterFullInfo): string {

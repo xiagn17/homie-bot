@@ -9,6 +9,7 @@ import { RenterObjectsTextsModule } from '../renter-objects/texts/renter-objects
 import { RentersObjectsKeyboardsModule } from '../renter-objects/keyboards/renters-objects-keyboards.module';
 import { LandlordsKeyboardsModule } from '../landlords/keyboards/landlords-keyboards.module';
 import { RenterObjectsApiModule } from '../renter-objects/api/renter-objects-api.module';
+import { RentersApiModule } from '../renters/api/renters-api.module';
 import { BroadcastService } from './broadcast.service';
 import { BroadcastEventsListener } from './listeners/broadcast-events.listener';
 
@@ -20,6 +21,7 @@ import { BroadcastEventsListener } from './listeners/broadcast-events.listener';
     LandlordsTextsModule,
     LandlordsKeyboardsModule,
     RentersTextsModule,
+    RentersApiModule,
     LandlordRentersKeyboardsModule,
     RenterObjectsTextsModule,
     RentersObjectsKeyboardsModule,

@@ -61,3 +61,4 @@ export const EMOJI_OK = '👌🏻';
 export const EMOJI_DINAMITE = '🧨';
 export const EMOJI_SUPER = '👍🏻';
 export const EMOJI_BAG = `🗑`;
+export const EMOJI_STICK = `🪄`;

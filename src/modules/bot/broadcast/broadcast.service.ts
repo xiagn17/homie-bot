@@ -33,6 +33,7 @@ import {
   RENTER_CONTACT_BUY_EVENT,
   RENTER_HELPER_BUY_EVENT,
 } from '../../../utils/google-analytics/events';
+import { RentersApiService } from '../renters/api/renters-api.service';
 
 interface ForwardOptions {
   chatId: string;
@@ -52,6 +53,7 @@ export class BroadcastService implements OnModuleInit {
     private readonly landlordsKeyboardsService: LandlordsKeyboardsService,
 
     private readonly rentersTextsService: RentersTextsService,
+    private readonly rentersApiService: RentersApiService,
 
     private readonly landlordRentersKeyboardsService: LandlordRentersKeyboardsService,
 
@@ -118,6 +120,18 @@ export class BroadcastService implements OnModuleInit {
     await this.sendMessage(chatId, contactsText, {
       reply_markup: this.renterObjectsKeyboardsService.getContactsKeyboard(object.id, true, tgUsername),
     });
+
+    if (object.isAdmin) {
+      const renterInfo = await this.rentersApiService.getRenterInfo(chatId);
+      if (!renterInfo) {
+        return;
+      }
+      await this.sendMessage(chatId, this.rentersTextsService.getCopyText());
+      await this.sendPhoto(chatId, renterInfo.photo, {
+        caption: this.rentersTextsService.getRenterInfoForCopyText(renterInfo),
+        parse_mode: 'HTML',
+      });
+    }
   }
 
   async sendSuccessfulPaidContacts(contactsNumber: number, { chatId }: ForwardOptions): Promise<void> {
