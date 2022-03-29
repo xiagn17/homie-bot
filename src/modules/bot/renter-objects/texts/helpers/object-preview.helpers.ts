@@ -26,7 +26,7 @@ export function getSecondRow(object: ApiObjectResponse): string {
 
 export function getFiveRow(object: ApiObjectResponse): string {
   if (object.objectType === ObjectTypeEnum.apartments) {
-    return '\n';
+    return '';
   }
   const peopleNumber = object.roomBedInfo.livingPeopleNumber;
   const age = getAgeText(object.roomBedInfo.averageAge);
