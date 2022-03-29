@@ -68,7 +68,7 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
   }
 
   async getByChatId(chatId: string): Promise<LandlordObjectEntity> {
-    const renterQb = this.createQueryBuilder('landlordObject')
+    const landlordObjectQb = this.createQueryBuilder('landlordObject')
       .where('telegramUser.chatId = :chatId', {
         chatId: chatId,
       })
@@ -76,7 +76,7 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
       .orderBy({
         number: 'DESC',
       });
-    const landlordObjectEntities = await this.getWithRelationsQb(renterQb).getMany();
+    const landlordObjectEntities = await this.getWithRelationsQb(landlordObjectQb).getMany();
 
     const object = landlordObjectEntities[0];
     if (!object) {
@@ -112,6 +112,15 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     return landlordObjectQb
       .innerJoinAndSelect('landlordObject.telegramUser', 'telegramUser')
       .innerJoinAndSelect('landlordObject.photos', 'photos');
+  }
+
+  countOfApprovedObjects(telegramUserId: string): Promise<number> {
+    const landlordObjectQb = this.createQueryBuilder('landlordObject')
+      .where('telegramUser.id = :id', {
+        id: telegramUserId,
+      })
+      .andWhere('landlordObject.isApproved = true');
+    return this.getWithRelationsQb(landlordObjectQb).getCount();
   }
 
   findMatchesForRenterToObjects(matchOptions: {

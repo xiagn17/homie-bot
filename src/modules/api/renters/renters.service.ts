@@ -106,12 +106,25 @@ export class RentersService {
   }
 
   async createInfo(renterInfoDto: CreateRenterInfoDto): Promise<ApiRenterInfo> {
-    const renter = await this.getRenterByChatId(renterInfoDto.chatId);
-    const dbData = this.renterInfosSerializer.mapToDbData({ renterInfoDto, renter });
-    const renterInfoEntity = await this.connection
-      .getCustomRepository(RenterInfosRepository)
-      .createWithRelations(dbData);
-    return this.renterInfosSerializer.toResponse(renterInfoEntity);
+    return this.connection.transaction(async entityManager => {
+      const renter = await entityManager
+        .getCustomRepository(RentersRepository)
+        .getByChatId(renterInfoDto.chatId);
+      const dbData = this.renterInfosSerializer.mapToDbData({ renterInfoDto, renter });
+      const renterInfoEntity = await entityManager
+        .getCustomRepository(RenterInfosRepository)
+        .createWithRelations(dbData);
+      const { referralUserId } = renter.telegramUser;
+      if (referralUserId) {
+        await this.depositReferralContacts(
+          referralUserId,
+          RenterReferralsEnum.onFillRenterInfo,
+          entityManager,
+        );
+      }
+
+      return this.renterInfosSerializer.toResponse(renterInfoEntity);
+    });
   }
 
   async isRenterInfoExists(chatId: string): Promise<boolean> {
@@ -229,7 +242,11 @@ export class RentersService {
     });
   }
 
-  public async depositReferralContacts(telegramUserId: string, from: RenterReferralsEnum): Promise<void> {
+  public async depositReferralContacts(
+    telegramUserId: string,
+    from: RenterReferralsEnum,
+    entityManager: EntityManager = this.connection.manager,
+  ): Promise<void> {
     let contacts: number = 0;
     if (from === RenterReferralsEnum.onStart) {
       contacts = this.configService.get('referral.bonusOnStart') as number;
@@ -238,6 +255,6 @@ export class RentersService {
     } else if (from === RenterReferralsEnum.onFillLandlordObject) {
       contacts = this.configService.get('referral.bonusOnFillLandlordObject') as number;
     }
-    await this.connection.getCustomRepository(RenterSettingsRepository).addContacts(telegramUserId, contacts);
+    await entityManager.getCustomRepository(RenterSettingsRepository).addContacts(telegramUserId, contacts);
   }
 }

@@ -34,17 +34,23 @@ export class TelegramBotService {
 
     sendAnalyticsStartChatEvent(chatId, newWebhookRenter.deepLink);
     const referralUserChatId = parseReferralChatIdFromLink(newWebhookRenter.deepLink);
-    const referralUser = referralUserChatId
-      ? await this.entityManager
-          .getCustomRepository(TelegramUsersRepository)
-          .findOne({ chatId: referralUserChatId })
-      : undefined;
-    const telegramUserDbData = this.telegramBotSerializer.mapToDbData(newWebhookRenter, referralUser?.id);
-    await this.entityManager.getCustomRepository(TelegramUsersRepository).createUser(telegramUserDbData);
+    await this.entityManager.transaction(async entityManager => {
+      const referralUser = referralUserChatId
+        ? await entityManager
+            .getCustomRepository(TelegramUsersRepository)
+            .findOne({ chatId: referralUserChatId })
+        : undefined;
+      const telegramUserDbData = this.telegramBotSerializer.mapToDbData(newWebhookRenter, referralUser?.id);
+      await entityManager.getCustomRepository(TelegramUsersRepository).createUser(telegramUserDbData);
 
-    if (referralUser) {
-      await this.rentersService.depositReferralContacts(referralUser.id, RenterReferralsEnum.onStart);
-    }
+      if (referralUser) {
+        await this.rentersService.depositReferralContacts(
+          referralUser.id,
+          RenterReferralsEnum.onStart,
+          entityManager,
+        );
+      }
+    });
   }
 
   public async unsubscribeUser(chatId: string): Promise<void> {
