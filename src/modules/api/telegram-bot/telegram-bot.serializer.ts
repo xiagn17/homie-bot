@@ -4,12 +4,16 @@ import { TelegramUserCreateDto } from './dto/telegram-bot.dto';
 
 @Injectable()
 export class TelegramBotSerializer {
-  mapToDbData(telegramUserCreateDto: TelegramUserCreateDto): Partial<TelegramUserEntity> {
+  mapToDbData(
+    telegramUserCreateDto: TelegramUserCreateDto,
+    referralUserId?: string,
+  ): Partial<TelegramUserEntity> {
     return {
       username: telegramUserCreateDto.username,
       chatId: telegramUserCreateDto.channel_id,
       botId: telegramUserCreateDto.bot_id,
       deepLink: telegramUserCreateDto.deepLink,
+      referralUserId: referralUserId,
     };
   }
 }

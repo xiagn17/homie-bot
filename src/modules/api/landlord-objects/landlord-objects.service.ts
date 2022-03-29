@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Connection, EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
-import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
 import { LandlordObjectRenterMatchesRepository } from '../landlord-renter-matches/repositories/landlordObjectRenterMatches';
 import { ObjectMatchesForLandlordService } from '../landlord-renter-matches/object-matches.for-landlord.service';
+import { TelegramUsersRepository } from '../telegram-bot/repositories/telegramUsers.repository';
 import { LandlordObjectsRepository } from './repositories/landlord-objects.repository';
 import { LandlordObjectPhotoEntity } from './entities/LandlordObjectPhoto.entity';
 import { LandlordObjectEntity } from './entities/LandlordObject.entity';
@@ -25,7 +25,6 @@ export class LandlordObjectsService {
     private logger: LoggerService,
     private connection: Connection,
 
-    private telegramBotService: TelegramBotService,
     private tasksSchedulerService: TasksSchedulerService,
 
     private landlordObjectsSerializer: LandlordObjectsSerializer,
@@ -36,7 +35,9 @@ export class LandlordObjectsService {
   }
 
   public async createObject(landlordObjectDraft: ApiLandlordObjectDraft): Promise<LandlordObjectEntity> {
-    const isAdmin = await this.telegramBotService.isUserAdmin(landlordObjectDraft.chatId);
+    const isAdmin = await this.connection
+      .getCustomRepository(TelegramUsersRepository)
+      .isUserAdmin(landlordObjectDraft.chatId);
 
     const landlordObject = await this.connection.transaction(async manager => {
       const telegramUser = await manager
@@ -78,7 +79,9 @@ export class LandlordObjectsService {
   }
 
   async getObjectByChatId(chatId: string): Promise<ApiObjectResponse | null> {
-    const isUserAdmin = await this.telegramBotService.isUserAdmin(chatId);
+    const isUserAdmin = await this.connection
+      .getCustomRepository(TelegramUsersRepository)
+      .isUserAdmin(chatId);
     if (isUserAdmin) {
       return null;
     }

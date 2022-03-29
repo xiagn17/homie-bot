@@ -1,4 +1,13 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { RenterEntity } from '../../renters/entities/Renter.entity';
 
 @Entity({ name: 'telegram_users' })
@@ -18,6 +27,16 @@ export class TelegramUserEntity {
 
   @Column({ type: 'varchar', name: 'deep_link' })
   readonly deepLink: string | null;
+
+  @Column({ type: 'uuid', name: 'referral_user_id' })
+  readonly referralUserId: string | null;
+
+  @ManyToOne(() => TelegramUserEntity)
+  @JoinColumn({ name: 'referral_user_id' })
+  readonly referralUser: TelegramUserEntity | null;
+
+  @OneToMany(() => TelegramUserEntity, telegramUser => telegramUser.referralUser)
+  readonly invitedUsers: TelegramUserEntity[];
 
   @OneToOne(() => RenterEntity, renter => renter.telegramUser)
   readonly renter: RenterEntity | null;

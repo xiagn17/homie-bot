@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
-import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../../logger/logger.service';
 import { sendAnalyticsStartChatEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
+import { parseReferralChatIdFromLink } from '../../bot/helpers/referralLink/parseReferralLink';
+import { RentersService } from '../renters/renters.service';
+import { RenterReferralsEnum } from '../renters/interfaces/renter-referrals.interface';
 import { TelegramUsersRepository } from './repositories/telegramUsers.repository';
-import { TelegramUserEntity } from './entities/TelegramUser.entity';
 import { TelegramBotSerializer } from './telegram-bot.serializer';
 import { TelegramUserCreateDto } from './dto/telegram-bot.dto';
 
@@ -14,45 +15,40 @@ export class TelegramBotService {
     private logger: LoggerService,
     private entityManager: EntityManager,
     private telegramBotSerializer: TelegramBotSerializer,
-    private configService: ConfigService,
+
+    private readonly rentersService: RentersService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
 
   public async subscribeUser(newWebhookRenter: TelegramUserCreateDto): Promise<void> {
-    const telegramUserDbData = this.telegramBotSerializer.mapToDbData(newWebhookRenter);
-    const chatId = telegramUserDbData.chatId as string;
+    const chatId = newWebhookRenter.channel_id;
     const isUserExists = await this.entityManager
       .getCustomRepository(TelegramUsersRepository)
       .findOne({ chatId: chatId, botId: newWebhookRenter.bot_id });
-    if (!isUserExists) {
-      sendAnalyticsStartChatEvent(chatId, newWebhookRenter.deepLink);
-      await this.entityManager.getCustomRepository(TelegramUsersRepository).createUser(telegramUserDbData);
+    if (isUserExists) {
+      this.logger.warn(`User with chatId = ${chatId} exists, undo archiving.`);
+      await this.entityManager.getCustomRepository(TelegramUsersRepository).unArchiveUser(chatId);
       return;
     }
 
-    this.logger.warn(`User with chatId = ${chatId} exists, undo archiving.`);
-    await this.entityManager.getCustomRepository(TelegramUsersRepository).unArchiveUser(chatId);
+    sendAnalyticsStartChatEvent(chatId, newWebhookRenter.deepLink);
+    const referralUserChatId = parseReferralChatIdFromLink(newWebhookRenter.deepLink);
+    const referralUser = referralUserChatId
+      ? await this.entityManager
+          .getCustomRepository(TelegramUsersRepository)
+          .findOne({ chatId: referralUserChatId })
+      : undefined;
+    const telegramUserDbData = this.telegramBotSerializer.mapToDbData(newWebhookRenter, referralUser?.id);
+    await this.entityManager.getCustomRepository(TelegramUsersRepository).createUser(telegramUserDbData);
+
+    if (referralUser) {
+      await this.rentersService.depositReferralContacts(referralUser.id, RenterReferralsEnum.onStart);
+    }
   }
 
   public async unsubscribeUser(chatId: string): Promise<void> {
     await this.entityManager.getCustomRepository(TelegramUsersRepository).archiveUser(chatId);
-  }
-
-  public getAdmin(): Promise<TelegramUserEntity> {
-    const adminUsername = this.configService.get('adminUsername');
-    return this.entityManager.getCustomRepository(TelegramUsersRepository).findByUsername(adminUsername);
-  }
-
-  public getSubAdmin(): Promise<TelegramUserEntity> {
-    const subAdminUsername = this.configService.get('subAdminUsername');
-    return this.entityManager.getCustomRepository(TelegramUsersRepository).findByUsername(subAdminUsername);
-  }
-
-  public async isUserAdmin(chatId: string): Promise<boolean> {
-    const { chatId: adminChatId } = await this.getAdmin();
-    const { chatId: subAdminChatId } = await this.getSubAdmin();
-    return adminChatId === chatId || subAdminChatId === chatId;
   }
 
   public async getUsersCount(): Promise<number> {

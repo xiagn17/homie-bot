@@ -39,6 +39,13 @@ export interface PaymentsConfigType {
   prices: PaymentsPricesConfigType;
 }
 
+export interface ReferralConfigType {
+  forInvitedUserOnStart: number;
+  bonusOnStart: number;
+  bonusOnFillRenterInfo: number;
+  bonusOnFillLandlordObject: number;
+}
+
 export interface ConfigurationType {
   env: NODE_ENV_TYPE;
   port: number;
@@ -49,5 +56,6 @@ export interface ConfigurationType {
   subAdminUsername: string;
   bot: BotConfigType;
   payments: PaymentsConfigType;
+  referral: ReferralConfigType;
   googleAnalyticsId: string;
 }

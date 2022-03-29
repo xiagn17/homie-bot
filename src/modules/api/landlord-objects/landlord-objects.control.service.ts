@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoggerService } from '../../logger/logger.service';
-import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { ObjectMatchesForLandlordService } from '../landlord-renter-matches/object-matches.for-landlord.service';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
 import {
@@ -13,6 +12,7 @@ import {
   BROADCAST_MODERATION_TO_ADMIN_EVENT_NAME,
   BroadcastModerationToAdminEvent,
 } from '../../bot/broadcast/events/broadcast-moderation-admin.event';
+import { TelegramUsersRepository } from '../telegram-bot/repositories/telegramUsers.repository';
 import { LandlordObjectsRepository } from './repositories/landlord-objects.repository';
 import { ApproveLandlordObjectDto } from './dto/landlord-objects.dto';
 import { ApiObjectResponse } from './interfaces/landlord-objects.type';
@@ -23,7 +23,6 @@ export class LandlordObjectsControlService {
     private logger: LoggerService,
     private connection: Connection,
 
-    private telegramBotService: TelegramBotService,
     private objectMatchesForLandlordService: ObjectMatchesForLandlordService,
 
     private tasksSchedulerService: TasksSchedulerService,
@@ -34,7 +33,7 @@ export class LandlordObjectsControlService {
   }
 
   public async notificationApproveLandlordObject(object: ApiObjectResponse): Promise<void> {
-    const adminEntity = await this.telegramBotService.getAdmin();
+    const adminEntity = await this.connection.getCustomRepository(TelegramUsersRepository).getAdmin();
     await this.eventEmitter.emitAsync(
       BROADCAST_MODERATION_TO_ADMIN_EVENT_NAME,
       new BroadcastModerationToAdminEvent({

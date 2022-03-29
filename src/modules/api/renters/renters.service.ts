@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Connection, EntityManager } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../../logger/logger.service';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
 import { ObjectMatchesForRenterService } from '../landlord-renter-matches/object-matches.for-renter.service';
@@ -17,7 +18,6 @@ import {
   BROADCAST_PAID_CONTACTS_TO_BUYER_EVENT_NAME,
   BroadcastPaidContactsToBuyerEvent,
 } from '../../bot/broadcast/events/broadcast-paid-contacts-buyer.event';
-import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
 import { RentersRepository } from './repositories/renters.repository';
 import { RenterEntity } from './entities/Renter.entity';
@@ -36,19 +36,20 @@ import { RenterInfosSerializer } from './serializers/renter-infos.serializer';
 import { ApiRenterFullInfo, ApiRenterInfo } from './interfaces/renter-info.interface';
 import { ApiRenterFilters } from './interfaces/renter-filters.interface';
 import { RenterFiltersSerializer } from './serializers/renter-filters.serializer';
+import { RenterReferralsEnum } from './interfaces/renter-referrals.interface';
 
 @Injectable()
 export class RentersService {
   constructor(
     private logger: LoggerService,
     private connection: Connection,
+    private readonly configService: ConfigService,
 
     private rentersSerializer: RentersSerializer,
     private renterInfosSerializer: RenterInfosSerializer,
     private renterFiltersSerializer: RenterFiltersSerializer,
 
     private objectMatchesForRenterService: ObjectMatchesForRenterService,
-    private readonly telegramBotService: TelegramBotService,
     private readonly tasksSchedulerService: TasksSchedulerService,
 
     private readonly eventEmitter: EventEmitter2,
@@ -88,7 +89,12 @@ export class RentersService {
       const { id: renterId } = await manager
         .getCustomRepository(RentersRepository)
         .createWithRelations(renterDbData);
-      await manager.getCustomRepository(RenterSettingsRepository).createWithRelations({ renterId: renterId });
+      const bonusContacts = telegramUser.referralUserId
+        ? this.configService.get('referral.forInvitedUserOnStart')
+        : 0;
+      await manager
+        .getCustomRepository(RenterSettingsRepository)
+        .createWithRelations({ renterId, ableContacts: bonusContacts });
       await manager.getCustomRepository(RenterFiltersRepository).createWithRelations({ renterId: renterId });
 
       return manager.getCustomRepository(RentersRepository).getFullRenter(renterId);
@@ -198,7 +204,7 @@ export class RentersService {
         chatId: telegramUser.chatId,
       }),
     );
-    const adminEntity = await this.telegramBotService.getAdmin();
+    const adminEntity = await entityManager.getCustomRepository(TelegramUsersRepository).getAdmin();
     await this.eventEmitter.emitAsync(
       BROADCAST_PAID_PRIVATE_HELPER_TO_ADMIN_EVENT_NAME,
       new BroadcastPaidPrivateHelperToAdminEvent({
@@ -221,5 +227,17 @@ export class RentersService {
       await entityManager.getCustomRepository(RenterSettingsRepository).stopSearch(renter.id);
       await this.tasksSchedulerService.removeTasksAfterStopRenter(renter.id, entityManager);
     });
+  }
+
+  public async depositReferralContacts(telegramUserId: string, from: RenterReferralsEnum): Promise<void> {
+    let contacts: number = 0;
+    if (from === RenterReferralsEnum.onStart) {
+      contacts = this.configService.get('referral.bonusOnStart') as number;
+    } else if (from === RenterReferralsEnum.onFillRenterInfo) {
+      contacts = this.configService.get('referral.bonusOnFillRenterInfo') as number;
+    } else if (from === RenterReferralsEnum.onFillLandlordObject) {
+      contacts = this.configService.get('referral.bonusOnFillLandlordObject') as number;
+    }
+    await this.connection.getCustomRepository(RenterSettingsRepository).addContacts(telegramUserId, contacts);
   }
 }

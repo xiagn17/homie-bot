@@ -37,6 +37,12 @@ export default (): ConfigurationType => {
         privateHelper: String(process.env.PRIVATE_HELPER_PRICE),
       },
     },
+    referral: {
+      forInvitedUserOnStart: 1,
+      bonusOnStart: 1,
+      bonusOnFillRenterInfo: 2,
+      bonusOnFillLandlordObject: 3,
+    },
     googleAnalyticsId: String(process.env.GOOGLE_ANALYTICS_ID),
   };
 };
