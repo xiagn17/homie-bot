@@ -85,6 +85,7 @@ export class LandlordObjectsControlService {
 
         await this.checkAndAddBonusContactsOnApprove(
           landlordObject.telegramUser.referralUserId,
+          landlordObject.telegramUserId,
           entityManager,
         );
       }
@@ -93,6 +94,7 @@ export class LandlordObjectsControlService {
 
   public async checkAndAddBonusContactsOnApprove(
     referralUserId: string | null,
+    telegramUserId: string,
     entityManager: EntityManager,
   ): Promise<void> {
     if (!referralUserId) {
@@ -100,7 +102,7 @@ export class LandlordObjectsControlService {
     }
     const count = await entityManager
       .getCustomRepository(LandlordObjectsRepository)
-      .countOfApprovedObjects(referralUserId);
+      .countOfApprovedObjects(telegramUserId);
     const firstApprovedObject = count === 0;
     if (!firstApprovedObject) {
       return;
