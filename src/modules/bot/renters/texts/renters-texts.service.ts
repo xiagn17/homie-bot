@@ -148,10 +148,7 @@ export class RentersTextsService {
   getRenterInfoForCopyText(renterInfo?: ApiRenterFullInfo): string {
     const mainText = this.getRenterInfoText(renterInfo);
     return (
-      `<code>` +
-      mainText +
-      `\n` +
-      `Сформировано с помощью https://t.me/Homie_robot?start=referral_copy-ank</code>`
+      `<code>` + mainText + `\n` + `Сформировано с помощью https://t.me/Homie_robot?start=ref_ank</code>`
     );
   }
 
