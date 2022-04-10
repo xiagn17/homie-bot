@@ -20,6 +20,7 @@ import {
   EMOJI_LOOPA,
   EMOJI_NEXT,
   EMOJI_NOT_AGREE,
+  EMOJI_SHARE,
   EMOJI_STATUS,
   EMOJI_SUPPORT,
   EMOJI_WOMAN_HAND,
@@ -31,6 +32,7 @@ import { RentersKeyboardsService } from '../../renters/keyboards/renters-keyboar
 import { TelegramUserType } from '../../session-storage/interfaces/session-storage.interface';
 import { HandlerOnLandlordObjectStopResume } from '../../landlords/interfaces/landlords-handlers.interface';
 import { HandlerOnFindObjectMenuButton } from '../../renter-objects/interfaces/renter-objects-handlers.interface';
+import { getReferralLink } from '../../helpers/referralLink/getReferralLink';
 
 @Injectable()
 export class MainMenuKeyboardsService {
@@ -110,12 +112,15 @@ export class MainMenuKeyboardsService {
         }
 
         if (userType === TelegramUserType.renter) {
-          range.text(`${EMOJI_LOOPA} Поиск по ID`, onFindObject).row();
+          range.text(`${EMOJI_LOOPA} Поиск по ID`, onFindObject);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        range.submenu(`${EMOJI_STATUS} Изменить статус`, 'keyboard-userType', () => {}).row();
+        if (userType === TelegramUserType.renter) {
+          const referralLink = getReferralLink(mainCtx.from?.id.toString() as string);
+          range.url(`${EMOJI_SHARE} Поделиться Homie`, `https://t.me/share/url?url=${referralLink}`).row();
         }
       })
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      .submenu(`${EMOJI_STATUS} Изменить статус`, 'keyboard-userType', () => {})
-      .row()
       .text(`${EMOJI_INFO} О нас`, onAbout)
       .back(`${EMOJI_BACK} Главное меню`, onBackToMainMenu);
 

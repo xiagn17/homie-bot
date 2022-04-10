@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Connection } from 'typeorm';
+import { Connection, EntityManager } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoggerService } from '../../logger/logger.service';
-import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { ObjectMatchesForLandlordService } from '../landlord-renter-matches/object-matches.for-landlord.service';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
 import {
@@ -13,6 +12,9 @@ import {
   BROADCAST_MODERATION_TO_ADMIN_EVENT_NAME,
   BroadcastModerationToAdminEvent,
 } from '../../bot/broadcast/events/broadcast-moderation-admin.event';
+import { TelegramUsersRepository } from '../telegram-bot/repositories/telegramUsers.repository';
+import { RentersService } from '../renters/renters.service';
+import { RenterReferralsEnum } from '../renters/interfaces/renter-referrals.interface';
 import { LandlordObjectsRepository } from './repositories/landlord-objects.repository';
 import { ApproveLandlordObjectDto } from './dto/landlord-objects.dto';
 import { ApiObjectResponse } from './interfaces/landlord-objects.type';
@@ -23,10 +25,10 @@ export class LandlordObjectsControlService {
     private logger: LoggerService,
     private connection: Connection,
 
-    private telegramBotService: TelegramBotService,
     private objectMatchesForLandlordService: ObjectMatchesForLandlordService,
 
-    private tasksSchedulerService: TasksSchedulerService,
+    private readonly tasksSchedulerService: TasksSchedulerService,
+    private readonly rentersService: RentersService,
 
     private readonly eventEmitter: EventEmitter2,
   ) {
@@ -34,7 +36,7 @@ export class LandlordObjectsControlService {
   }
 
   public async notificationApproveLandlordObject(object: ApiObjectResponse): Promise<void> {
-    const adminEntity = await this.telegramBotService.getAdmin();
+    const adminEntity = await this.connection.getCustomRepository(TelegramUsersRepository).getAdmin();
     await this.eventEmitter.emitAsync(
       BROADCAST_MODERATION_TO_ADMIN_EVENT_NAME,
       new BroadcastModerationToAdminEvent({
@@ -73,7 +75,6 @@ export class LandlordObjectsControlService {
           undefined,
           entityManager,
         );
-
         await this.eventEmitter.emitAsync(
           BROADCAST_MODERATION_DECISION_TO_LANDLORD_EVENT_NAME,
           new BroadcastModerationDecisionToLandlordEvent({
@@ -81,7 +82,35 @@ export class LandlordObjectsControlService {
             chatId: landlordObject.telegramUser.chatId,
           }),
         );
+
+        await this.checkAndAddBonusContactsOnApprove(
+          landlordObject.telegramUser.referralUserId,
+          landlordObject.telegramUserId,
+          entityManager,
+        );
       }
     });
+  }
+
+  public async checkAndAddBonusContactsOnApprove(
+    referralUserId: string | null,
+    telegramUserId: string,
+    entityManager: EntityManager,
+  ): Promise<void> {
+    if (!referralUserId) {
+      return;
+    }
+    const count = await entityManager
+      .getCustomRepository(LandlordObjectsRepository)
+      .countOfApprovedObjects(telegramUserId);
+    const firstApprovedObject = count === 1;
+    if (!firstApprovedObject) {
+      return;
+    }
+    await this.rentersService.depositReferralContacts(
+      referralUserId,
+      RenterReferralsEnum.onFillLandlordObject,
+      entityManager,
+    );
   }
 }

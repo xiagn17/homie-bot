@@ -3,10 +3,11 @@ import { CreateRenterInfoDto } from '../dto/renters.dto';
 import { RenterInfoEntity } from '../entities/RenterInfo.entity';
 import { ApiRenterFull } from '../interfaces/renters.type';
 import { ApiRenterFullInfo, ApiRenterInfo } from '../interfaces/renter-info.interface';
+import { RenterEntity } from '../entities/Renter.entity';
 
 interface RenterInfoData {
   renterInfoDto: CreateRenterInfoDto;
-  renter: ApiRenterFull;
+  renter: RenterEntity;
 }
 @Injectable()
 export class RenterInfosSerializer {

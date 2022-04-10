@@ -45,6 +45,14 @@ import {
   BROADCAST_OBJECT_OUTDATED_TO_LANDLORD_EVENT_NAME,
   BroadcastObjectOutdatedPushEvent,
 } from '../events/broadcast-object-outdated.event';
+import {
+  BROADCAST_REFERRAL_CONTACTS_TO_RENTER_EVENT_NAME,
+  BroadcastReferralContactsRenterEvent,
+} from '../events/broadcast-referral-contacts-renter.event';
+import {
+  BROADCAST_SEND_MESSAGE_TASK_EVENT_NAME,
+  BroadcastSendMessageTaskEvent,
+} from '../events/broadcast-send-message-user.event';
 
 @Injectable()
 export class BroadcastEventsListener {
@@ -125,5 +133,15 @@ export class BroadcastEventsListener {
     await this.broadcastService.sendObjectOutdatedToLandlord(data.object, {
       chatId: data.chatId,
     });
+  }
+
+  @OnEvent(BROADCAST_REFERRAL_CONTACTS_TO_RENTER_EVENT_NAME)
+  async handleReferralContactsToRenter(data: BroadcastReferralContactsRenterEvent): Promise<void> {
+    await this.broadcastService.sendReferralContactsToRenter(data.from, { chatId: data.chatId });
+  }
+
+  @OnEvent(BROADCAST_SEND_MESSAGE_TASK_EVENT_NAME)
+  async handleSendMessageTask(data: BroadcastSendMessageTaskEvent): Promise<void> {
+    await this.broadcastService.sendMessageTask(data.message, { chatId: data.chatId }, data.markup);
   }
 }

@@ -10,6 +10,7 @@ import { TasksLandlordNotificationsWorkerService } from './workers/tasks-landlor
 import { TasksAdminObjectSubmitRenterWorkerService } from './workers/tasks-admin-object-submit-renter-worker.service';
 import { TasksNewObjectRenterPushWorkerService } from './workers/tasks-new-object-renter-push-worker.service';
 import { TasksObjectsOutdatedWorkerService } from './workers/tasks-objects-outdated-worker.service';
+import { TasksSendMessageWorkerService } from './workers/tasks-send-message-worker.service';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TasksObjectsOutdatedWorkerService } from './workers/tasks-objects-outda
     TasksAdminObjectSubmitRenterWorkerService,
     TasksNewObjectRenterPushWorkerService,
     TasksObjectsOutdatedWorkerService,
+    TasksSendMessageWorkerService,
   ],
   exports: [],
 })

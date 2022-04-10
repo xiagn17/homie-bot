@@ -38,4 +38,20 @@ export class TelegramUsersRepository extends Repository<TelegramUserEntity> {
     const res: [{ count: number }] = await this.query(query);
     return res[0].count;
   }
+
+  async getAdmin(): Promise<TelegramUserEntity> {
+    const adminUsername = String(process.env.ADMIN_USERNAME);
+    return this.findByUsername(adminUsername);
+  }
+
+  async getSubAdmin(): Promise<TelegramUserEntity> {
+    const adminUsername = String(process.env.SUBADMIN_USERNAME);
+    return this.findByUsername(adminUsername);
+  }
+
+  async isUserAdmin(chatId: string): Promise<boolean> {
+    const { chatId: adminChatId } = await this.getAdmin();
+    const { chatId: subAdminChatId } = await this.getSubAdmin();
+    return adminChatId === chatId || subAdminChatId === chatId;
+  }
 }

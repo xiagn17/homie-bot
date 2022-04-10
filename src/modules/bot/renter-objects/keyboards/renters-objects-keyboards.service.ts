@@ -6,23 +6,25 @@ import { MyContext } from '../../main/interfaces/bot.interface';
 import { PaymentsPricesConfigType } from '../../../configuration/interfaces/configuration.types';
 import {
   EMOJI_COMMENT,
-  EMOJI_HOLMS_WOMAN,
-  EMOJI_INFO,
   EMOJI_KEY,
   EMOJI_NEXT,
   EMOJI_SEND_REQUEST,
+  EMOJI_SHARE,
   EMOJI_STOP,
   EMOJI_WRITE_TO_CONTACT,
 } from '../../constants/emoji';
 import { PaymentItems } from '../../../api/payments/interfaces/payment-item.interface';
-import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
-import { RENTER_ACTION, RENTER_HELPER_CLICK_EVENT } from '../../../../utils/google-analytics/events';
+import { getReferralLink } from '../../helpers/referralLink/getReferralLink';
+import { HandlerOnFreeContactsMenuButton } from '../interfaces/renter-objects-handlers.interface';
+import { SendNextObject } from '../interfaces/renter-objects.interface';
 
 export const KEYBOARD_RENTER_SEE_OBJECTS_PREFIX = 'kb_renterSeeObjects_';
 
 @Injectable()
 export class RentersObjectsKeyboardsService {
   public payContactsMenu: Menu<MyContext>;
+
+  public freeContactsMenu: Menu<MyContext>;
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -69,7 +71,10 @@ export class RentersObjectsKeyboardsService {
     return new InlineKeyboard().text(`${EMOJI_NEXT} Смотреть объявления`, KEYBOARD_RENTER_SEE_OBJECTS_PREFIX);
   }
 
-  initPayContactsMenu(privateHelperText: string): void {
+  initPayContactsMenu(
+    onFreeContactsButtonHandler: HandlerOnFreeContactsMenuButton,
+    onSendNextObjectHandler: SendNextObject,
+  ): void {
     const prices = this.configService.get('payments.prices') as PaymentsPricesConfigType;
     const apiPrefix = this.configService.get('apiPrefix') as string;
     this.payContactsMenu = new Menu<MyContext>('menu-payContacts').dynamic((ctx, range) => {
@@ -77,30 +82,21 @@ export class RentersObjectsKeyboardsService {
       const oneContactUrl = `${apiPrefix}/payments/${chatId}/${PaymentItems['1-contacts']}`;
       const fiveContactsUrl = `${apiPrefix}/payments/${chatId}/${PaymentItems['5-contacts']}`;
       range
+        .text('Получить бесплатно', onFreeContactsButtonHandler)
+        .row()
         .url(`1 контакт - ${prices.oneContacts} ₽`, oneContactUrl)
         .row()
-        .url(`5 контактов - ${prices.fiveContacts} ₽`, fiveContactsUrl)
-        .row()
-        .submenu(`${EMOJI_INFO} Личный помощник`, 'menu-payContacts-sub', async ctx => {
-          sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_HELPER_CLICK_EVENT);
-          await ctx.editMessageText(privateHelperText, {
-            disable_web_page_preview: true,
-          });
-        });
+        .url(`5 контактов - ${prices.fiveContacts} ₽`, fiveContactsUrl);
     });
 
-    const subMenu = new Menu<MyContext>('menu-payContacts-sub').dynamic((ctx, range) => {
+    this.freeContactsMenu = new Menu<MyContext>('menu-payContacts-sub').dynamic((ctx, range) => {
       const chatId = ctx.from?.id?.toString() as string;
-      const oneContactUrl = `${apiPrefix}/payments/${chatId}/${PaymentItems['1-contacts']}`;
-      const fiveContactsUrl = `${apiPrefix}/payments/${chatId}/${PaymentItems['5-contacts']}`;
-      const privateHelperUrl = `${apiPrefix}/payments/${chatId}/${PaymentItems['private-helper']}`;
+      const referralLink = getReferralLink(chatId);
       range
-        .url(`1 контакт - ${prices.oneContacts} ₽`, oneContactUrl)
+        .url(`${EMOJI_SHARE} Поделиться Homie`, `https://t.me/share/url?url=${referralLink}`)
         .row()
-        .url(`5 контактов - ${prices.fiveContacts} ₽`, fiveContactsUrl)
-        .row()
-        .url(`${EMOJI_HOLMS_WOMAN} Помощник - ${prices.privateHelper} ₽`, privateHelperUrl);
+        .text(`${EMOJI_NEXT} Смотреть объявления`, onSendNextObjectHandler);
     });
-    this.payContactsMenu.register(subMenu);
+    this.payContactsMenu.register(this.freeContactsMenu);
   }
 }

@@ -4,17 +4,15 @@ import { LandlordObjectEntity } from '../../../api/landlord-objects/entities/Lan
 import {
   EMOJI_CHECK,
   EMOJI_GREEN_BOOM,
-  EMOJI_HOLMS_WOMAN,
   EMOJI_KEY,
   EMOJI_LIGHTNING,
   EMOJI_LOOPA,
   EMOJI_MEDAL,
-  EMOJI_MONEY,
   EMOJI_OK,
-  EMOJI_PLUS,
   EMOJI_SAD,
   EMOJI_SEND_REQUEST,
-  EMOJI_STAR,
+  EMOJI_SHARE,
+  EMOJI_SPEAK,
 } from '../../constants/emoji';
 import { getDefaultObjectText } from './helpers/object-preview.helpers';
 
@@ -101,28 +99,10 @@ export class RenterObjectsTextsService {
 
   getNoContactsPayWindowText(): string {
     return (
-      `${EMOJI_MEDAL} <b>Хорошие объекты разлетаются очень быстро.</b> Чтобы увеличить свои шансы - получи контакт сразу.\n` +
+      `${EMOJI_KEY} <b>Хорошие объекты разлетаются очень быстро.</b> Чтобы увеличить свои шансы - получи контакт сразу.\n` +
+      `Арендодатель получит твою анкету с пометкой о высокой заинтересованности!\n` +
       `\n` +
-      `${EMOJI_PLUS} Арендодатель получит твою анкету с пометкой о высокой заинтересованности!\n` +
-      `\n` +
-      `${EMOJI_LIGHTNING}️ Если вдруг объект окажется неактуальным (рынок динамичен) - мы БЕСПЛАТНО дадим доступ к другому.\n` +
-      `\n` +
-      `<a href='https://telegra.ph/Rasskazyvaem-o-tarifah-Homie-02-10'>Подробнее о тарифах Homie.</a>`
-    );
-  }
-
-  getPrivateHelperText(): string {
-    return (
-      `${EMOJI_HOLMS_WOMAN} <b>Личный помощник</b> прозвонит все объявления, подходящие твоему индивидуальному запросу, на разных площадках и будет присылать тебе ежедневную подборку <b>в течение 2 недель!</b>\n` +
-      `\n` +
-      `${EMOJI_STAR} <b>Бонусом:</b>\n` +
-      `* проверка объекта\n` +
-      `* организация показов\n` +
-      `* проверку собственника\n` +
-      `* составление договора аренды\n` +
-      `\n` +
-      `${EMOJI_MONEY} Предоплата - 1990 ₽ + 2910 ₽ при фактическом заселении.\n` +
-      `<a href='https://telegra.ph/Rasskazyvaem-o-tarifah-Homie-02-10'>Подробнее о тарифах Homie.</a>`
+      `${EMOJI_LIGHTNING}️ Если купленный объект окажется неактуальным (рынок динамичен) - мы <b>бесплатно</b> дадим доступ к другому. <a href='https://telegra.ph/Rasskazyvaem-o-tarifah-Homie-02-10'>Подробнее о тарифах Homie.</a>`
     );
   }
 
@@ -138,6 +118,22 @@ export class RenterObjectsTextsService {
     return (
       `${EMOJI_SAD} К сожалению, данное объявление недавно было снято с публикации.\n` +
       `Но не расстраивайся! Мы обязательно что-нибудь найдем!`
+    );
+  }
+
+  getFreeContactsText(): string {
+    return (
+      `${EMOJI_SPEAK} Расскажи обо мне своим друзьям и получили мгновенные контакты совершенно бесплатно!\n` +
+      `\n` +
+      `${EMOJI_KEY} Сколько контактов ты получишь?\n` +
+      `1 контакт - за друга, который нажал /start\n` +
+      `2 контакта - за друга, который заполнил анкету\n` +
+      `3 контакта - за друга, который разместил объект на Homie\n` +
+      `\n` +
+      `${EMOJI_KEY} Приведенный друг также получит 1 контакт!\n` +
+      `\n` +
+      `${EMOJI_SHARE} Поделиться Homie и получить контакты ты сможешь в любое время через:\n` +
+      `/menu --> Прочее --> Поделиться Homie`
     );
   }
 }

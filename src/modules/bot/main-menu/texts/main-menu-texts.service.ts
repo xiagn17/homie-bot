@@ -8,6 +8,7 @@ import {
   EMOJI_LOOPA,
   EMOJI_MAP,
   EMOJI_PHONE,
+  EMOJI_SHARE,
   EMOJI_STATUS,
   EMOJI_WOMAN_HAND,
 } from '../../constants/emoji';
@@ -31,7 +32,9 @@ export class MainMenuTextsService {
       `\n` +
       `${EMOJI_LOOPA} <b>Поиск по ID</b> - позволит найти конкретный объект по тегу #home...\n` +
       `\n` +
-      `${EMOJI_STATUS} <b>Изменить статус</b> - поможет тебе изменить статус из арендатора в арендодателя и наоборот.`
+      `${EMOJI_STATUS} <b>Изменить статус</b> - поможет тебе изменить статус из арендатора в арендодателя и наоборот.\n` +
+      `\n` +
+      `${EMOJI_SHARE} <b>Поделиться Homie</b> - делись уникальной ссылкой на Homie и получи от <a href='https://telegra.ph/Priglasi-druga-v-Homie-03-22'><u>1 до 3 контактов</u></a> за каждого приведенного друга!`
     );
   }
 

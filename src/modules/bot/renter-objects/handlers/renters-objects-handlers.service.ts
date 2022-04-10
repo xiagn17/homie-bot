@@ -9,6 +9,7 @@ import {
   HandlerGetNextObject,
   HandlerOnFindObjectCallback,
   HandlerOnFindObjectMenuButton,
+  HandlerOnFreeContactsMenuButton,
   HandlerRenterStopSearch,
   HandlerSendRequest,
 } from '../interfaces/renter-objects-handlers.interface';
@@ -22,9 +23,6 @@ import {
   RenterInfoRouterSteps,
   TelegramUserType,
 } from '../../session-storage/interfaces/session-storage.interface';
-import { getObjectNumber } from './helpers/objectNumber.helper';
-import UrlButton = InlineKeyboardButton.UrlButton;
-import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
 import {
   RENTER_ACTION,
   RENTER_CONTACT_2_CLICK_EVENT,
@@ -33,6 +31,9 @@ import {
   RENTER_NEXT_CLICK_EVENT,
   RENTER_STOP_CLICK_EVENT,
 } from '../../../../utils/google-analytics/events';
+import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
+import { getObjectNumber } from './helpers/objectNumber.helper';
+import UrlButton = InlineKeyboardButton.UrlButton;
 
 const ROUTE_FIND_OBJECT_BY_NUMBER: RenterInfoRouterSteps = 'find_object';
 
@@ -107,6 +108,11 @@ export class RentersObjectsHandlersService implements OnModuleInit {
 
     this.router.route(ROUTE_FIND_OBJECT_BY_NUMBER, this.onFindObjectCallback);
     this.composer.use(this.router);
+
+    this.renterObjectsKeyboardsService.initPayContactsMenu(
+      this.onFreeContactsButtonHandler,
+      this.renterObjectsService.sendNextObject,
+    );
   }
 
   public onFindObjectMenuButtonHandler: HandlerOnFindObjectMenuButton = async ctx => {
@@ -114,6 +120,12 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     session.renter.router = 'find_object';
 
     await ctx.reply(this.renterObjectsTextsService.getIdInterestedObjectText());
+  };
+
+  private onFreeContactsButtonHandler: HandlerOnFreeContactsMenuButton = async ctx => {
+    await ctx.reply(this.renterObjectsTextsService.getFreeContactsText(), {
+      reply_markup: this.renterObjectsKeyboardsService.freeContactsMenu,
+    });
   };
 
   private onFindObjectCallback: HandlerOnFindObjectCallback = async ctx => {

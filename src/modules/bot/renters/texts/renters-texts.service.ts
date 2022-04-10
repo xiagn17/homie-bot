@@ -7,6 +7,7 @@ import {
   EMOJI_CAT,
   EMOJI_CELEBRATE,
   EMOJI_COMMENT,
+  EMOJI_CONGRATS,
   EMOJI_FILTER,
   EMOJI_GENDER,
   EMOJI_GENDER_MAN,
@@ -28,6 +29,7 @@ import {
 import { GENDER_TEXT_MAP, OBJECT_TYPE_TEXT_MAP } from '../../constants/texts';
 import { LOCATIONS_PHOTO } from '../../constants/imageUrls';
 import { getAgeText } from '../../../../utils/texts/get-age-text.helper';
+import { RenterReferralsEnum } from '../../../api/renters/interfaces/renter-referrals.interface';
 import { getLifestyleRow } from './helpers/renter-info-lifestyle.helper';
 
 @Injectable()
@@ -199,5 +201,26 @@ export class RentersTextsService {
 
   getSuccessfulFilledInfoAfterObjectRequestText(): string {
     return `${EMOJI_CELEBRATE} <b>Супер!</b> Ты заполнил анкету, отправляю твой запрос по объекту...`;
+  }
+
+  getReferralContactsText(from: RenterReferralsEnum): string {
+    if (from === RenterReferralsEnum.onStart) {
+      return (
+        `${EMOJI_CONGRATS} Ура, по твоей ссылке зашли в бота.\n` +
+        `\n` +
+        `${EMOJI_KEY} Тебе начислен контакт!`
+      );
+    } else if (from === RenterReferralsEnum.onFillRenterInfo) {
+      return (
+        `${EMOJI_CONGRATS} Ура, твой друг заполнил анкету.\n` + `\n` + `${EMOJI_KEY} Тебе начислен контакт!`
+      );
+    } else if (from === RenterReferralsEnum.onFillLandlordObject) {
+      return (
+        `${EMOJI_CONGRATS} Ура, твой друг разместил объявление.\n` +
+        `\n` +
+        `${EMOJI_KEY} Тебе начислены контакты!`
+      );
+    }
+    return '';
   }
 }

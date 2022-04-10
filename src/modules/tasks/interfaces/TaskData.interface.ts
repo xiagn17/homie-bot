@@ -1,7 +1,8 @@
 export type TaskDataInterface =
   | TaskDataLandlordRenewNotificationInterface
   | TaskDataAdminObjectSubmitRenterInterface
-  | TaskDataNewObjectToRenterInterface;
+  | TaskDataNewObjectToRenterInterface
+  | TaskDataSendMessageInterface;
 
 export interface TaskDataLandlordRenewNotificationInterface {
   landlordObjectId: string;
@@ -15,4 +16,10 @@ export interface TaskDataAdminObjectSubmitRenterInterface {
 export interface TaskDataNewObjectToRenterInterface {
   landlordObjectId: string;
   chatId: string;
+}
+
+export interface TaskDataSendMessageInterface {
+  message: string;
+  chatId: string;
+  markup?: string;
 }

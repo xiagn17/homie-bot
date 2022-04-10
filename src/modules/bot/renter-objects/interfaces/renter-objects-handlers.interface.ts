@@ -8,4 +8,7 @@ export type HandlerGetNextObject = (objectId: string, ctx: MyContext) => Promise
 
 export type HandlerRenterStopSearch = (ctx: MyContext) => Promise<void>;
 export type HandlerOnFindObjectMenuButton = Middleware<Filter<MyContext, 'callback_query:data'> & MenuFlavor>;
+export type HandlerOnFreeContactsMenuButton = Middleware<
+  Filter<MyContext, 'callback_query:data'> & MenuFlavor
+>;
 export type HandlerOnFindObjectCallback = Middleware<MyContext>;
