@@ -62,3 +62,4 @@ export const EMOJI_BAG = `🗑`;
 export const EMOJI_STICK = `🪄`;
 export const EMOJI_SHARE = `🔖`;
 export const EMOJI_SPEAK = `🗣`;
+export const EMOJI_CONGRATS = `🥳`;

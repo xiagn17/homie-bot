@@ -103,7 +103,7 @@ export class LandlordObjectsControlService {
     const count = await entityManager
       .getCustomRepository(LandlordObjectsRepository)
       .countOfApprovedObjects(telegramUserId);
-    const firstApprovedObject = count === 0;
+    const firstApprovedObject = count === 1;
     if (!firstApprovedObject) {
       return;
     }

@@ -34,6 +34,7 @@ import {
   RENTER_HELPER_BUY_EVENT,
 } from '../../../utils/google-analytics/events';
 import { RentersApiService } from '../renters/api/renters-api.service';
+import { RenterReferralsEnum } from '../../api/renters/interfaces/renter-referrals.interface';
 
 interface ForwardOptions {
   chatId: string;
@@ -197,6 +198,11 @@ export class BroadcastService implements OnModuleInit {
 
   async sendObjectOutdatedToLandlord(_object: ApiObjectResponse, { chatId }: ForwardOptions): Promise<void> {
     const text = this.landlordsTextsService.getStoppedText();
+    await this.sendMessage(chatId, text);
+  }
+
+  async sendReferralContactsToRenter(from: RenterReferralsEnum, { chatId }: ForwardOptions): Promise<void> {
+    const text = this.rentersTextsService.getReferralContactsText(from);
     await this.sendMessage(chatId, text);
   }
 

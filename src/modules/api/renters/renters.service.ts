@@ -19,6 +19,10 @@ import {
   BroadcastPaidContactsToBuyerEvent,
 } from '../../bot/broadcast/events/broadcast-paid-contacts-buyer.event';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
+import {
+  BROADCAST_REFERRAL_CONTACTS_TO_RENTER_EVENT_NAME,
+  BroadcastReferralContactsRenterEvent,
+} from '../../bot/broadcast/events/broadcast-referral-contacts-renter.event';
 import { RentersRepository } from './repositories/renters.repository';
 import { RenterEntity } from './entities/Renter.entity';
 import { RentersSerializer } from './serializers/renters.serializer';
@@ -256,5 +260,16 @@ export class RentersService {
       contacts = this.configService.get('referral.bonusOnFillLandlordObject') as number;
     }
     await entityManager.getCustomRepository(RenterSettingsRepository).addContacts(telegramUserId, contacts);
+
+    const telegramUser = await entityManager
+      .getCustomRepository(TelegramUsersRepository)
+      .findOneOrFail(telegramUserId);
+    await this.eventEmitter.emitAsync(
+      BROADCAST_REFERRAL_CONTACTS_TO_RENTER_EVENT_NAME,
+      new BroadcastReferralContactsRenterEvent({
+        from: from,
+        chatId: telegramUser.chatId,
+      }),
+    );
   }
 }
