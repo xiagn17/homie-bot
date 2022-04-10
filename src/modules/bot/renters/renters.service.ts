@@ -199,9 +199,19 @@ export class RentersService {
 
   sendUpdatePhoto: SendUpdatePhoto = async ctx => {
     const session = await ctx.session;
+    session.renter.infoStep = 'photo';
     session.renter.infoStepUpdate = true;
+    const photo = session.renter.infoStepsData.photo;
 
-    await this.sendPhotoQuestion(ctx);
+    const text = this.rentersTextsService.getPhotosQuestionText(!!photo);
+    if (photo) {
+      await ctx.replyWithPhoto(photo, {
+        caption: text,
+        reply_markup: this.rentersKeyboardsService.getRenterInfoPhotosKeyboard(),
+      });
+      return;
+    }
+    await ctx.reply(text);
   };
 
   updateRenterAbout: UpdateRenterAbout = async (about, ctx) => {
