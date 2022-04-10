@@ -116,9 +116,7 @@ export class LandlordObjectsService {
       .getCustomRepository(LandlordObjectsRepository)
       .getByChatId(renewLandlordObjectDto.chatId);
     await this.connection.getCustomRepository(LandlordObjectsRepository).renewObject(landlordObject.id);
-    await this.tasksSchedulerService.setTaskLandlordRenewNotification({
-      landlordObjectId: landlordObject.id,
-    });
+    await this.tasksSchedulerService.setTaskLandlordRenewNotification(landlordObject);
 
     return landlordObject.id;
   }

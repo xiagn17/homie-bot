@@ -1,7 +1,10 @@
 import { EntityNotFoundError, EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import { LandlordObjectEntity, PreferredGenderEnumType } from '../entities/LandlordObject.entity';
 import { LocationsEnum, ObjectTypeEnum } from '../../renters/entities/RenterFilters.entity';
-import { OBJECT_ACTIVE_TIME_DAYS } from '../constants/landlord-object-active-time.constant';
+import {
+  OBJECT_APARTMENTS_ACTIVE_TIME_DAYS,
+  OBJECT_ROOMS_BEDS_ACTIVE_TIME_DAYS,
+} from '../constants/landlord-object-active-time.constant';
 
 export interface LandlordObjectIdsDataRaw {
   landlordObjectId: string;
@@ -100,8 +103,10 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     const query: string = `
         SELECT landlord_object_id as "landlordObjectId" FROM landlord_objects
         WHERE
-            updated_at < now() - (interval '${OBJECT_ACTIVE_TIME_DAYS} days')
-            AND stopped_at is NULL
+              stopped_at is NULL AND (
+                  (updated_at < now() - (interval '${OBJECT_APARTMENTS_ACTIVE_TIME_DAYS} days') AND object_type = '${ObjectTypeEnum.apartments}') OR
+                  (updated_at < now() - (interval '${OBJECT_ROOMS_BEDS_ACTIVE_TIME_DAYS} days') AND object_type != '${ObjectTypeEnum.apartments}')
+              )
     `;
     return this.query(query);
   }
@@ -133,7 +138,7 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
     const preferredGenderString = matchOptions.preferredGender.join(', ');
     let query: string = `
         SELECT o.landlord_object_id as "landlordObjectId" FROM landlord_objects o
-        WHERE (o.is_approved = true AND o.stopped_at IS NULL AND o.updated_at > now() - (interval '${OBJECT_ACTIVE_TIME_DAYS} days'))
+        WHERE (o.is_approved = true AND o.stopped_at IS NULL)
             AND o.preferred_gender = ANY ('{${preferredGenderString}}')
     `;
 

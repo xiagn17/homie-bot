@@ -33,7 +33,7 @@ export class TasksObjectsOutdatedWorkerService extends TasksQueueBaseService {
     this.logger.setContext(this.constructor.name);
   }
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_MINUTE)
   async checkTasks(): Promise<void> {
     const outdatedObjectIds = await this.connection
       .getCustomRepository(LandlordObjectsRepository)

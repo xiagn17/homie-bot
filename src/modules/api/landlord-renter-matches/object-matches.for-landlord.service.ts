@@ -79,13 +79,7 @@ export class ObjectMatchesForLandlordService {
 
       if (!object.isAdmin) {
         await entityManager.getCustomRepository(LandlordObjectsRepository).renewObject(object.id);
-        await this.tasksSchedulerService.setTaskLandlordRenewNotification(
-          {
-            landlordObjectId: object.id,
-          },
-          undefined,
-          entityManager,
-        );
+        await this.tasksSchedulerService.setTaskLandlordRenewNotification(object, undefined, entityManager);
       }
 
       if (landlordStatusOfObjectDto.landlordStatus === MatchStatusEnumType.resolved) {

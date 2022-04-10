@@ -69,9 +69,7 @@ export class LandlordObjectsControlService {
 
       if (!landlordObject.isAdmin) {
         await this.tasksSchedulerService.setTaskLandlordRenewNotification(
-          {
-            landlordObjectId: approveLandlordObjectDto.id,
-          },
+          landlordObject,
           undefined,
           entityManager,
         );
