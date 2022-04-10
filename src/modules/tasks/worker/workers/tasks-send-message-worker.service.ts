@@ -28,7 +28,7 @@ export class TasksSendMessageWorkerService extends TasksQueueBaseService {
     this.logger.setContext(this.constructor.name);
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_HOUR)
   async checkTasks(): Promise<void> {
     const waitingTasks =
       (await this.tasksRepository.getTodoSendMessage()) as TaskEntity<TaskDataSendMessageInterface>[];
