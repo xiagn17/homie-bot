@@ -147,7 +147,9 @@ export class MainMenuHandlersService implements OnModuleInit {
     const session = await ctx.session;
     const userType = session.type;
     if (userType === TelegramUserType.renter) {
-      await ctx.editMessageText(this.mainMenuTextsService.getRenterSecondPageText());
+      await ctx.editMessageText(this.mainMenuTextsService.getRenterSecondPageText(), {
+        disable_web_page_preview: true,
+      });
       return;
     } else if (userType === TelegramUserType.landlord) {
       await ctx.editMessageText(this.mainMenuTextsService.getLandlordSecondPageText());

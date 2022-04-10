@@ -53,6 +53,14 @@ export class TasksRepository extends Repository<TaskEntity> {
       .getMany();
   }
 
+  getTodoSendMessage(): Promise<TaskEntity[]> {
+    return this.getTodoQuery()
+      .andWhere('task.type = :type', {
+        type: TaskTypeEnumInterface.send_message,
+      })
+      .getMany();
+  }
+
   async isExistsOtherObjectPushToRenter(renterChatId: string): Promise<boolean> {
     const type = TaskTypeEnumInterface.new_object_push_to_renters;
     const result: [{ exists: boolean }] = await this.query(`

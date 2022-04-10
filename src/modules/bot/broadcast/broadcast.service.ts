@@ -9,6 +9,7 @@ import {
 } from 'grammy/out/platform.node';
 import { AbortSignal } from 'grammy/out/shim.node';
 import { Other } from 'grammy/out/core/api';
+import { InlineKeyboardMarkup } from '@grammyjs/types/inline';
 import { ApiObjectResponse } from '../../api/landlord-objects/interfaces/landlord-objects.type';
 import { AdminTextsService } from '../admin/texts/admin-texts.service';
 import { AdminKeyboardsService } from '../admin/keyboards/admin-keyboards.service';
@@ -204,6 +205,19 @@ export class BroadcastService implements OnModuleInit {
   async sendReferralContactsToRenter(from: RenterReferralsEnum, { chatId }: ForwardOptions): Promise<void> {
     const text = this.rentersTextsService.getReferralContactsText(from);
     await this.sendMessage(chatId, text);
+  }
+
+  async sendMessageTask(
+    message: string,
+    { chatId }: ForwardOptions,
+    markup?: InlineKeyboardMarkup,
+  ): Promise<void> {
+    const other = markup
+      ? {
+          reply_markup: markup,
+        }
+      : undefined;
+    await this.sendMessage(chatId, message, other);
   }
 
   private async sendMessage(
