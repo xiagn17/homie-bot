@@ -40,8 +40,8 @@ export default (): ConfigurationType => {
     referral: {
       forInvitedUserOnStart: 1,
       bonusOnStart: 1,
-      bonusOnFillRenterInfo: 2,
-      bonusOnFillLandlordObject: 3,
+      bonusOnFillRenterInfo: 1,
+      bonusOnFillLandlordObject: 2,
     },
     googleAnalyticsId: String(process.env.GOOGLE_ANALYTICS_ID),
   };

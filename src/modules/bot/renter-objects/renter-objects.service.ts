@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EMOJI_CELEBRATE } from '../constants/emoji';
 import { RentersObjectsKeyboardsService } from './keyboards/renters-objects-keyboards.service';
 import { RenterObjectsApiService } from './api/renter-objects-api.service';
@@ -13,18 +13,12 @@ import {
 } from './interfaces/renter-objects.interface';
 
 @Injectable()
-export class RenterObjectsService implements OnModuleInit {
+export class RenterObjectsService {
   constructor(
     private renterObjectsKeyboardsService: RentersObjectsKeyboardsService,
     private renterObjectsApiService: RenterObjectsApiService,
     private renterObjectsTextsService: RenterObjectsTextsService,
   ) {}
-
-  onModuleInit(): void {
-    this.renterObjectsKeyboardsService.initPayContactsMenu(
-      this.renterObjectsTextsService.getPrivateHelperText(),
-    );
-  }
 
   sendNextObject: SendNextObject = async ctx => {
     const chatId = ctx.from?.id?.toString() as string;

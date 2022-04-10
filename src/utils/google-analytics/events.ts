@@ -2,7 +2,6 @@ export const ALL_START_EVENT = 'all_start';
 export const ALL_HELLO_EVENT = 'all_hellow';
 
 export const RENTER_HELLO_EVENT = 'renter_hellow';
-export const RENTER_HELPER_CLICK_EVENT = 'renter_helper-click';
 export const RENTER_CONTACT_BUY_EVENT = 'renter_contact-buy';
 export const RENTER_HELPER_BUY_EVENT = 'renter_helper-buy';
 export const RENTER_ANKETA_START_EVENT = 'renter_anketa-start';
