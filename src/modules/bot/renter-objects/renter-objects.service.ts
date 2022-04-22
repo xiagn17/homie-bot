@@ -1,5 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { EMOJI_CELEBRATE } from '../constants/emoji';
+import { sendAnalyticsEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
+import {
+  RENTER_ACTION,
+  RENTER_INFO_ASK_EVENT,
+  RENTER_INFO_SEND2_EVENT,
+  RENTER_INFO_SEND_EVENT,
+  RENTER_OBJECT_VIEW_EVENT,
+} from '../../../utils/google-analytics/events';
 import { RentersObjectsKeyboardsService } from './keyboards/renters-objects-keyboards.service';
 import { RenterObjectsApiService } from './api/renter-objects-api.service';
 import { RenterObjectsTextsService } from './texts/renter-objects-texts.service';
@@ -57,6 +65,7 @@ export class RenterObjectsService {
       disable_web_page_preview: true,
     });
 
+    sendAnalyticsEvent(chatId, RENTER_ACTION, RENTER_OBJECT_VIEW_EVENT);
     await this.renterObjectsApiService.markObjectAsNotInterested({
       objectId: object.id,
       chatId: chatId,
@@ -94,6 +103,7 @@ export class RenterObjectsService {
     await ctx.reply(this.renterObjectsTextsService.getNoRenterInfoText(), {
       reply_markup: this.renterObjectsKeyboardsService.getNoInfoKeyboard(objectId),
     });
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_INFO_ASK_EVENT);
   };
 
   sendObjectRequest: SendObjectRequest = async (objectId, ctx) => {
@@ -110,5 +120,11 @@ export class RenterObjectsService {
     await ctx.reply(text, {
       reply_markup: keyboard,
     });
+
+    sendAnalyticsEvent(
+      chatId,
+      RENTER_ACTION,
+      isAdminObject ? RENTER_INFO_SEND2_EVENT : RENTER_INFO_SEND_EVENT,
+    );
   };
 }

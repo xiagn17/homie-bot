@@ -18,6 +18,10 @@ export const RENTER_CONTACT_CLICK_EVENT = 'renter_contact-click';
 export const RENTER_CONTACT_2_CLICK_EVENT = 'renter_contact-click-2lvl';
 export const RENTER_STOP_CLICK_EVENT = 'renter_stop-click';
 export const RENTER_NEXT_CLICK_EVENT = 'renter_next-click';
+export const RENTER_OBJECT_VIEW_EVENT = 'renter_object-view';
+export const RENTER_INFO_ASK_EVENT = 'renter_ank-ask';
+export const RENTER_INFO_SEND_EVENT = 'renter_ank-send';
+export const RENTER_INFO_SEND2_EVENT = 'renter_ank-send2';
 
 export const LANDLORD_HELLO_EVENT = 'LL-_hellow';
 export const LANDLORD_FORM_START_EVENT = 'LL_form-start';
