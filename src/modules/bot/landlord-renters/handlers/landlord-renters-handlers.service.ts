@@ -12,6 +12,7 @@ import {
   LANDLORD_ANKETA_DISLIKE_EVENT,
   LANDLORD_ANKETA_LIKE_EVENT,
 } from '../../../../utils/google-analytics/events';
+import { ReviewsService } from '../../reviews/reviews.service';
 
 @Injectable()
 export class LandlordRentersHandlersService {
@@ -20,6 +21,8 @@ export class LandlordRentersHandlersService {
   constructor(
     private readonly landlordRentersApiService: LandlordRentersApiService,
     private readonly landlordRentersTextsService: LandlordRentersTextsService,
+
+    private readonly reviewsService: ReviewsService,
   ) {
     this.composer.callbackQuery(
       new RegExp(`^${KEYBOARD_LANDLORD_RENTER_ACTIONS_PREFIX}`),
@@ -54,6 +57,10 @@ export class LandlordRentersHandlersService {
 
       const stopObjectText = this.landlordRentersTextsService.getStopObjectText();
       await ctx.reply(stopObjectText);
+
+      setTimeout(() => {
+        this.reviewsService.sendReviewReason(ctx);
+      }, 600);
     }
   };
 }

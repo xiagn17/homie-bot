@@ -54,6 +54,7 @@ import { LandlordsApiService } from '../api/landlords-api.service';
 import { BotApiService } from '../../main/api/bot-api.service';
 import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
 import { LANDLORD_ACTION, LANDLORD_HELLO_EVENT } from '../../../../utils/google-analytics/events';
+import { ReviewsService } from '../../reviews/reviews.service';
 import { getDateFromString } from './helpers/startArrivalDate';
 import { getPrice } from './helpers/price';
 import { getApartmentsFloors } from './helpers/apartmentsFloors';
@@ -113,6 +114,8 @@ export class LandlordsHandlersService {
     private readonly botApiService: BotApiService,
 
     private readonly mainMenuService: MainMenuService,
+
+    private readonly reviewsService: ReviewsService,
   ) {
     this.firstTipRouter.route(ROUTE_FIRST_TIP, this.onShowFirstTipHandler);
 
@@ -512,6 +515,10 @@ export class LandlordsHandlersService {
     } else if (action === 'stop') {
       await this.landlordsApiService.stopSearchObject(chatId);
       await ctx.editMessageText(this.landlordsTextsService.getStoppedText());
+
+      setTimeout(() => {
+        this.reviewsService.sendReviewReason(ctx);
+      }, 600);
     }
   };
 }

@@ -32,6 +32,7 @@ import {
   RENTER_STOP_CLICK_EVENT,
 } from '../../../../utils/google-analytics/events';
 import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
+import { ReviewsService } from '../../reviews/reviews.service';
 import { getObjectNumber } from './helpers/objectNumber.helper';
 import UrlButton = InlineKeyboardButton.UrlButton;
 
@@ -58,6 +59,8 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     private readonly renterObjectsApiService: RenterObjectsApiService,
     private readonly renterObjectsKeyboardsService: RentersObjectsKeyboardsService,
     private readonly renterObjectsTextsService: RenterObjectsTextsService,
+
+    private readonly reviewsService: ReviewsService,
   ) {}
 
   onModuleInit(): void {
@@ -212,8 +215,9 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     const chatId = ctx.from?.id.toString() as string;
     await this.renterObjectsApiService.stopSearch(chatId);
     await ctx.reply(this.renterObjectsTextsService.getStoppedRenterSearchText());
-  };
 
-  // private onSeeObjects:
-  //     await this.renterObjectsService.sendNextObject(ctx);
+    setTimeout(() => {
+      this.reviewsService.sendReviewReason(ctx);
+    }, 600);
+  };
 }

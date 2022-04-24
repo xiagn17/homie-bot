@@ -9,6 +9,7 @@ import { RentersObjectsKeyboardsModule } from '../../renter-objects/keyboards/re
 import { LandlordsHandlersModule } from '../../landlords/handlers/landlords-handlers.module';
 import { AdminHandlersModule } from '../../admin/handlers/admin-handlers.module';
 import { LandlordRentersHandlersModule } from '../../landlord-renters/handlers/landlord-renters-handlers.module';
+import { ReviewsHandlersModule } from '../../reviews/handlers/reviews-handlers.module';
 import { BotMiddlewaresService } from './bot-middlewares.service';
 
 @Module({
@@ -29,6 +30,8 @@ import { BotMiddlewaresService } from './bot-middlewares.service';
     RentersObjectsKeyboardsModule,
 
     LandlordRentersHandlersModule,
+
+    ReviewsHandlersModule,
   ],
   providers: [BotMiddlewaresService],
   exports: [BotMiddlewaresService],

@@ -5,6 +5,7 @@ import { LandlordsKeyboardsModule } from '../keyboards/landlords-keyboards.modul
 import { MainMenuModule } from '../../main-menu/main-menu.module';
 import { LandlordsApiModule } from '../api/landlords-api.module';
 import { BotApiModule } from '../../main/api/bot-api.module';
+import { ReviewsModule } from '../../reviews/reviews.module';
 import { LandlordsHandlersService } from './landlords-handlers.service';
 
 @Module({
@@ -16,6 +17,8 @@ import { LandlordsHandlersService } from './landlords-handlers.service';
     LandlordsApiModule,
 
     BotApiModule,
+
+    ReviewsModule,
   ],
   providers: [LandlordsHandlersService],
   exports: [LandlordsHandlersService],

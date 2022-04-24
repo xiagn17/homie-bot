@@ -11,6 +11,7 @@ import { RentersObjectsKeyboardsService } from '../../renter-objects/keyboards/r
 import { LandlordsHandlersService } from '../../landlords/handlers/landlords-handlers.service';
 import { AdminHandlersService } from '../../admin/handlers/admin-handlers.service';
 import { LandlordRentersHandlersService } from '../../landlord-renters/handlers/landlord-renters-handlers.service';
+import { ReviewsHandlersService } from '../../reviews/handlers/reviews-handlers.service';
 
 @Injectable()
 export class BotMiddlewaresService {
@@ -31,6 +32,8 @@ export class BotMiddlewaresService {
     private readonly rentersObjectsKeyboardsService: RentersObjectsKeyboardsService,
 
     private readonly landlordRentersHandlersService: LandlordRentersHandlersService,
+
+    private readonly reviewsHandlersService: ReviewsHandlersService,
   ) {}
 
   get middlewares(): Middleware<MyContext>[] {
@@ -59,6 +62,8 @@ export class BotMiddlewaresService {
       this.landlordRentersHandlersService.composer,
 
       this.adminHandlersService.composer,
+
+      this.reviewsHandlersService.composer,
     ];
   }
 }

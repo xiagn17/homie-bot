@@ -36,6 +36,9 @@ import {
 } from '../../../utils/google-analytics/events';
 import { RentersApiService } from '../renters/api/renters-api.service';
 import { RenterReferralsEnum } from '../../api/renters/interfaces/renter-referrals.interface';
+import { TelegramUserType } from '../session-storage/interfaces/session-storage.interface';
+import { ReviewsTextsService } from '../reviews/texts/reviews-texts.service';
+import { ReviewsKeyboardsService } from '../reviews/keyboards/reviews-keyboards.service';
 
 interface ForwardOptions {
   chatId: string;
@@ -62,6 +65,9 @@ export class BroadcastService implements OnModuleInit {
     private readonly renterObjectsTextsService: RenterObjectsTextsService,
     private readonly renterObjectsKeyboardsService: RentersObjectsKeyboardsService,
     private readonly renterObjectsApiService: RenterObjectsApiService,
+
+    private readonly reviewsTextsService: ReviewsTextsService,
+    private readonly reviewsKeyboardsService: ReviewsKeyboardsService,
   ) {}
 
   onModuleInit(): void {
@@ -200,6 +206,12 @@ export class BroadcastService implements OnModuleInit {
   async sendObjectOutdatedToLandlord(_object: ApiObjectResponse, { chatId }: ForwardOptions): Promise<void> {
     const text = this.landlordsTextsService.getStoppedText();
     await this.sendMessage(chatId, text);
+
+    setTimeout(() => {
+      this.sendMessage(chatId, this.reviewsTextsService.getReasonText(), {
+        reply_markup: this.reviewsKeyboardsService.getReasonsKeyboard(TelegramUserType.landlord),
+      });
+    });
   }
 
   async sendReferralContactsToRenter(from: RenterReferralsEnum, { chatId }: ForwardOptions): Promise<void> {
