@@ -11,6 +11,7 @@ import {
   BROADCAST_SEND_MESSAGE_TASK_EVENT_NAME,
   BroadcastSendMessageTaskEvent,
 } from '../../../bot/broadcast/events/broadcast-send-message-user.event';
+import { replaceN } from '../../../../utils/texts/replaceN';
 
 @Injectable()
 export class TasksSendMessageWorkerService extends TasksQueueBaseService {
@@ -48,7 +49,7 @@ export class TasksSendMessageWorkerService extends TasksQueueBaseService {
         await this.eventEmitter.emitAsync(
           BROADCAST_SEND_MESSAGE_TASK_EVENT_NAME,
           new BroadcastSendMessageTaskEvent({
-            message: taskData.message,
+            message: replaceN(taskData.message),
             chatId: taskData.chatId,
             markup: taskData.markup ? JSON.parse(taskData.markup) : undefined,
           }),
