@@ -27,6 +27,7 @@ import {
   LANDLORD_FORM_Q9_EVENT,
   LANDLORD_FORM_START_EVENT,
 } from '../../../utils/google-analytics/events';
+import { AdminKeyboardsService } from '../admin/keyboards/admin-keyboards.service';
 import {
   SendLandlordObjectForm,
   SendObjectFormAddressQuestion,
@@ -58,6 +59,8 @@ export class LandlordsService {
     private readonly landlordsKeyboardsService: LandlordsKeyboardsService,
     private readonly landlordsTextsService: LandlordsTextsService,
     private readonly landlordsApiService: LandlordsApiService,
+
+    private readonly adminKeyboardsService: AdminKeyboardsService,
   ) {}
 
   public sendLandlordObjectForm: SendLandlordObjectForm = async ctx => {
@@ -263,7 +266,9 @@ export class LandlordsService {
       const object = await this.landlordsApiService.createObject(data);
       session.landlord.objectStepsData = {};
       if (object.isAdmin) {
-        await ctx.reply(`Айдишник обьекта - ${object.id}\n\n#home${object.number}`);
+        await ctx.reply(`Айдишник обьекта - ${object.id}\n\n#home${object.number}`, {
+          reply_markup: this.adminKeyboardsService.getAdminObjectStarredKeyboard(object.id),
+        });
       } else {
         const text = this.landlordsTextsService.getObjectFormModerationText(object.number);
         await ctx.reply(text);

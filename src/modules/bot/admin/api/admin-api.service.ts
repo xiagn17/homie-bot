@@ -11,4 +11,8 @@ export class AdminApiService {
       isApproved: isApproved,
     });
   }
+
+  async makeObjectStarred(objectId: string): Promise<void> {
+    await this.landlordObjectsControlService.makeObjectStarred(objectId);
+  }
 }

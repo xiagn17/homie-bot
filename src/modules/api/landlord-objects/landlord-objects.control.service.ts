@@ -111,4 +111,10 @@ export class LandlordObjectsControlService {
       entityManager,
     );
   }
+
+  public async makeObjectStarred(objectId: string): Promise<void> {
+    await this.connection.getCustomRepository(LandlordObjectsRepository).update(objectId, {
+      starred: true,
+    });
+  }
 }

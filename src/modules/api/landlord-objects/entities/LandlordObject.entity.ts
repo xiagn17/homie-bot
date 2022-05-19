@@ -94,4 +94,7 @@ export class LandlordObjectEntity {
 
   @Column({ name: 'is_admin', type: 'boolean' })
   isAdmin: boolean;
+
+  @Column({ name: 'starred', type: 'boolean' })
+  starred: boolean;
 }

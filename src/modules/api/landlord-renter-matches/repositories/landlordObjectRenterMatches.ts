@@ -92,7 +92,7 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
         JOIN renter_matches USING (landlord_object_id)
         WHERE t_landlordObjects.landlord_object_id = renter_matches.landlord_object_id
           AND t_landlordObjects.stopped_at IS NULL
-        ORDER BY t_landlordObjects.created_at
+        ORDER BY t_landlordObjects.starred DESC, t_landlordObjects.created_at
         LIMIT 1
     `);
 
