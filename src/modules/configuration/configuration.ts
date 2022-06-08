@@ -32,16 +32,13 @@ export default (): ConfigurationType => {
       secretKey: String(process.env.YOUKASSA_KEY),
       shopId: String(process.env.YOUKASSA_SHOP_ID),
       prices: {
-        oneContacts: String(process.env.ONE_CONTACTS_PRICE),
-        fiveContacts: String(process.env.FIVE_CONTACTS_PRICE),
-        privateHelper: String(process.env.PRIVATE_HELPER_PRICE),
+        subscriptionTwoWeeks: String(process.env.TWO_WEEKS_SUBSCRIPTION_PRICE),
+        subscriptionMonth: String(process.env.MONTH_SUBSCRIPTION_PRICE),
       },
     },
     referral: {
-      forInvitedUserOnStart: 1,
-      bonusOnStart: 1,
       bonusOnFillRenterInfo: 1,
-      bonusOnFillLandlordObject: 2,
+      bonusOnFillLandlordObject: 7,
     },
     googleAnalyticsId: String(process.env.GOOGLE_ANALYTICS_ID),
   };

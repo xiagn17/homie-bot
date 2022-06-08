@@ -29,9 +29,12 @@ export class RentersSerializer {
 
   toResponseSettings(renterSettings: RenterSettingsEntity): ApiRenterSettings {
     return {
-      ableContacts: renterSettings.ableContacts,
       inSearch: renterSettings.inSearch,
       renterId: renterSettings.renterId,
+      subscriptionStarted: renterSettings.subscriptionStarted,
+      subscriptionEnds: renterSettings.subscriptionEnds,
+      subscriptionTrialStarted: renterSettings.subscriptionTrialStarted,
+      subscriptionTrialEnds: renterSettings.subscriptionTrialEnds,
     };
   }
 

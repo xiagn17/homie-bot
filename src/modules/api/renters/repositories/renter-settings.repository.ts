@@ -9,30 +9,31 @@ export class RenterSettingsRepository extends Repository<RenterSettingsEntity> {
     return this.findOneOrFail(renterSettingsEntity.id);
   }
 
-  async addContacts(telegramUserId: string, count: number): Promise<number> {
+  findByTelegramUserId(telegramUserId: string): Promise<RenterSettingsEntity> {
+    return this.findOneOrFail(
+      { renterEntity: { telegramUserId: telegramUserId } },
+      { relations: ['renterEntity'] },
+    );
+  }
+
+  async startSubscription(telegramUserId: string, startedAt: Date, endsAt: Date): Promise<void> {
     const renterSettings = await this.findOneOrFail(
       { renterEntity: { telegramUserId: telegramUserId } },
       { relations: ['renterEntity'] },
     );
-    renterSettings.ableContacts += count;
+    renterSettings.subscriptionStarted = startedAt;
+    renterSettings.subscriptionEnds = endsAt;
     await this.save(renterSettings);
-    return renterSettings.ableContacts;
   }
 
-  async addPrivateHelper(telegramUserId: string): Promise<void> {
+  async startTrialSubscription(renterId: string, startedAt: Date, endsAt: Date): Promise<void> {
     const renterSettings = await this.findOneOrFail(
-      { renterEntity: { telegramUserId: telegramUserId } },
+      { renterEntity: { id: renterId } },
       { relations: ['renterEntity'] },
     );
-    renterSettings.privateHelper = true;
+    renterSettings.subscriptionTrialStarted = startedAt;
+    renterSettings.subscriptionTrialEnds = endsAt;
     await this.save(renterSettings);
-  }
-
-  async removeContact(renterId: string): Promise<number> {
-    const renter = await this.findOneOrFail({ renterId: renterId });
-    renter.ableContacts -= 1;
-    await this.save(renter);
-    return renter.ableContacts;
   }
 
   async stopSearch(renterId: string): Promise<void> {

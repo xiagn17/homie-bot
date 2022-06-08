@@ -22,12 +22,12 @@ export class YoukassaPaymentsFabricService {
   }
 
   private getDescriptionByItem(item: PaymentItemInterface): string {
-    if (item === PaymentItems['5-contacts']) {
-      return 'Покупка 5-ти контактов';
-    } else if (item === PaymentItems['1-contacts']) {
-      return 'Покупка 1-го контакта';
+    if (item === PaymentItems['subscription-2-weeks']) {
+      return 'Две недели подписки Homie';
+    } else if (item === PaymentItems['subscription-month']) {
+      return 'Месяц подписки Homie';
     } else {
-      return 'Услуга Личного помощника';
+      return 'Покупка';
     }
   }
 
@@ -35,12 +35,10 @@ export class YoukassaPaymentsFabricService {
     const amount: Partial<IAmount> = {
       currency: 'RUB',
     };
-    if (item === PaymentItems['5-contacts']) {
-      amount.value = this.prices.fiveContacts;
-    } else if (item === PaymentItems['1-contacts']) {
-      amount.value = this.prices.oneContacts;
-    } else {
-      amount.value = this.prices.privateHelper;
+    if (item === PaymentItems['subscription-month']) {
+      amount.value = this.prices.subscriptionMonth;
+    } else if (item === PaymentItems['subscription-2-weeks']) {
+      amount.value = this.prices.subscriptionTwoWeeks;
     }
     const postfix = '.00';
     amount.value += postfix;

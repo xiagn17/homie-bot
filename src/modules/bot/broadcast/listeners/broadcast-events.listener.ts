@@ -6,18 +6,6 @@ import {
 } from '../events/broadcast-renew-object.event';
 import { BroadcastService } from '../broadcast.service';
 import {
-  BROADCAST_PAID_PRIVATE_HELPER_TO_ADMIN_EVENT_NAME,
-  BroadcastPaidPrivateHelperToAdminEvent,
-} from '../events/broadcast-paid-private-helper-admin.event';
-import {
-  BROADCAST_PAID_PRIVATE_HELPER_TO_BUYER_EVENT_NAME,
-  BroadcastPaidPrivateHelperToBuyerEvent,
-} from '../events/broadcast-paid-private-helper-buyer.event';
-import {
-  BROADCAST_PAID_CONTACTS_TO_BUYER_EVENT_NAME,
-  BroadcastPaidContactsToBuyerEvent,
-} from '../events/broadcast-paid-contacts-buyer.event';
-import {
   BROADCAST_LANDLORD_CONTACTS_TO_APPROVED_RENTER_EVENT_NAME,
   BroadcastLandlordContactsToApprovedRenterEvent,
 } from '../events/broadcast-landlord-contacts-approved-renter.event';
@@ -38,21 +26,21 @@ import {
   BroadcastNewObjectToRenterPushEvent,
 } from '../events/broadcast-new-object-renter-push.event';
 import {
-  BROADCAST_INTERESTED_RENTER_TO_LANDLORD_EVENT_NAME,
-  BroadcastInterestedRenterToLandlordEvent,
-} from '../events/broadcast-interested-renter-landlord.event';
-import {
   BROADCAST_OBJECT_OUTDATED_TO_LANDLORD_EVENT_NAME,
   BroadcastObjectOutdatedPushEvent,
 } from '../events/broadcast-object-outdated.event';
 import {
-  BROADCAST_REFERRAL_CONTACTS_TO_RENTER_EVENT_NAME,
-  BroadcastReferralContactsRenterEvent,
-} from '../events/broadcast-referral-contacts-renter.event';
+  BROADCAST_REFERRAL_DAYS_TO_RENTER_EVENT_NAME,
+  BroadcastReferralDaysRenterEvent,
+} from '../events/broadcast-referral-days-renter.event';
 import {
   BROADCAST_SEND_MESSAGE_TASK_EVENT_NAME,
   BroadcastSendMessageTaskEvent,
 } from '../events/broadcast-send-message-user.event';
+import {
+  BROADCAST_SUBSCRIPTION_START_EVENT_NAME,
+  BroadcastSubscriptionStartEvent,
+} from '../events/broadcast-subscription-start.event';
 
 @Injectable()
 export class BroadcastEventsListener {
@@ -61,27 +49,6 @@ export class BroadcastEventsListener {
   @OnEvent(BROADCAST_RENEW_OBJECT_EVENT_NAME)
   async handleRenewObject(data: BroadcastRenewObjectEvent): Promise<void> {
     await this.broadcastService.sendRenewObjectToLandlord(data.object, { chatId: data.chatId });
-  }
-
-  @OnEvent(BROADCAST_PAID_PRIVATE_HELPER_TO_ADMIN_EVENT_NAME)
-  async handlePaidPrivateHelperToAdmin(data: BroadcastPaidPrivateHelperToAdminEvent): Promise<void> {
-    await this.broadcastService.sendSuccessfulPaidPrivateHelperToAdmin(data.username, {
-      chatId: data.chatId,
-    });
-  }
-
-  @OnEvent(BROADCAST_PAID_PRIVATE_HELPER_TO_BUYER_EVENT_NAME)
-  async handlePaidPrivateHelperToBuyer(data: BroadcastPaidPrivateHelperToBuyerEvent): Promise<void> {
-    await this.broadcastService.sendSuccessfulPaidPrivateHelper({
-      chatId: data.chatId,
-    });
-  }
-
-  @OnEvent(BROADCAST_PAID_CONTACTS_TO_BUYER_EVENT_NAME)
-  async handlePaidContactsToBuyer(data: BroadcastPaidContactsToBuyerEvent): Promise<void> {
-    await this.broadcastService.sendSuccessfulPaidContacts(data.contactsNumber, {
-      chatId: data.chatId,
-    });
   }
 
   @OnEvent(BROADCAST_LANDLORD_CONTACTS_TO_APPROVED_RENTER_EVENT_NAME)
@@ -96,13 +63,6 @@ export class BroadcastEventsListener {
   @OnEvent(BROADCAST_RENTER_INFO_TO_LANDLORD_EVENT_NAME)
   async handleRenterInfoToLandlord(data: BroadcastRenterInfoToLandlordEvent): Promise<void> {
     await this.broadcastService.sendRenterInfoToLandlord(data.renterInfo, {
-      chatId: data.chatId,
-    });
-  }
-
-  @OnEvent(BROADCAST_INTERESTED_RENTER_TO_LANDLORD_EVENT_NAME)
-  async handleInterestedRenterToLandlord(data: BroadcastInterestedRenterToLandlordEvent): Promise<void> {
-    await this.broadcastService.sendInterestedRenterToLandlord(data.renterInfo, {
       chatId: data.chatId,
     });
   }
@@ -135,13 +95,18 @@ export class BroadcastEventsListener {
     });
   }
 
-  @OnEvent(BROADCAST_REFERRAL_CONTACTS_TO_RENTER_EVENT_NAME)
-  async handleReferralContactsToRenter(data: BroadcastReferralContactsRenterEvent): Promise<void> {
-    await this.broadcastService.sendReferralContactsToRenter(data.from, { chatId: data.chatId });
+  @OnEvent(BROADCAST_REFERRAL_DAYS_TO_RENTER_EVENT_NAME)
+  async handleReferralDaysToRenter(data: BroadcastReferralDaysRenterEvent): Promise<void> {
+    await this.broadcastService.sendReferralDaysToRenter(data.from, { chatId: data.chatId });
   }
 
   @OnEvent(BROADCAST_SEND_MESSAGE_TASK_EVENT_NAME)
   async handleSendMessageTask(data: BroadcastSendMessageTaskEvent): Promise<void> {
     await this.broadcastService.sendMessageTask(data.message, { chatId: data.chatId }, data.markup);
+  }
+
+  @OnEvent(BROADCAST_SUBSCRIPTION_START_EVENT_NAME)
+  async handleSubscriptionStart(data: BroadcastSubscriptionStartEvent): Promise<void> {
+    await this.broadcastService.sendSubscriptionStart(data.endsAt, { chatId: data.chatId });
   }
 }

@@ -3,8 +3,6 @@ import { EntityManager } from 'typeorm';
 import { LoggerService } from '../../logger/logger.service';
 import { sendAnalyticsStartChatEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
 import { parseReferralChatIdFromLink } from '../../bot/helpers/referralLink/parseReferralLink';
-import { RentersService } from '../renters/renters.service';
-import { RenterReferralsEnum } from '../renters/interfaces/renter-referrals.interface';
 import { TelegramUsersRepository } from './repositories/telegramUsers.repository';
 import { TelegramBotSerializer } from './telegram-bot.serializer';
 import { TelegramUserCreateDto } from './dto/telegram-bot.dto';
@@ -15,8 +13,6 @@ export class TelegramBotService {
     private logger: LoggerService,
     private entityManager: EntityManager,
     private telegramBotSerializer: TelegramBotSerializer,
-
-    private readonly rentersService: RentersService,
   ) {
     this.logger.setContext(this.constructor.name);
   }
@@ -42,14 +38,6 @@ export class TelegramBotService {
         : undefined;
       const telegramUserDbData = this.telegramBotSerializer.mapToDbData(newWebhookRenter, referralUser?.id);
       await entityManager.getCustomRepository(TelegramUsersRepository).createUser(telegramUserDbData);
-
-      if (referralUser) {
-        await this.rentersService.depositReferralContacts(
-          referralUser.id,
-          RenterReferralsEnum.onStart,
-          entityManager,
-        );
-      }
     });
   }
 

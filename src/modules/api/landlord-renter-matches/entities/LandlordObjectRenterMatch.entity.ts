@@ -39,12 +39,6 @@ export class LandlordObjectRenterMatchEntity {
   })
   landlordStatus: MatchStatusEnumType | null;
 
-  @Column({
-    type: 'boolean',
-    name: 'paid',
-  })
-  paid: boolean;
-
   @Column({ name: 'updated_at', type: 'timestamptz' })
   readonly updatedAt: Date | null;
 }

@@ -5,7 +5,6 @@ import { Router } from '@grammyjs/router';
 import { MyContext } from '../../main/interfaces/bot.interface';
 import { RenterObjectsService } from '../renter-objects.service';
 import {
-  HandlerGetContact,
   HandlerGetNextObject,
   HandlerOnFindObjectCallback,
   HandlerOnFindObjectMenuButton,
@@ -25,8 +24,6 @@ import {
 } from '../../session-storage/interfaces/session-storage.interface';
 import {
   RENTER_ACTION,
-  RENTER_CONTACT_2_CLICK_EVENT,
-  RENTER_CONTACT_CLICK_EVENT,
   RENTER_LIKE_CLICK_EVENT,
   RENTER_NEXT_CLICK_EVENT,
   RENTER_STOP_CLICK_EVENT,
@@ -70,22 +67,10 @@ export class RentersObjectsHandlersService implements OnModuleInit {
       await this.onSendRequestHandler(objectId, ctx);
       await ctx.answerCallbackQuery();
     });
-    this.composer.callbackQuery(/^contact_/, async ctx => {
-      const data = ctx.callbackQuery.data;
-      const objectId = data.split('contact_')[1];
-      await this.onGetContactHandler(objectId, ctx);
-      await ctx.answerCallbackQuery();
-    });
     this.composer.callbackQuery(/^nextObj_/, async ctx => {
       const data = ctx.callbackQuery.data;
       const objectId = data.split('nextObj_')[1];
       await this.onGetNextObjectHandler(objectId, ctx);
-      await ctx.answerCallbackQuery();
-    });
-    this.composer.callbackQuery(/^after_contact_/, async ctx => {
-      const data = ctx.callbackQuery.data;
-      const objectId = data.split('after_contact_')[1];
-      await this.onGetContactAfterHandler(objectId, ctx);
       await ctx.answerCallbackQuery();
     });
     this.composer.callbackQuery(/^after_nextObj_/, async ctx => {
@@ -112,8 +97,8 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     this.router.route(ROUTE_FIND_OBJECT_BY_NUMBER, this.onFindObjectCallback);
     this.composer.use(this.router);
 
-    this.renterObjectsKeyboardsService.initPayContactsMenu(
-      this.onFreeContactsButtonHandler,
+    this.renterObjectsKeyboardsService.initPaySubscriptionMenu(
+      this.onFreeSubscriptionButtonHandler,
       this.renterObjectsService.sendNextObject,
     );
   }
@@ -125,9 +110,9 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     await ctx.reply(this.renterObjectsTextsService.getIdInterestedObjectText());
   };
 
-  private onFreeContactsButtonHandler: HandlerOnFreeContactsMenuButton = async ctx => {
-    await ctx.reply(this.renterObjectsTextsService.getFreeContactsText(), {
-      reply_markup: this.renterObjectsKeyboardsService.freeContactsMenu,
+  private onFreeSubscriptionButtonHandler: HandlerOnFreeContactsMenuButton = async ctx => {
+    await ctx.reply(this.renterObjectsTextsService.getFreeSubscriptionText(), {
+      reply_markup: this.renterObjectsKeyboardsService.freeSubscriptionMenu,
     });
   };
 
@@ -160,28 +145,11 @@ export class RentersObjectsHandlersService implements OnModuleInit {
       return;
     }
 
-    await this.renterObjectsService.sendObjectRequest(objectId, ctx);
-
-    const keyboardToObjectMessage = ctx.msg?.reply_markup?.inline_keyboard.filter(k =>
-      k[0].text.includes('Получить контакт'),
-    ) as InlineKeyboardButton[][];
-    await ctx.editMessageReplyMarkup({ reply_markup: { inline_keyboard: keyboardToObjectMessage } });
-  };
-
-  private onGetContactHandler: HandlerGetContact = async (objectId, ctx) => {
-    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_CONTACT_CLICK_EVENT);
-    const isContactSent = await this.renterObjectsService.getPaidContact(objectId, ctx);
-    if (isContactSent) {
+    const sent = await this.renterObjectsService.sendObjectRequest(objectId, ctx);
+    if (sent) {
       await ctx.editMessageReplyMarkup({ reply_markup: undefined });
     }
-  };
-
-  private onGetContactAfterHandler: HandlerGetContact = async (objectId, ctx) => {
-    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_CONTACT_2_CLICK_EVENT);
-    const isContactSent = await this.renterObjectsService.getPaidContact(objectId, ctx);
-    if (isContactSent) {
-      await ctx.editMessageReplyMarkup({ reply_markup: undefined });
-    }
+    await this.renterObjectsService.sendNextObject(ctx);
   };
 
   private onGetNextObjectHandler: HandlerGetNextObject = async (objectId, ctx) => {
@@ -193,10 +161,10 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     await this.renterObjectsService.sendNextObject(ctx);
   };
 
-  private onGetNextObjectAfterHandler: HandlerGetNextObject = async (objectId, ctx) => {
+  private onGetNextObjectAfterHandler: HandlerGetNextObject = async (_objectId, ctx) => {
     sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_NEXT_CLICK_EVENT);
     await ctx.editMessageReplyMarkup({
-      reply_markup: this.renterObjectsKeyboardsService.getSendRequestKeyboard(objectId, false),
+      reply_markup: undefined,
     });
     await this.renterObjectsService.sendNextObject(ctx);
   };

@@ -15,14 +15,12 @@ import {
   EMOJI_GLOBUS,
   EMOJI_HI,
   EMOJI_HOUSE_TYPE,
-  EMOJI_KEY,
   EMOJI_LOCATION,
   EMOJI_MONEY,
   EMOJI_PHONE,
   EMOJI_PHOTOS,
   EMOJI_PHOTOS_LIMIT,
   EMOJI_PROFESSION,
-  EMOJI_STAR,
   EMOJI_STICK,
   EMOJI_SUPER,
 } from '../../constants/emoji';
@@ -30,6 +28,7 @@ import { GENDER_TEXT_MAP, OBJECT_TYPE_TEXT_MAP } from '../../constants/texts';
 import { LOCATIONS_PHOTO } from '../../constants/imageUrls';
 import { getAgeText } from '../../../../utils/texts/get-age-text.helper';
 import { RenterReferralsEnum } from '../../../api/renters/interfaces/renter-referrals.interface';
+import { RU_LOCALE } from '../../../../utils/locales';
 import { getLifestyleRow } from './helpers/renter-info-lifestyle.helper';
 
 @Injectable()
@@ -158,12 +157,6 @@ export class RentersTextsService {
     return `${EMOJI_STICK} Этот арендодатель еще <b>не увидел твою анкету.</b> Чтобы не тратить время на рассказ о себе, можешь <b>скопировать свою анкету</b>, кликнув на любое место в тексте, и отправить ему.`;
   }
 
-  getRenterInfoInterestedText(renterInfo?: ApiRenterFullInfo): string {
-    const mainText = this.getRenterInfoText(renterInfo);
-
-    return `${EMOJI_STAR} <b>ОЧЕНЬ ЗАИНТЕРЕСОВАН (купил контакт)</b>` + '\n\n' + mainText;
-  }
-
   getFirstRenterInfoTip(text: string): string {
     return `${EMOJI_ATTENTION}️ На основе этой анкеты арендодатели Homie будут <b>принимать решение</b>, делиться с тобой контактом, либо нет.\n\n${text}`;
   }
@@ -179,48 +172,28 @@ export class RentersTextsService {
     return mainText;
   }
 
-  getSuccessfulPaidContactsText(contactsNumber: number): string {
-    return (
-      `${EMOJI_SUPER} Ты успешно приобрел <b>${contactsNumber} контакт/ов</b>.` +
-      `\n` +
-      `Осталось нажать "${EMOJI_KEY} Получить контакт" под любым объектом!`
-    );
-  }
-
-  getSuccessfulPrivateHelperText(): string {
-    return (
-      `${EMOJI_SUPER} Ты успешно приобрел услугу <b>Личного помощника</b>!\n` +
-      `В скором времени с тобой свяжется специалист.\n` +
-      `А чтобы не тянуть - можешь смело писать --> @homie_admin`
-    );
-  }
-
-  getSuccessfulPrivateHelperToAdminText(username: string | null): string {
-    return `Купили Личного помощника.\nUsername - ${username ?? '???'}`;
-  }
-
   getSuccessfulFilledInfoAfterObjectRequestText(): string {
     return `${EMOJI_CELEBRATE} <b>Супер!</b> Ты заполнил анкету, отправляю твой запрос по объекту...`;
   }
 
-  getReferralContactsText(from: RenterReferralsEnum): string {
-    if (from === RenterReferralsEnum.onStart) {
+  getReferralDaysText(from: RenterReferralsEnum): string {
+    if (from === RenterReferralsEnum.onFillRenterInfo) {
       return (
-        `${EMOJI_CONGRATS} Ура, по твоей ссылке зашли в бота.\n` +
-        `\n` +
-        `${EMOJI_KEY} Тебе начислен контакт!`
-      );
-    } else if (from === RenterReferralsEnum.onFillRenterInfo) {
-      return (
-        `${EMOJI_CONGRATS} Ура, твой друг заполнил анкету.\n` + `\n` + `${EMOJI_KEY} Тебе начислен контакт!`
+        `${EMOJI_CONGRATS} Ура, твой друг заполнил анкету.\n` + `\n` + `Подписка продлена ещё на 1 день!`
       );
     } else if (from === RenterReferralsEnum.onFillLandlordObject) {
       return (
-        `${EMOJI_CONGRATS} Ура, твой друг разместил объявление.\n` +
-        `\n` +
-        `${EMOJI_KEY} Тебе начислены контакты!`
+        `${EMOJI_CONGRATS} Ура, твой друг разместил объявление.\n` + `\n` + `Подписка продлена ещё на 7 дней!`
       );
     }
     return '';
+  }
+
+  getSubscriptionStartedText(endsAt: Date): string {
+    const endsAtText = endsAt.toLocaleDateString(RU_LOCALE);
+    return (
+      `${EMOJI_SUPER} Теперь мы настоящие Homie)\n` +
+      `Можешь пользоваться всеми моими возможностями до окончания срока подписки. (${endsAtText})`
+    );
   }
 }

@@ -1,7 +1,6 @@
 export enum PaymentItems {
-  '1-contacts' = '1-contacts',
-  '5-contacts' = '5-contacts',
-  'private-helper' = 'private-helper',
+  'subscription-2-weeks' = 'subscription-2-weeks',
+  'subscription-month' = 'subscription-month',
 }
 
 export type PaymentItemInterface = keyof typeof PaymentItems;

@@ -24,13 +24,16 @@ export class MainMenuService {
     const text = await this.getMenuMainPageText(ctx);
     await ctx.reply(text, {
       reply_markup: this.mainMenuKeyboardsService.mainMenuKeyboard,
+      disable_web_page_preview: true,
     });
   };
 
   getMenuMainPageText: GetMainMenuText = async ctx => {
     const session = await ctx.session;
+    const chatId = ctx.from?.id.toString() as string;
+    const renter = await this.mainMenuApiService.getRenterEntityOfUser(chatId);
     if (session.type === TelegramUserType.renter) {
-      return this.mainMenuTextsService.getRenterMainPageText();
+      return this.mainMenuTextsService.getRenterMainPageText(renter.settings);
     } else if (session.type === TelegramUserType.landlord) {
       const chatId = ctx.from?.id.toString() as string;
       const object = await this.mainMenuApiService.getUserObject(chatId);

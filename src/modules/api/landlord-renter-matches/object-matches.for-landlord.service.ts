@@ -15,10 +15,6 @@ import {
   BROADCAST_LANDLORD_CONTACTS_TO_APPROVED_RENTER_EVENT_NAME,
   BroadcastLandlordContactsToApprovedRenterEvent,
 } from '../../bot/broadcast/events/broadcast-landlord-contacts-approved-renter.event';
-import {
-  BROADCAST_INTERESTED_RENTER_TO_LANDLORD_EVENT_NAME,
-  BroadcastInterestedRenterToLandlordEvent,
-} from '../../bot/broadcast/events/broadcast-interested-renter-landlord.event';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import {
   ApiChangeLandlordStatusOfObject,
@@ -93,40 +89,6 @@ export class ObjectMatchesForLandlordService {
         );
       }
     });
-  }
-
-  public async getPaidContacts(renterId: string, landlordObjectId: string): Promise<LandlordObjectEntity> {
-    const landlordObject = await this.entityManager.transaction(async entityManager => {
-      const landlordObject = await entityManager
-        .getCustomRepository(LandlordObjectsRepository)
-        .getFullObject(landlordObjectId);
-      await entityManager
-        .getCustomRepository(LandlordObjectRenterMatchesRepository)
-        .markAsPaidMatch(renterId, landlordObjectId);
-      await this.rentersService.removeContact(renterId, entityManager);
-      return landlordObject;
-    });
-
-    const isPublishedByAdmins = landlordObject.isAdmin;
-    if (isPublishedByAdmins) {
-      await this.tasksSchedulerService.removeAdminObjectSubmitRenter({
-        renterId: renterId,
-        landlordObjectId: landlordObjectId,
-      });
-    } else {
-      const renterInfo = await this.rentersService.getRenterInfoById(renterId);
-      if (renterInfo) {
-        await this.eventEmitter.emitAsync(
-          BROADCAST_INTERESTED_RENTER_TO_LANDLORD_EVENT_NAME,
-          new BroadcastInterestedRenterToLandlordEvent({
-            renterInfo: renterInfo,
-            chatId: landlordObject.telegramUser.chatId,
-          }),
-        );
-      }
-    }
-
-    return landlordObject;
   }
 
   private async sendNewObjectToRenters(renterIds: string[], landlordObjectId: string): Promise<void> {

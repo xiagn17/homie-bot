@@ -13,13 +13,11 @@ export class PaymentSucceededListener {
 
   @OnEvent(PAYMENT_SUCCEEDED_EVENT_NAME)
   async handlePaymentSucceededEvent(data: PaymentSucceededEvent): Promise<void> {
-    if (data.item === PaymentItems['5-contacts'] || data.item === PaymentItems['1-contacts']) {
-      const countContacts = data.item === PaymentItems['5-contacts'] ? 5 : 1;
-      await this.rentersService.addPaidContacts(data.telegramUserId, countContacts, data.entityManager);
-      return;
-    }
-    if (data.item === PaymentItems['private-helper']) {
-      await this.rentersService.addPrivateHelper(data.telegramUserId, data.entityManager);
+    if (
+      data.item === PaymentItems['subscription-2-weeks'] ||
+      data.item === PaymentItems['subscription-month']
+    ) {
+      await this.rentersService.startSubscription(data.telegramUserId, data.item, data.entityManager);
       return;
     }
   }

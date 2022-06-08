@@ -28,11 +28,7 @@ import { sendAnalyticsEvent } from '../../../utils/google-analytics/sendAnalytic
 import {
   LANDLORD_ACTION,
   LANDLORD_ANKETA_CAME_EVENT,
-  LANDLORD_ANKETA_CAME_SUPER_EVENT,
   LANDLORD_FORM_CONFIRMED_EVENT,
-  RENTER_ACTION,
-  RENTER_CONTACT_BUY_EVENT,
-  RENTER_HELPER_BUY_EVENT,
 } from '../../../utils/google-analytics/events';
 import { RentersApiService } from '../renters/api/renters-api.service';
 import { RenterReferralsEnum } from '../../api/renters/interfaces/renter-referrals.interface';
@@ -105,17 +101,6 @@ export class BroadcastService implements OnModuleInit {
     sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_ANKETA_CAME_EVENT);
   }
 
-  async sendInterestedRenterToLandlord(
-    renterInfo: ApiRenterFullInfo,
-    { chatId }: ForwardOptions,
-  ): Promise<void> {
-    const text = this.rentersTextsService.getRenterInfoInterestedText(renterInfo);
-    await this.sendPhoto(chatId, renterInfo.photo, {
-      caption: text,
-    });
-    sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_ANKETA_CAME_SUPER_EVENT);
-  }
-
   async sendLandlordContactsToApprovedRenter(
     object: LandlordObjectEntity,
     { chatId }: ForwardOptions,
@@ -142,26 +127,6 @@ export class BroadcastService implements OnModuleInit {
     }
   }
 
-  async sendSuccessfulPaidContacts(contactsNumber: number, { chatId }: ForwardOptions): Promise<void> {
-    const text = this.rentersTextsService.getSuccessfulPaidContactsText(contactsNumber);
-    await this.sendMessage(chatId, text);
-    sendAnalyticsEvent(chatId, RENTER_ACTION, RENTER_CONTACT_BUY_EVENT);
-  }
-
-  async sendSuccessfulPaidPrivateHelper({ chatId }: ForwardOptions): Promise<void> {
-    const text = this.rentersTextsService.getSuccessfulPrivateHelperText();
-    await this.sendMessage(chatId, text);
-    sendAnalyticsEvent(chatId, RENTER_ACTION, RENTER_HELPER_BUY_EVENT);
-  }
-
-  async sendSuccessfulPaidPrivateHelperToAdmin(
-    username: string | null,
-    { chatId }: ForwardOptions,
-  ): Promise<void> {
-    const text = this.rentersTextsService.getSuccessfulPrivateHelperToAdminText(username);
-    await this.sendMessage(chatId, text);
-  }
-
   async sendRenewObjectToLandlord(object: ApiObjectResponse, { chatId }: ForwardOptions): Promise<void> {
     const text = this.landlordsTextsService.getRenewObjectText(object);
     const keyboard = this.landlordsKeyboardsService.getObjectRenewKeyboard(object.id);
@@ -184,9 +149,7 @@ export class BroadcastService implements OnModuleInit {
       await this.sendMessage(chatId, 'К сожалению, фотографии не были загружены.');
     }
 
-    const renter = await this.renterObjectsApiService.getRenterEntityOfUser(chatId);
-    const ableContacts = renter.settings.ableContacts;
-    const text = this.renterObjectsTextsService.getObjectText(object, ableContacts);
+    const text = this.renterObjectsTextsService.getObjectText(object);
     const keyboard = this.renterObjectsKeyboardsService.getObjectsKeyboard(object.id, true);
     await this.sendMessage(
       chatId,
@@ -214,8 +177,8 @@ export class BroadcastService implements OnModuleInit {
     });
   }
 
-  async sendReferralContactsToRenter(from: RenterReferralsEnum, { chatId }: ForwardOptions): Promise<void> {
-    const text = this.rentersTextsService.getReferralContactsText(from);
+  async sendReferralDaysToRenter(from: RenterReferralsEnum, { chatId }: ForwardOptions): Promise<void> {
+    const text = this.rentersTextsService.getReferralDaysText(from);
     await this.sendMessage(chatId, text);
   }
 
@@ -230,6 +193,11 @@ export class BroadcastService implements OnModuleInit {
         }
       : undefined;
     await this.sendMessage(chatId, message, other);
+  }
+
+  async sendSubscriptionStart(endsAt: Date, { chatId }: ForwardOptions): Promise<void> {
+    const text = this.rentersTextsService.getSubscriptionStartedText(endsAt);
+    await this.sendMessage(chatId, text);
   }
 
   private async sendMessage(

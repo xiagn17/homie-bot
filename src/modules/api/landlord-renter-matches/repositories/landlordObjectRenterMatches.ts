@@ -20,7 +20,6 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
       renterId: r.renterId,
       landlordObjectId: landlordObject.id,
       renterStatus: MatchStatusEnumType.processing,
-      paid: false,
       landlordStatus: null,
       updatedAt: new Date(),
     }));
@@ -36,7 +35,6 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
       renterId: renter.id,
       landlordObjectId: lo.landlordObjectId,
       renterStatus: MatchStatusEnumType.processing,
-      paid: false,
       landlordStatus: null,
       updatedAt: new Date(),
     }));
@@ -45,22 +43,21 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
   }
 
   async deleteUnprocessedObjectsForRenter(renterId: string): Promise<void> {
-    await this.delete({ renterId: renterId, renterStatus: MatchStatusEnumType.processing, paid: false });
+    await this.delete({ renterId: renterId, renterStatus: MatchStatusEnumType.processing });
   }
 
   async deleteUnprocessedRentersForObject(landlordObjectId: string): Promise<void> {
     await this.delete({
       landlordObjectId: landlordObjectId,
       renterStatus: MatchStatusEnumType.processing,
-      paid: false,
     });
   }
 
   async getAllObjectIdsForRenter(renterId: string): Promise<string[]> {
     const data: { landlordObjectId: string }[] = await this.query(`
         SELECT landlord_object_id as "landlordObjectId"
-            FROM landlord_object_renter_matches
-            WHERE renter_id = '${renterId}'
+        FROM landlord_object_renter_matches
+        WHERE renter_id = '${renterId}'
     `);
     return data.map(({ landlordObjectId }) => landlordObjectId);
   }
@@ -68,8 +65,8 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
   async getAllRenterIdsForObject(landlordObjectId: string): Promise<string[]> {
     const data: { renterId: string }[] = await this.query(`
         SELECT renter_id as "renterId"
-            FROM landlord_object_renter_matches
-            WHERE landlord_object_id = '${landlordObjectId}'
+        FROM landlord_object_renter_matches
+        WHERE landlord_object_id = '${landlordObjectId}'
     `);
     return data.map(({ renterId }) => renterId);
   }
@@ -77,19 +74,16 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
   async getNextObjectIdForRenter(renterId: string): Promise<string | undefined> {
     const result: [NextLandlordObjectRawDataType] | [] = await this.query(`
         WITH renter_matches AS (
-            SELECT
-                   match_id,
+            SELECT match_id,
                    renter_id,
                    landlord_object_id
             FROM landlord_object_renter_matches
             WHERE renter_id = '${renterId}'
               AND renter_status = '${MatchStatusEnumType.processing}'
-              AND paid = false
         )
-        SELECT
-               landlord_object_id as "landlordObjectId"
+        SELECT landlord_object_id as "landlordObjectId"
         FROM landlord_objects t_landlordObjects
-        JOIN renter_matches USING (landlord_object_id)
+                 JOIN renter_matches USING (landlord_object_id)
         WHERE t_landlordObjects.landlord_object_id = renter_matches.landlord_object_id
           AND t_landlordObjects.stopped_at IS NULL
         ORDER BY t_landlordObjects.starred DESC, t_landlordObjects.created_at
@@ -128,20 +122,6 @@ export class LandlordObjectRenterMatchesRepository extends Repository<LandlordOb
       .set({
         landlordStatus: landlordStatus,
         updatedAt: new Date(),
-      })
-      .where('renterId = :renterId AND landlordObjectId = :landlordObjectId', {
-        renterId: renterId,
-        landlordObjectId: landlordObjectId,
-      })
-      .execute();
-  }
-
-  async markAsPaidMatch(renterId: string, landlordObjectId: string): Promise<void> {
-    await this.createQueryBuilder()
-      .update(LandlordObjectRenterMatchEntity)
-      .set({
-        updatedAt: new Date(),
-        paid: true,
       })
       .where('renterId = :renterId AND landlordObjectId = :landlordObjectId', {
         renterId: renterId,

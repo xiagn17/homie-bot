@@ -10,11 +10,17 @@ export class RenterSettingsEntity {
   @Column({ name: 'in_search', type: 'boolean', default: true })
   inSearch: boolean;
 
-  @Column({ name: 'able_contacts', type: 'smallint', default: 0 })
-  ableContacts: number;
+  @Column({ name: 'subscription_trial_started', type: 'timestamptz' })
+  subscriptionTrialStarted: Date | null;
 
-  @Column({ name: 'private_helper', type: 'boolean' })
-  privateHelper: boolean;
+  @Column({ name: 'subscription_trial_ends', type: 'timestamptz' })
+  subscriptionTrialEnds: Date | null;
+
+  @Column({ name: 'subscription_started', type: 'timestamptz' })
+  subscriptionStarted: Date | null;
+
+  @Column({ name: 'subscription_ends', type: 'timestamptz' })
+  subscriptionEnds: Date | null;
 
   @Column({ name: 'renter_id', type: 'uuid' })
   renterId: string;

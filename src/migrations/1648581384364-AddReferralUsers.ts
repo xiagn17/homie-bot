@@ -46,6 +46,9 @@ export class AddReferralUsers1648581384364 implements MigrationInterface {
         ],
       }),
     }));
+    if (!tasks.length) {
+      return;
+    }
     const scheduledFor = new Date();
     await queryRunner.query(
       format(

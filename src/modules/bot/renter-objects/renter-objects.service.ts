@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { EMOJI_CELEBRATE } from '../constants/emoji';
 import { sendAnalyticsEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
 import {
   RENTER_ACTION,
@@ -12,10 +11,8 @@ import { RentersObjectsKeyboardsService } from './keyboards/renters-objects-keyb
 import { RenterObjectsApiService } from './api/renter-objects-api.service';
 import { RenterObjectsTextsService } from './texts/renter-objects-texts.service';
 import {
-  GetContact,
   SendNextObject,
   SendObject,
-  SendObjectContact,
   SendObjectRequest,
   SendRenterInfoNotExists,
 } from './interfaces/renter-objects.interface';
@@ -56,9 +53,7 @@ export class RenterObjectsService {
     }
 
     const chatId = ctx.from?.id?.toString() as string;
-    const renter = await this.renterObjectsApiService.getRenterEntityOfUser(chatId);
-    const ableContacts = renter.settings.ableContacts;
-    const text = this.renterObjectsTextsService.getObjectText(object, ableContacts);
+    const text = this.renterObjectsTextsService.getObjectText(object);
     const keyboard = this.renterObjectsKeyboardsService.getObjectsKeyboard(object.id, true);
     await ctx.reply(text, {
       reply_markup: keyboard,
@@ -72,33 +67,6 @@ export class RenterObjectsService {
     });
   };
 
-  getPaidContact: GetContact = async (objectId, ctx) => {
-    const chatId = ctx.from?.id?.toString() as string;
-    const renter = await this.renterObjectsApiService.getRenterEntityOfUser(chatId);
-    if (renter.settings.ableContacts === 0) {
-      const text = this.renterObjectsTextsService.getNoContactsPayWindowText();
-      const keyboard = this.renterObjectsKeyboardsService.payContactsMenu;
-      await ctx.reply(text, { reply_markup: keyboard, disable_web_page_preview: true });
-      return false;
-    } else {
-      const object = await this.renterObjectsApiService.getLandlordContact({ renterId: renter.id, objectId });
-      await this.sendObjectContact(object, ctx);
-
-      return true;
-    }
-  };
-
-  sendObjectContact: SendObjectContact = async (object, ctx) => {
-    const contactsText = this.renterObjectsTextsService.getContactObjectText(object);
-    await ctx.reply(`${EMOJI_CELEBRATE}`);
-
-    const tgUsername =
-      !object.isAdmin && object.telegramUser.username ? object.telegramUser.username : undefined;
-    await ctx.reply(contactsText, {
-      reply_markup: this.renterObjectsKeyboardsService.getContactsKeyboard(object.id, true, tgUsername),
-    });
-  };
-
   sendRenterInfoNotExists: SendRenterInfoNotExists = async (objectId, ctx) => {
     await ctx.reply(this.renterObjectsTextsService.getNoRenterInfoText(), {
       reply_markup: this.renterObjectsKeyboardsService.getNoInfoKeyboard(objectId),
@@ -108,23 +76,50 @@ export class RenterObjectsService {
 
   sendObjectRequest: SendObjectRequest = async (objectId, ctx) => {
     const chatId = ctx.from?.id.toString() as string;
+    const renter = await this.renterObjectsApiService.getRenterEntityOfUser(chatId);
+
+    const subscriptionTrialDidntStarted = renter.settings.subscriptionTrialEnds === null;
+    const hasSubscription =
+      (renter.settings.subscriptionTrialEnds !== null &&
+        renter.settings.subscriptionTrialEnds > new Date()) ||
+      (renter.settings.subscriptionEnds !== null && renter.settings.subscriptionEnds > new Date());
+    const canSend = subscriptionTrialDidntStarted || hasSubscription;
+
+    if (!canSend) {
+      const text = this.renterObjectsTextsService.getNoSubscriptionText();
+      const keyboard = this.renterObjectsKeyboardsService.paySubscriptionMenu;
+      await ctx.reply(text, { reply_markup: keyboard, disable_web_page_preview: true });
+      return false;
+    }
+
     await this.renterObjectsApiService.markObjectAsInterested({ objectId: objectId, chatId: chatId });
     const object = await this.renterObjectsApiService.getObject(objectId);
     const isAdminObject = object.isAdmin;
     const objectNumber = object.number;
+    if (subscriptionTrialDidntStarted) {
+      await this.renterObjectsApiService.startTrialSubscription(renter.id);
+      const renterWithTrial = await this.renterObjectsApiService.getRenterEntityOfUser(chatId);
 
-    const text = isAdminObject
-      ? this.renterObjectsTextsService.getSendRequestAdminObjectText(objectNumber)
-      : this.renterObjectsTextsService.getSendRequestText(objectNumber);
-    const keyboard = this.renterObjectsKeyboardsService.getSendRequestKeyboard(objectId, true);
-    await ctx.reply(text, {
-      reply_markup: keyboard,
-    });
+      const text = isAdminObject
+        ? this.renterObjectsTextsService.getSendRequestTrialStartedAdminObjectText(
+            objectNumber,
+            renterWithTrial.settings.subscriptionTrialEnds as Date,
+          )
+        : this.renterObjectsTextsService.getSendRequestTrialStartedText(
+            objectNumber,
+            renterWithTrial.settings.subscriptionTrialEnds as Date,
+          );
+      const keyboard = this.renterObjectsKeyboardsService.getSendRequestKeyboard(objectId);
+      await ctx.reply(text, {
+        reply_markup: keyboard,
+      });
+    }
 
     sendAnalyticsEvent(
       chatId,
       RENTER_ACTION,
       isAdminObject ? RENTER_INFO_SEND2_EVENT : RENTER_INFO_SEND_EVENT,
     );
+    return true;
   };
 }

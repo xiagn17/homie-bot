@@ -10,31 +10,54 @@ import {
   EMOJI_PHONE,
   EMOJI_SHARE,
   EMOJI_STATUS,
+  EMOJI_VERY_HEART,
   EMOJI_WOMAN_HAND,
 } from '../../constants/emoji';
 import { TelegramUserType } from '../../session-storage/interfaces/session-storage.interface';
+import { ApiRenterSettings } from '../../../api/renters/interfaces/renters.type';
+import { RU_LOCALE } from '../../../../utils/locales';
 
 @Injectable()
 export class MainMenuTextsService {
-  getRenterMainPageText(): string {
+  getRenterMainPageText(renterSettings: ApiRenterSettings): string {
+    const isTrialDidntStarted = renterSettings.subscriptionTrialEnds === null;
+    const isTrial =
+      renterSettings.subscriptionTrialEnds !== null && renterSettings.subscriptionTrialEnds > new Date();
+    const isSubscriptionValid =
+      renterSettings.subscriptionEnds !== null && renterSettings.subscriptionEnds > new Date();
+
+    let textSubscription = 'отсутствует';
+    if (isTrialDidntStarted) {
+      textSubscription = 'пробный период';
+    } else if (isTrial) {
+      textSubscription = `пробный период до ${(
+        renterSettings.subscriptionTrialEnds as Date
+      ).toLocaleDateString(RU_LOCALE)}`;
+    } else if (isSubscriptionValid) {
+      textSubscription = `активна до ${(renterSettings.subscriptionEnds as Date).toLocaleDateString(
+        RU_LOCALE,
+      )}`;
+    }
     return (
-      `${EMOJI_MAP} <b>Меню</b> - твой главный помощник в навигации по возможностям и функционалу бота.\n` +
+      `<b>• Menu •</b>\n` +
       `\n` +
       `${EMOJI_FILTER}️ <b>Фильтр</b> - позволит показывать только те объявления, которые соответствуют настройкам.\n` +
       `\n` +
-      `${EMOJI_WOMAN_HAND}️ <b>Анкета</b> - это твоя анкета, которую я буду отправлять арендодателям заинтересовавшихся объявлений.`
+      `${EMOJI_WOMAN_HAND}️ <b>Анкета</b> - это твоя анкета, которую я буду отправлять арендодателям заинтересовавшихся объявлений.\n` +
+      `\n` +
+      `${EMOJI_VERY_HEART} <b>Подписка Homie</b>: <a href='https://telegra.ph/Statusy-v-Homie-05-05'>${textSubscription}</a>`
     );
   }
 
   getRenterSecondPageText(): string {
     return (
-      `${EMOJI_MAP} <b>Меню</b> - твой главный помощник в навигации по возможностям и функционалу бота.\n` +
+      `<b>• Menu •</b>\n` +
       `\n` +
       `${EMOJI_LOOPA} <b>Поиск по ID</b> - позволит найти конкретный объект по тегу #home...\n` +
       `\n` +
       `${EMOJI_STATUS} <b>Изменить статус</b> - поможет тебе изменить статус из арендатора в арендодателя и наоборот.\n` +
       `\n` +
-      `${EMOJI_SHARE} <b>Поделиться Homie</b> - делись уникальной ссылкой на Homie и получи от <a href='https://telegra.ph/Priglasi-druga-v-Homie-03-22'><u>1 до 3 контактов</u></a> за каждого приведенного друга!`
+      `${EMOJI_SHARE} <b>Поделиться Homie</b> - делись уникальной ссылкой на Homie и получи безлимитный доступ ко всем объявлениям и функциям!`
     );
   }
 

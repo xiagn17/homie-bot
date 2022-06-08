@@ -6,23 +6,16 @@ import { LoggerService } from '../../logger/logger.service';
 import { TelegramUserEntity } from '../telegram-bot/entities/TelegramUser.entity';
 import { ObjectMatchesForRenterService } from '../landlord-renter-matches/object-matches.for-renter.service';
 import { TelegramUsersRepository } from '../telegram-bot/repositories/telegramUsers.repository';
-import {
-  BROADCAST_PAID_PRIVATE_HELPER_TO_ADMIN_EVENT_NAME,
-  BroadcastPaidPrivateHelperToAdminEvent,
-} from '../../bot/broadcast/events/broadcast-paid-private-helper-admin.event';
-import {
-  BROADCAST_PAID_PRIVATE_HELPER_TO_BUYER_EVENT_NAME,
-  BroadcastPaidPrivateHelperToBuyerEvent,
-} from '../../bot/broadcast/events/broadcast-paid-private-helper-buyer.event';
-import {
-  BROADCAST_PAID_CONTACTS_TO_BUYER_EVENT_NAME,
-  BroadcastPaidContactsToBuyerEvent,
-} from '../../bot/broadcast/events/broadcast-paid-contacts-buyer.event';
 import { TasksSchedulerService } from '../../tasks/scheduler/tasks.scheduler.service';
 import {
-  BROADCAST_REFERRAL_CONTACTS_TO_RENTER_EVENT_NAME,
-  BroadcastReferralContactsRenterEvent,
-} from '../../bot/broadcast/events/broadcast-referral-contacts-renter.event';
+  BROADCAST_REFERRAL_DAYS_TO_RENTER_EVENT_NAME,
+  BroadcastReferralDaysRenterEvent,
+} from '../../bot/broadcast/events/broadcast-referral-days-renter.event';
+import { PaymentItemInterface, PaymentItems } from '../payments/interfaces/payment-item.interface';
+import {
+  BROADCAST_SUBSCRIPTION_START_EVENT_NAME,
+  BroadcastSubscriptionStartEvent,
+} from '../../bot/broadcast/events/broadcast-subscription-start.event';
 import { RentersRepository } from './repositories/renters.repository';
 import { RenterEntity } from './entities/Renter.entity';
 import { RentersSerializer } from './serializers/renters.serializer';
@@ -93,12 +86,7 @@ export class RentersService {
       const { id: renterId } = await manager
         .getCustomRepository(RentersRepository)
         .createWithRelations(renterDbData);
-      const bonusContacts = telegramUser.referralUserId
-        ? this.configService.get('referral.forInvitedUserOnStart')
-        : 0;
-      await manager
-        .getCustomRepository(RenterSettingsRepository)
-        .createWithRelations({ renterId, ableContacts: bonusContacts });
+      await manager.getCustomRepository(RenterSettingsRepository).createWithRelations({ renterId });
       await manager.getCustomRepository(RenterFiltersRepository).createWithRelations({ renterId: renterId });
 
       return manager.getCustomRepository(RentersRepository).getFullRenter(renterId);
@@ -192,50 +180,40 @@ export class RentersService {
     return this.renterFiltersSerializer.toResponse(filters);
   }
 
-  public async addPaidContacts(
+  public async startTrialSubscription(renterId: string): Promise<void> {
+    const startedAt = new Date();
+    const endsAt = new Date();
+    endsAt.setDate(startedAt.getDate() + 7);
+
+    await this.connection
+      .getCustomRepository(RenterSettingsRepository)
+      .startTrialSubscription(renterId, startedAt, endsAt);
+  }
+
+  public async startSubscription(
     telegramUserId: string,
-    count: number,
+    subscriptionType: PaymentItemInterface,
     entityManager: EntityManager,
   ): Promise<void> {
-    await entityManager.getCustomRepository(RenterSettingsRepository).addContacts(telegramUserId, count);
+    const startedAt = new Date();
+    const endsAt = new Date();
+    subscriptionType === PaymentItems['subscription-month']
+      ? endsAt.setMonth(startedAt.getMonth() + 1)
+      : endsAt.setDate(startedAt.getDate() + 14);
+
+    await entityManager
+      .getCustomRepository(RenterSettingsRepository)
+      .startSubscription(telegramUserId, startedAt, endsAt);
     const telegramUser = await entityManager
       .getCustomRepository(TelegramUsersRepository)
       .findOneOrFail({ id: telegramUserId });
     await this.eventEmitter.emitAsync(
-      BROADCAST_PAID_CONTACTS_TO_BUYER_EVENT_NAME,
-      new BroadcastPaidContactsToBuyerEvent({
-        contactsNumber: count,
+      BROADCAST_SUBSCRIPTION_START_EVENT_NAME,
+      new BroadcastSubscriptionStartEvent({
+        endsAt: endsAt,
         chatId: telegramUser.chatId,
       }),
     );
-  }
-
-  public async addPrivateHelper(telegramUserId: string, entityManager: EntityManager): Promise<void> {
-    await entityManager.getCustomRepository(RenterSettingsRepository).addPrivateHelper(telegramUserId);
-    const telegramUser = await entityManager
-      .getCustomRepository(TelegramUsersRepository)
-      .findOneOrFail({ id: telegramUserId });
-    await this.eventEmitter.emitAsync(
-      BROADCAST_PAID_PRIVATE_HELPER_TO_BUYER_EVENT_NAME,
-      new BroadcastPaidPrivateHelperToBuyerEvent({
-        chatId: telegramUser.chatId,
-      }),
-    );
-    const adminEntity = await entityManager.getCustomRepository(TelegramUsersRepository).getAdmin();
-    await this.eventEmitter.emitAsync(
-      BROADCAST_PAID_PRIVATE_HELPER_TO_ADMIN_EVENT_NAME,
-      new BroadcastPaidPrivateHelperToAdminEvent({
-        username: telegramUser.username,
-        chatId: adminEntity.chatId,
-      }),
-    );
-  }
-
-  public async removeContact(
-    renterId: string,
-    entityManager: EntityManager = this.connection.manager,
-  ): Promise<void> {
-    await entityManager.getCustomRepository(RenterSettingsRepository).removeContact(renterId);
   }
 
   public async stopSearch(chatId: string): Promise<void> {
@@ -251,22 +229,31 @@ export class RentersService {
     from: RenterReferralsEnum,
     entityManager: EntityManager = this.connection.manager,
   ): Promise<void> {
-    let contacts: number = 0;
-    if (from === RenterReferralsEnum.onStart) {
-      contacts = this.configService.get('referral.bonusOnStart') as number;
-    } else if (from === RenterReferralsEnum.onFillRenterInfo) {
-      contacts = this.configService.get('referral.bonusOnFillRenterInfo') as number;
+    let days: number = 0;
+    if (from === RenterReferralsEnum.onFillRenterInfo) {
+      days = this.configService.get('referral.bonusOnFillRenterInfo') as number;
     } else if (from === RenterReferralsEnum.onFillLandlordObject) {
-      contacts = this.configService.get('referral.bonusOnFillLandlordObject') as number;
+      days = this.configService.get('referral.bonusOnFillLandlordObject') as number;
     }
-    await entityManager.getCustomRepository(RenterSettingsRepository).addContacts(telegramUserId, contacts);
+    const renterSettings = await entityManager
+      .getCustomRepository(RenterSettingsRepository)
+      .findByTelegramUserId(telegramUserId);
+    const isSubscriptionValid =
+      renterSettings.subscriptionEnds !== null && renterSettings.subscriptionEnds > new Date();
+    const startedAt = isSubscriptionValid ? (renterSettings.subscriptionStarted as Date) : new Date();
+    const endsAt = isSubscriptionValid ? (renterSettings.subscriptionEnds as Date) : new Date();
+    endsAt.setDate(endsAt.getDate() + days);
+
+    await entityManager
+      .getCustomRepository(RenterSettingsRepository)
+      .startSubscription(telegramUserId, startedAt, endsAt);
 
     const telegramUser = await entityManager
       .getCustomRepository(TelegramUsersRepository)
       .findOneOrFail(telegramUserId);
     await this.eventEmitter.emitAsync(
-      BROADCAST_REFERRAL_CONTACTS_TO_RENTER_EVENT_NAME,
-      new BroadcastReferralContactsRenterEvent({
+      BROADCAST_REFERRAL_DAYS_TO_RENTER_EVENT_NAME,
+      new BroadcastReferralDaysRenterEvent({
         from: from,
         chatId: telegramUser.chatId,
       }),

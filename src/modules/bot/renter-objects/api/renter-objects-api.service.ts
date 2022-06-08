@@ -4,7 +4,6 @@ import { ApiObjectResponse } from '../../../api/landlord-objects/interfaces/land
 import { LandlordObjectsService } from '../../../api/landlord-objects/landlord-objects.service';
 import { MatchStatusEnumType } from '../../../api/landlord-renter-matches/interfaces/landlord-renter-matches.types';
 import { RentersService } from '../../../api/renters/renters.service';
-import { ObjectMatchesForLandlordService } from '../../../api/landlord-renter-matches/object-matches.for-landlord.service';
 import { ApiRenterFull } from '../../../api/renters/interfaces/renters.type';
 import { LandlordObjectEntity } from '../../../api/landlord-objects/entities/LandlordObject.entity';
 
@@ -12,16 +11,11 @@ interface ChangeRenterStatusOfObjectData {
   objectId: string;
   chatId: string;
 }
-interface GetLandlordContactsData {
-  renterId: string;
-  objectId: string;
-}
 
 @Injectable()
 export class RenterObjectsApiService {
   constructor(
     private readonly objectMatchesForRenterService: ObjectMatchesForRenterService,
-    private readonly objectMatchesForLandlordService: ObjectMatchesForLandlordService,
     private readonly landlordObjectsService: LandlordObjectsService,
     private readonly rentersService: RentersService,
   ) {}
@@ -50,13 +44,13 @@ export class RenterObjectsApiService {
     });
   }
 
+  async startTrialSubscription(renterId: string): Promise<void> {
+    await this.rentersService.startTrialSubscription(renterId);
+  }
+
   async getRenterEntityOfUser(chatId: string): Promise<ApiRenterFull> {
     const renter = await this.rentersService.getRenterByChatId(chatId);
     return renter;
-  }
-
-  async getLandlordContact(data: GetLandlordContactsData): Promise<LandlordObjectEntity> {
-    return this.objectMatchesForLandlordService.getPaidContacts(data.renterId, data.objectId);
   }
 
   async isInfoExists(chatId: string): Promise<boolean> {

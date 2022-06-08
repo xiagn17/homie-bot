@@ -140,7 +140,9 @@ export class MainMenuHandlersService implements OnModuleInit {
 
   onBackToMainMenuHandler: HandlerOnBackToMainMenu = async ctx => {
     const text = await this.mainMenuService.getMenuMainPageText(ctx);
-    await ctx.editMessageText(text);
+    await ctx.editMessageText(text, {
+      disable_web_page_preview: true,
+    });
   };
 
   onOtherHandler: HandlerOnOther = async ctx => {

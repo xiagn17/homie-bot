@@ -20,6 +20,9 @@ export interface ApiRenterResponseType extends TelegramUserResposeType {
 
 export interface ApiRenterSettings {
   inSearch: boolean;
-  ableContacts: number;
   renterId: string;
+  subscriptionStarted: Date | null;
+  subscriptionEnds: Date | null;
+  subscriptionTrialStarted: Date | null;
+  subscriptionTrialEnds: Date | null;
 }

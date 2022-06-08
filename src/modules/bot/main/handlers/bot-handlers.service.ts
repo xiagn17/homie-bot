@@ -91,7 +91,7 @@ export class BotHandlersService implements OnModuleInit {
       ctx.callbackQuery?.data,
     );
     if (!keyboardData) {
-      await ctx.reply('Как я могу тебе помочь?', {
+      await ctx.reply('Чем я могу тебе помочь?', {
         reply_markup: this.botKeyboardsService.getInlineUserTypeKeyboard(),
       });
       sendAnalyticsEvent(ctx, ALL_ACTION, ALL_HELLO_EVENT);

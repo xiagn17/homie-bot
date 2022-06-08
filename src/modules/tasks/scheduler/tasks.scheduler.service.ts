@@ -53,13 +53,6 @@ export class TasksSchedulerService {
     await this.tasksRepository.createAndSave(type, date, data);
   }
 
-  async removeAdminObjectSubmitRenter(data: TaskDataAdminObjectSubmitRenterInterface): Promise<void> {
-    await this.tasksRepository.delete({
-      type: TaskTypeEnumInterface.admin_object_submit_renter,
-      data: data,
-    });
-  }
-
   async setPushNewObjectToRenter(data: TaskDataNewObjectToRenterInterface): Promise<void> {
     const isExistsOtherObjectPush = await this.tasksRepository.isExistsOtherObjectPushToRenter(data.chatId);
     if (isExistsOtherObjectPush) {

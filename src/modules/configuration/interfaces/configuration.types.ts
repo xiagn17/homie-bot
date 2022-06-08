@@ -29,9 +29,8 @@ export interface BotConfigType {
 }
 
 export interface PaymentsPricesConfigType {
-  oneContacts: string;
-  fiveContacts: string;
-  privateHelper: string;
+  subscriptionTwoWeeks: string;
+  subscriptionMonth: string;
 }
 export interface PaymentsConfigType {
   secretKey: string;
@@ -40,8 +39,6 @@ export interface PaymentsConfigType {
 }
 
 export interface ReferralConfigType {
-  forInvitedUserOnStart: number;
-  bonusOnStart: number;
   bonusOnFillRenterInfo: number;
   bonusOnFillLandlordObject: number;
 }
