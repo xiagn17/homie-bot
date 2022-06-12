@@ -121,6 +121,7 @@ export class MainMenuHandlersService implements OnModuleInit {
   onGetMenuHandler: HandlerOnGetMenu = async ctx => {
     const session = await ctx.session;
     clearTemporaryPropertiesInSession(session);
+    session.renter.firstMenuTip = true;
     await this.mainMenuService.getMenu(ctx);
   };
 
