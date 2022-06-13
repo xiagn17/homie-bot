@@ -122,19 +122,22 @@ export class ObjectMatchesForRenterService {
   public async changeRenterStatusOfObject(
     renterStatusOfObjectDto: ChangeRenterStatusOfObjectDto,
   ): Promise<void> {
+    console.log('1');
     const renter = await this.entityManager
       .getCustomRepository(RentersRepository)
       .getByChatId(renterStatusOfObjectDto.chatId);
+    console.log('2');
     const match = await this.entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .findOne({
         renterId: renter.id,
         landlordObjectId: renterStatusOfObjectDto.landlordObjectId,
       });
+    console.log('3');
     if (match?.renterStatus === MatchStatusEnumType.resolved) {
       return;
     }
-
+    console.log('4');
     await this.entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .changeRenterStatus(
@@ -142,11 +145,14 @@ export class ObjectMatchesForRenterService {
         renterStatusOfObjectDto.landlordObjectId,
         renterStatusOfObjectDto.renterStatus,
       );
+    console.log('5');
 
     await this.tasksSchedulerService.removePushNewObjectToRenter({
       landlordObjectId: renterStatusOfObjectDto.landlordObjectId,
       chatId: renterStatusOfObjectDto.chatId,
     });
+    console.log('6');
+
     if (renterStatusOfObjectDto.renterStatus === MatchStatusEnumType.rejected) {
       return;
     }
