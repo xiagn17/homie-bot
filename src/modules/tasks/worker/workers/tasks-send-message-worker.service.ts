@@ -24,8 +24,8 @@ export class TasksSendMessageWorkerService extends TasksQueueBaseService {
     private readonly eventEmitter: EventEmitter2,
   ) {
     super();
-    this.THROTTLE_MS = 1000;
-    this.THROTTLE_CHUNK_LENGTH = 25;
+    this.THROTTLE_MS = 1500;
+    this.THROTTLE_CHUNK_LENGTH = 10;
     this.logger.setContext(this.constructor.name);
   }
 
