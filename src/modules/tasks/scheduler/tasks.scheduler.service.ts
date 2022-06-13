@@ -46,11 +46,11 @@ export class TasksSchedulerService {
 
   async setAdminObjectSubmitRenter(
     data: TaskDataAdminObjectSubmitRenterInterface,
-    customDate?: Date,
+    entityManager: EntityManager = this.entityManager,
   ): Promise<void> {
     const type = TaskTypeEnumInterface.admin_object_submit_renter;
-    const date = customDate ?? new Date(Date.now() + EIGHT_HOURS_TIMESTAMP);
-    await this.tasksRepository.createAndSave(type, date, data);
+    const date = new Date(Date.now() + EIGHT_HOURS_TIMESTAMP);
+    await entityManager.getCustomRepository(TasksRepository).createAndSave(type, date, data);
   }
 
   async setPushNewObjectToRenter(data: TaskDataNewObjectToRenterInterface): Promise<void> {
@@ -63,8 +63,11 @@ export class TasksSchedulerService {
     await this.tasksRepository.createAndSave(type, date, data);
   }
 
-  async removePushNewObjectToRenter(data: TaskDataNewObjectToRenterInterface): Promise<void> {
-    await this.tasksRepository.delete({
+  async removePushNewObjectToRenter(
+    data: TaskDataNewObjectToRenterInterface,
+    entityManager: EntityManager = this.entityManager,
+  ): Promise<void> {
+    await entityManager.getCustomRepository(TasksRepository).delete({
       type: TaskTypeEnumInterface.new_object_push_to_renters,
       data: data,
     });

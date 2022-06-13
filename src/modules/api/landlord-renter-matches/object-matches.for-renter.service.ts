@@ -145,10 +145,13 @@ export class ObjectMatchesForRenterService {
       );
     console.log('5');
 
-    await this.tasksSchedulerService.removePushNewObjectToRenter({
-      landlordObjectId: renterStatusOfObjectDto.landlordObjectId,
-      chatId: renterStatusOfObjectDto.chatId,
-    });
+    await this.tasksSchedulerService.removePushNewObjectToRenter(
+      {
+        landlordObjectId: renterStatusOfObjectDto.landlordObjectId,
+        chatId: renterStatusOfObjectDto.chatId,
+      },
+      entityManager,
+    );
     console.log('6');
 
     if (renterStatusOfObjectDto.renterStatus === MatchStatusEnumType.rejected) {
@@ -161,10 +164,13 @@ export class ObjectMatchesForRenterService {
 
     const isPublishedByAdmins = landlordObject.isAdmin;
     if (isPublishedByAdmins) {
-      await this.tasksSchedulerService.setAdminObjectSubmitRenter({
-        renterId: renter.id,
-        landlordObjectId: landlordObject.id,
-      });
+      await this.tasksSchedulerService.setAdminObjectSubmitRenter(
+        {
+          renterId: renter.id,
+          landlordObjectId: landlordObject.id,
+        },
+        entityManager,
+      );
       return;
     }
 
