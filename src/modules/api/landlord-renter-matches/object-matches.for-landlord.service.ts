@@ -54,8 +54,9 @@ export class ObjectMatchesForLandlordService {
 
   public async changeLandlordStatusOfObject(
     landlordStatusOfObjectDto: ApiChangeLandlordStatusOfObject,
+    transactionEntityManager?: EntityManager,
   ): Promise<void> {
-    await this.entityManager.transaction(async entityManager => {
+    const run = async (entityManager: EntityManager): Promise<void> => {
       const object = ((landlordStatusOfObjectDto.chatId &&
         (await entityManager
           .getCustomRepository(LandlordObjectsRepository)
@@ -88,7 +89,11 @@ export class ObjectMatchesForLandlordService {
           }),
         );
       }
-    });
+    };
+
+    transactionEntityManager
+      ? await run(transactionEntityManager)
+      : await this.entityManager.transaction(run);
   }
 
   private async sendNewObjectToRenters(renterIds: string[], landlordObjectId: string): Promise<void> {

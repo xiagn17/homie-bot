@@ -43,11 +43,14 @@ export class TasksAdminObjectSubmitRenterWorkerService extends TasksQueueBaseSer
     await this.connection.transaction(async entityManager => {
       const processTasks = tasks.map(async task => {
         const { data: taskData, id: taskId } = task;
-        await this.objectMatchesForLandlordService.changeLandlordStatusOfObject({
-          renterId: taskData.renterId,
-          landlordObjectId: taskData.landlordObjectId,
-          landlordStatus: MatchStatusEnumType.resolved,
-        });
+        await this.objectMatchesForLandlordService.changeLandlordStatusOfObject(
+          {
+            renterId: taskData.renterId,
+            landlordObjectId: taskData.landlordObjectId,
+            landlordStatus: MatchStatusEnumType.resolved,
+          },
+          entityManager,
+        );
         await entityManager.getCustomRepository(TasksRepository).setTaskCompleted(taskId);
 
         this.logger.info(
