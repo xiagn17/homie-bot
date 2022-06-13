@@ -29,11 +29,13 @@ export class RenterObjectsApiService {
   }
 
   async markObjectAsNotInterested(data: ChangeRenterStatusOfObjectData): Promise<void> {
+    console.log(data.chatId, 'not interested');
     await this.objectMatchesForRenterService.changeRenterStatusOfObject({
       renterStatus: MatchStatusEnumType.rejected,
       landlordObjectId: data.objectId,
       chatId: data.chatId,
     });
+    console.log(data.chatId, 'not interested passed');
   }
 
   async markObjectAsInterested(data: ChangeRenterStatusOfObjectData): Promise<void> {

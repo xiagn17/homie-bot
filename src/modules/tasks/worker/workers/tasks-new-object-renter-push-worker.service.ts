@@ -26,7 +26,7 @@ export class TasksNewObjectRenterPushWorkerService extends TasksQueueBaseService
     private readonly eventEmitter: EventEmitter2,
   ) {
     super();
-    this.THROTTLE_MS = 1500;
+    this.THROTTLE_MS = 1000;
     this.THROTTLE_CHUNK_LENGTH = 10;
 
     this.logger.setContext(this.constructor.name);
@@ -48,7 +48,8 @@ export class TasksNewObjectRenterPushWorkerService extends TasksQueueBaseService
     }
 
     await this.connection.transaction(async entityManager => {
-      const processTasks = tasks.map(async task => {
+      for (let i = 0; i < tasks.length; i++) {
+        const task = tasks[i];
         const { data: taskData, id: taskId } = task;
         const landlordObject = await entityManager
           .getCustomRepository(LandlordObjectsRepository)
@@ -66,9 +67,7 @@ export class TasksNewObjectRenterPushWorkerService extends TasksQueueBaseService
         await entityManager.getCustomRepository(TasksRepository).setTaskCompleted(taskId);
 
         this.logger.info(`PUSH event for new object to renter ${taskData.chatId} was sent just now`);
-      });
-
-      await Promise.all(processTasks);
+      }
     });
   }
 }
