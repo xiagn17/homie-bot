@@ -10,6 +10,7 @@ import {
 import { AbortSignal } from 'grammy/out/shim.node';
 import { Other } from 'grammy/out/core/api';
 import { InlineKeyboardMarkup } from '@grammyjs/types/inline';
+import { EntityManager } from 'typeorm';
 import { ApiObjectResponse } from '../../api/landlord-objects/interfaces/landlord-objects.type';
 import { AdminTextsService } from '../admin/texts/admin-texts.service';
 import { AdminKeyboardsService } from '../admin/keyboards/admin-keyboards.service';
@@ -135,7 +136,11 @@ export class BroadcastService implements OnModuleInit {
     });
   }
 
-  async sendNewObjectToRenter(object: ApiObjectResponse, { chatId }: ForwardOptions): Promise<void> {
+  async sendNewObjectToRenter(
+    object: ApiObjectResponse,
+    { chatId }: ForwardOptions,
+    entityManager: EntityManager,
+  ): Promise<void> {
     try {
       await this.sendMediaGroup(
         chatId,
@@ -159,10 +164,14 @@ export class BroadcastService implements OnModuleInit {
         disable_web_page_preview: true,
       },
       undefined,
-      this.renterObjectsApiService.markObjectAsNotInterested.bind(this.renterObjectsApiService, {
-        objectId: object.id,
-        chatId: chatId,
-      }),
+      this.renterObjectsApiService.markObjectAsNotInterested.bind(
+        this.renterObjectsApiService,
+        {
+          objectId: object.id,
+          chatId: chatId,
+        },
+        entityManager,
+      ),
     );
   }
 

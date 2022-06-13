@@ -83,9 +83,13 @@ export class BroadcastEventsListener {
 
   @OnEvent(BROADCAST_NEW_OBJECT_TO_RENTER_EVENT_NAME)
   async handleNewObjectToRenterPush(data: BroadcastNewObjectToRenterPushEvent): Promise<void> {
-    await this.broadcastService.sendNewObjectToRenter(data.object, {
-      chatId: data.chatId,
-    });
+    await this.broadcastService.sendNewObjectToRenter(
+      data.object,
+      {
+        chatId: data.chatId,
+      },
+      data.entityManager,
+    );
   }
 
   @OnEvent(BROADCAST_OBJECT_OUTDATED_TO_LANDLORD_EVENT_NAME)

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 import { ObjectMatchesForRenterService } from '../../../api/landlord-renter-matches/object-matches.for-renter.service';
 import { ApiObjectResponse } from '../../../api/landlord-objects/interfaces/landlord-objects.type';
 import { LandlordObjectsService } from '../../../api/landlord-objects/landlord-objects.service';
@@ -28,13 +29,19 @@ export class RenterObjectsApiService {
     return this.landlordObjectsService.getLandlordObject(objectId);
   }
 
-  async markObjectAsNotInterested(data: ChangeRenterStatusOfObjectData): Promise<void> {
+  async markObjectAsNotInterested(
+    data: ChangeRenterStatusOfObjectData,
+    entityManager?: EntityManager,
+  ): Promise<void> {
     console.log(data.chatId, 'not interested');
-    await this.objectMatchesForRenterService.changeRenterStatusOfObject({
-      renterStatus: MatchStatusEnumType.rejected,
-      landlordObjectId: data.objectId,
-      chatId: data.chatId,
-    });
+    await this.objectMatchesForRenterService.changeRenterStatusOfObject(
+      {
+        renterStatus: MatchStatusEnumType.rejected,
+        landlordObjectId: data.objectId,
+        chatId: data.chatId,
+      },
+      entityManager,
+    );
     console.log(data.chatId, 'not interested passed');
   }
 

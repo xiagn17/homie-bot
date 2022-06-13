@@ -121,24 +121,22 @@ export class ObjectMatchesForRenterService {
   // тут сразу renterId тоже
   public async changeRenterStatusOfObject(
     renterStatusOfObjectDto: ChangeRenterStatusOfObjectDto,
+    entityManager: EntityManager = this.entityManager,
   ): Promise<void> {
     console.log('1');
-    const renter = await this.entityManager
+    const renter = await entityManager
       .getCustomRepository(RentersRepository)
       .getByChatId(renterStatusOfObjectDto.chatId);
     console.log('2');
-    const match = await this.entityManager
-      .getCustomRepository(LandlordObjectRenterMatchesRepository)
-      .findOne({
-        renterId: renter.id,
-        landlordObjectId: renterStatusOfObjectDto.landlordObjectId,
-      });
-    console.log('3');
+    const match = await entityManager.getCustomRepository(LandlordObjectRenterMatchesRepository).findOne({
+      renterId: renter.id,
+      landlordObjectId: renterStatusOfObjectDto.landlordObjectId,
+    });
     if (match?.renterStatus === MatchStatusEnumType.resolved) {
       return;
     }
     console.log('4');
-    await this.entityManager
+    await entityManager
       .getCustomRepository(LandlordObjectRenterMatchesRepository)
       .changeRenterStatus(
         renter.id,
@@ -157,7 +155,7 @@ export class ObjectMatchesForRenterService {
       return;
     }
 
-    const landlordObject = await this.entityManager
+    const landlordObject = await entityManager
       .getCustomRepository(LandlordObjectsRepository)
       .getFullObject(renterStatusOfObjectDto.landlordObjectId);
 

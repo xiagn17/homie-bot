@@ -48,8 +48,7 @@ export class TasksNewObjectRenterPushWorkerService extends TasksQueueBaseService
     }
 
     await this.connection.transaction(async entityManager => {
-      for (let i = 0; i < tasks.length; i++) {
-        const task = tasks[i];
+      const processTasks = tasks.map(async task => {
         const { data: taskData, id: taskId } = task;
         const landlordObject = await entityManager
           .getCustomRepository(LandlordObjectsRepository)
@@ -61,13 +60,16 @@ export class TasksNewObjectRenterPushWorkerService extends TasksQueueBaseService
           new BroadcastNewObjectToRenterPushEvent({
             object: object,
             chatId: taskData.chatId,
+            entityManager: entityManager,
           }),
         );
 
         await entityManager.getCustomRepository(TasksRepository).setTaskCompleted(taskId);
 
         this.logger.info(`PUSH event for new object to renter ${taskData.chatId} was sent just now`);
-      }
+      });
+
+      await Promise.all(processTasks);
     });
   }
 }
