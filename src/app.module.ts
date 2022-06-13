@@ -18,7 +18,10 @@ import { BotModule } from './modules/bot/main/bot.module';
       isGlobal: true,
       load: [configuration],
     }),
-    EventEmitterModule.forRoot(),
+    EventEmitterModule.forRoot({
+      maxListeners: 100,
+      verboseMemoryLeak: true,
+    }),
     LoggerModule,
     DatabaseModule,
     TasksWorkerModule,
@@ -27,6 +30,10 @@ import { BotModule } from './modules/bot/main/bot.module';
   ],
 })
 export class AppModule {}
+
+process.on('uncaughtException', err => {
+  console.log('uncaught', err);
+});
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule, { bufferLogs: true });
