@@ -33,7 +33,6 @@ export class RenterObjectsApiService {
     data: ChangeRenterStatusOfObjectData,
     entityManager?: EntityManager,
   ): Promise<void> {
-    console.log(data.chatId, 'not interested');
     await this.objectMatchesForRenterService.changeRenterStatusOfObject(
       {
         renterStatus: MatchStatusEnumType.rejected,
@@ -42,7 +41,6 @@ export class RenterObjectsApiService {
       },
       entityManager,
     );
-    console.log(data.chatId, 'not interested passed');
   }
 
   async markObjectAsInterested(data: ChangeRenterStatusOfObjectData): Promise<void> {

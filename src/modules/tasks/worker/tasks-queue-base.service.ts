@@ -13,9 +13,7 @@ export class TasksQueueBaseService {
   ): Promise<void> {
     const tasksByChunks = this.reduceTasksByChunks(waitingTasks);
     for (let i = 0; i < tasksByChunks.length; i++) {
-      console.log('action is started on ', i);
       await action(tasksByChunks[i]);
-      console.log('action is ended on ', i);
       await new Promise(res => setTimeout(res, this.THROTTLE_MS));
     }
   }
