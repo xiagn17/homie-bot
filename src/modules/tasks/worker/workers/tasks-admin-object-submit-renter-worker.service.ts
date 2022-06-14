@@ -41,7 +41,8 @@ export class TasksAdminObjectSubmitRenterWorkerService extends TasksQueueBaseSer
     }
 
     await this.connection.transaction(async entityManager => {
-      const processTasks = tasks.map(async task => {
+      for (let i = 0; i < tasks.length; i++) {
+        const task = tasks[i];
         const { data: taskData, id: taskId } = task;
         await this.objectMatchesForLandlordService.changeLandlordStatusOfObject(
           {
@@ -56,9 +57,7 @@ export class TasksAdminObjectSubmitRenterWorkerService extends TasksQueueBaseSer
         this.logger.info(
           `Contacts of object ${taskData.landlordObjectId} was sent to renter ${taskData.renterId}`,
         );
-      });
-
-      await Promise.all(processTasks);
+      }
     });
   }
 }

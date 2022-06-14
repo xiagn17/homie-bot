@@ -80,7 +80,9 @@ export class ObjectMatchesForLandlordService {
       }
 
       if (landlordStatusOfObjectDto.landlordStatus === MatchStatusEnumType.resolved) {
+        console.log('trying get renterrr', landlordStatusOfObjectDto.renterId);
         const renter = await this.rentersService.getRenter(landlordStatusOfObjectDto.renterId, entityManager);
+        console.log('we got renter', renter.id, renter.telegramUser.chatId);
         await this.eventEmitter.emitAsync(
           BROADCAST_LANDLORD_CONTACTS_TO_APPROVED_RENTER_EVENT_NAME,
           new BroadcastLandlordContactsToApprovedRenterEvent({
