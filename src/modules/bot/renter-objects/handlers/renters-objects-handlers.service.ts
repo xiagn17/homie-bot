@@ -146,9 +146,10 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     }
 
     const sent = await this.renterObjectsService.sendObjectRequest(objectId, ctx);
-    if (sent) {
-      await ctx.editMessageReplyMarkup({ reply_markup: undefined });
+    if (!sent) {
+      return;
     }
+    await ctx.editMessageReplyMarkup({ reply_markup: undefined });
     await this.renterObjectsService.sendNextObject(ctx);
   };
 
