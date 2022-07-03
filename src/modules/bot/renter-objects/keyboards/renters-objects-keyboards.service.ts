@@ -62,7 +62,7 @@ export class RentersObjectsKeyboardsService {
   }
 
   initPaySubscriptionMenu(
-    onFreeSubscriptionButtonHandler: HandlerOnFreeContactsMenuButton,
+    _onFreeSubscriptionButtonHandler: HandlerOnFreeContactsMenuButton,
     onSendNextObjectHandler: SendNextObject,
   ): void {
     const prices = this.configService.get('payments.prices') as PaymentsPricesConfigType;
@@ -72,7 +72,7 @@ export class RentersObjectsKeyboardsService {
       const subscriptionTwoWeeksUrl = `${apiPrefix}/payments/${chatId}/${PaymentItems['subscription-2-weeks']}`;
       const subscriptionMonthUrl = `${apiPrefix}/payments/${chatId}/${PaymentItems['subscription-month']}`;
       range
-        .text('Получить бесплатно', onFreeSubscriptionButtonHandler)
+        // .text('Получить бесплатно', onFreeSubscriptionButtonHandler)
         .row()
         .url(`${prices.subscriptionTwoWeeks} ₽ / 2 нед`, subscriptionTwoWeeksUrl)
         .row()
