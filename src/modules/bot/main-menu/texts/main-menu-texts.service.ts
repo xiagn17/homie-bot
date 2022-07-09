@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   EMOJI_CHECK,
+  EMOJI_DOWN,
   EMOJI_FILTER,
   EMOJI_HOUSE,
   EMOJI_ID,
@@ -9,6 +10,7 @@ import {
   EMOJI_MAP,
   EMOJI_PHONE,
   EMOJI_SHARE,
+  EMOJI_STARS,
   EMOJI_STATUS,
   EMOJI_VERY_HEART,
   EMOJI_WOMAN_HAND,
@@ -43,7 +45,7 @@ export class MainMenuTextsService {
       `\n` +
       `${EMOJI_FILTER}️ <b>Фильтр</b> - позволит показывать только те объявления, которые соответствуют настройкам.\n` +
       `\n` +
-      `${EMOJI_WOMAN_HAND}️ <b>Анкета</b> - это твоя анкета, которую я буду отправлять арендодателям заинтересовавшихся объявлений.\n` +
+      `${EMOJI_WOMAN_HAND}️ <b>Анкета</b> - её я буду отправлять арендодателем заинтересовавшихся объявлений. А сдающие смогут ее видеть и отправлять Вам сами свои объекты!\n` +
       `\n` +
       `${EMOJI_VERY_HEART} <b>Подписка Homie</b>: <a href='https://telegra.ph/Statusy-v-Homie-05-05'>${textSubscription}</a>`
     );
@@ -87,9 +89,11 @@ export class MainMenuTextsService {
 
   getFirstMenuTip(): string {
     return (
-      `Пришло время показать тебе центр управления.\n` +
+      `${EMOJI_STARS} Отлично, теперь ты знаешь как взаимодействовать с объявлениями!\n` +
       `\n` +
-      `${EMOJI_INFO} Через <b>Меню</b> ты можешь настроить <b>фильтры</b> объявлений и заполнить свою <b>анкету</b>.`
+      `Чтобы не тратить время на неподходящие объекты, можешь <b>настрой фильтры через меню.</b>\n` +
+      `\n` +
+      `Вот, кстати, как оно выглядит ${EMOJI_DOWN}`
     );
   }
 

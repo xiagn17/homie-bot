@@ -19,6 +19,9 @@ export const RENTER_INFO_ASK_EVENT = 'renter_ank-ask';
 export const RENTER_INFO_SEND_EVENT = 'renter_ank-send';
 export const RENTER_INFO_SEND2_EVENT = 'renter_ank-send2';
 export const RENTER_OK_ONBOARDING = 'renter_ok-onboarding';
+export const RENTER_HI_MENU = 'renter_hi-menu';
+export const RENTER_SUBSCRIPTION_990 = 'renter_sub-990-buy';
+export const RENTER_SUBSCRIPTION_1490 = 'renter_sub-1490-buy';
 
 export const LANDLORD_HELLO_EVENT = 'LL-_hellow';
 export const LANDLORD_FORM_START_EVENT = 'LL_form-start';
@@ -41,10 +44,11 @@ export const LANDLORD_FORM_Q13_RM_EVENT = 'LL_form-rm-q13-gender';
 export const LANDLORD_FORM_Q14_RM_EVENT = 'LL_form-rm-q14-comment';
 export const LANDLORD_FORM_Q15_RM_EVENT = 'LL_form-rm-q15-openpost';
 export const LANDLORD_FORM_DONE_EVENT = 'LL_form-done';
-export const LANDLORD_FORM_CONFIRMED_EVENT = 'LL-_form_confirmed';
+export const LANDLORD_FORM_CONFIRMED_EVENT = 'LL_form_confirmed';
 export const LANDLORD_ANKETA_CAME_EVENT = 'LL_anketa-came';
 export const LANDLORD_ANKETA_LIKE_EVENT = 'LL_anket-like';
 export const LANDLORD_ANKETA_DISLIKE_EVENT = 'LL_anket-dislike';
+export const LANDLORD_STOP_SEARCH = 'LL_stop';
 
 export const RENTER_ACTION = 'renter';
 export const LANDLORD_ACTION = 'LL';

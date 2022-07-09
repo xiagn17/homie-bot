@@ -16,6 +16,12 @@ import {
   BROADCAST_SUBSCRIPTION_START_EVENT_NAME,
   BroadcastSubscriptionStartEvent,
 } from '../../bot/broadcast/events/broadcast-subscription-start.event';
+import { sendAnalyticsEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
+import {
+  RENTER_ACTION,
+  RENTER_SUBSCRIPTION_1490,
+  RENTER_SUBSCRIPTION_990,
+} from '../../../utils/google-analytics/events';
 import { RentersRepository } from './repositories/renters.repository';
 import { RenterEntity } from './entities/Renter.entity';
 import { RentersSerializer } from './serializers/renters.serializer';
@@ -214,6 +220,12 @@ export class RentersService {
         chatId: telegramUser.chatId,
       }),
     );
+
+    if (subscriptionType === PaymentItems['subscription-2-weeks']) {
+      sendAnalyticsEvent(telegramUser.chatId, RENTER_ACTION, RENTER_SUBSCRIPTION_990);
+    } else if (subscriptionType === PaymentItems['subscription-month']) {
+      sendAnalyticsEvent(telegramUser.chatId, RENTER_ACTION, RENTER_SUBSCRIPTION_1490);
+    }
   }
 
   public async stopSearch(chatId: string): Promise<void> {

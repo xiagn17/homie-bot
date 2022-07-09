@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TelegramUserType } from '../session-storage/interfaces/session-storage.interface';
+import { sendAnalyticsEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
+import { RENTER_ACTION, RENTER_HI_MENU } from '../../../utils/google-analytics/events';
 import { GetFirstMenuTip, GetMainMenu, GetMainMenuText } from './interfaces/main-menu.interface';
 import { MainMenuTextsService } from './texts/main-menu-texts.service';
 import { MainMenuKeyboardsService } from './keyboards/main-menu-keyboards.service';
@@ -15,6 +17,7 @@ export class MainMenuService {
 
   getFirstMenuTip: GetFirstMenuTip = async ctx => {
     await ctx.reply(this.mainMenuTextsService.getFirstMenuTip());
+    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_HI_MENU);
     const session = await ctx.session;
     session.renter.firstMenuTip = true;
     setTimeout(() => void this.getMenu(ctx), 3500);

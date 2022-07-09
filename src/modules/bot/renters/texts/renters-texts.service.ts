@@ -53,7 +53,7 @@ export class RentersTextsService {
     return (
       `${EMOJI_GLOBUS} <b>Укажи ссылку на свой профиль instagram</b> (или другой соцсети)\n` +
       `\n` +
-      `Открытый аккаунт кратно увеличить шансы на одобрение твоей анкеты!\n` +
+      `Открытый аккаунт кратно увеличит шансы на одобрение твоей анкеты!\n` +
       `\n` +
       `<b>пример:</b> <a href="https://instagram.com/homie.rf">https://instagram.com/homie.rf</a>`
     );
@@ -192,7 +192,7 @@ export class RentersTextsService {
   getSubscriptionStartedText(endsAt: Date): string {
     const endsAtText = endsAt.toLocaleDateString(RU_LOCALE);
     return (
-      `${EMOJI_SUPER} Теперь мы настоящие Homie)\n` +
+      `${EMOJI_SUPER} Все прошло успешно.\n` +
       `Можешь пользоваться всеми моими возможностями до окончания срока подписки. (${endsAtText})`
     );
   }

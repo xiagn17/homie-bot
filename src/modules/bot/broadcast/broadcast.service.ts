@@ -30,6 +30,7 @@ import {
   LANDLORD_ACTION,
   LANDLORD_ANKETA_CAME_EVENT,
   LANDLORD_FORM_CONFIRMED_EVENT,
+  LANDLORD_STOP_SEARCH,
 } from '../../../utils/google-analytics/events';
 import { RentersApiService } from '../renters/api/renters-api.service';
 import { RenterReferralsEnum } from '../../api/renters/interfaces/renter-referrals.interface';
@@ -178,6 +179,7 @@ export class BroadcastService implements OnModuleInit {
   async sendObjectOutdatedToLandlord(_object: ApiObjectResponse, { chatId }: ForwardOptions): Promise<void> {
     const text = this.landlordsTextsService.getStoppedText();
     await this.sendMessage(chatId, text);
+    sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_STOP_SEARCH);
 
     setTimeout(() => {
       this.sendMessage(chatId, this.reviewsTextsService.getReasonText(), {

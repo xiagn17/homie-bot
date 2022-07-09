@@ -53,7 +53,11 @@ import { MainMenuService } from '../../main-menu/main-menu.service';
 import { LandlordsApiService } from '../api/landlords-api.service';
 import { BotApiService } from '../../main/api/bot-api.service';
 import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
-import { LANDLORD_ACTION, LANDLORD_HELLO_EVENT } from '../../../../utils/google-analytics/events';
+import {
+  LANDLORD_ACTION,
+  LANDLORD_HELLO_EVENT,
+  LANDLORD_STOP_SEARCH,
+} from '../../../../utils/google-analytics/events';
 import { ReviewsService } from '../../reviews/reviews.service';
 import { getDateFromString } from './helpers/startArrivalDate';
 import { getPrice } from './helpers/price';
@@ -515,6 +519,8 @@ export class LandlordsHandlersService {
     } else if (action === 'stop') {
       await this.landlordsApiService.stopSearchObject(chatId);
       await ctx.editMessageText(this.landlordsTextsService.getStoppedText());
+
+      sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_STOP_SEARCH);
 
       setTimeout(() => {
         this.reviewsService.sendReviewReason(ctx);

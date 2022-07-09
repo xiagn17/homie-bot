@@ -11,6 +11,7 @@ import {
   LANDLORD_ACTION,
   LANDLORD_ANKETA_DISLIKE_EVENT,
   LANDLORD_ANKETA_LIKE_EVENT,
+  LANDLORD_STOP_SEARCH,
 } from '../../../../utils/google-analytics/events';
 import { ReviewsService } from '../../reviews/reviews.service';
 
@@ -57,6 +58,8 @@ export class LandlordRentersHandlersService {
 
       const stopObjectText = this.landlordRentersTextsService.getStopObjectText();
       await ctx.reply(stopObjectText);
+
+      sendAnalyticsEvent(chatId, LANDLORD_ACTION, LANDLORD_STOP_SEARCH);
 
       setTimeout(() => {
         this.reviewsService.sendReviewReason(ctx);
