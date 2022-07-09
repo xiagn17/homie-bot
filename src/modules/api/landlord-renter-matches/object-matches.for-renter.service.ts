@@ -21,6 +21,10 @@ import {
   BroadcastRenterInfoToLandlordEvent,
 } from '../../bot/broadcast/events/broadcast-renter-info-landlord.event';
 import { RenterSettingsRepository } from '../renters/repositories/renter-settings.repository';
+import {
+  BROADCAST_LANDLORD_CONTACTS_TO_APPROVED_RENTER_EVENT_NAME,
+  BroadcastLandlordContactsToApprovedRenterEvent,
+} from '../../bot/broadcast/events/broadcast-landlord-contacts-approved-renter.event';
 import { LandlordObjectRenterMatchesRepository } from './repositories/landlordObjectRenterMatches';
 import { ChangeRenterStatusOfObjectDto } from './dto/ChangeRenterStatusOfObjectDto';
 import { MatchStatusEnumType } from './interfaces/landlord-renter-matches.types';
@@ -160,12 +164,19 @@ export class ObjectMatchesForRenterService {
 
     const isPublishedByAdmins = landlordObject.isAdmin;
     if (isPublishedByAdmins) {
-      await this.tasksSchedulerService.setAdminObjectSubmitRenter(
-        {
-          renterId: renter.id,
-          landlordObjectId: landlordObject.id,
-        },
-        entityManager,
+      await entityManager
+        .getCustomRepository(LandlordObjectRenterMatchesRepository)
+        .changeLandlordStatus(
+          renter.id,
+          renterStatusOfObjectDto.landlordObjectId,
+          MatchStatusEnumType.resolved,
+        );
+      await this.eventEmitter.emitAsync(
+        BROADCAST_LANDLORD_CONTACTS_TO_APPROVED_RENTER_EVENT_NAME,
+        new BroadcastLandlordContactsToApprovedRenterEvent({
+          object: landlordObject,
+          chatId: renter.telegramUser.chatId,
+        }),
       );
       return;
     }

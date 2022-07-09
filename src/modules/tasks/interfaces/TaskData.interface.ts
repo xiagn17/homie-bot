@@ -8,6 +8,7 @@ export interface TaskDataLandlordRenewNotificationInterface {
   landlordObjectId: string;
 }
 
+// deleted this logic
 export interface TaskDataAdminObjectSubmitRenterInterface {
   landlordObjectId: string;
   renterId: string;

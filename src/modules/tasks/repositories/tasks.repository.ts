@@ -37,14 +37,6 @@ export class TasksRepository extends Repository<TaskEntity> {
       .getMany();
   }
 
-  getTodoAdminObjectSubmitRenter(): Promise<TaskEntity[]> {
-    return this.getTodoQuery()
-      .andWhere('task.type = :type', {
-        type: TaskTypeEnumInterface.admin_object_submit_renter,
-      })
-      .getMany();
-  }
-
   getTodoNewObjectToRenter(): Promise<TaskEntity[]> {
     return this.getTodoQuery()
       .andWhere('task.type = :type', {

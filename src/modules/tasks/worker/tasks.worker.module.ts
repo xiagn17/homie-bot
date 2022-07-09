@@ -7,7 +7,6 @@ import { LandlordRenterMatchesModule } from '../../api/landlord-renter-matches/l
 import { LandlordObjectsModule } from '../../api/landlord-objects/landlord-objects.module';
 import { TasksSchedulerModule } from '../scheduler/tasks.scheduler.module';
 import { TasksLandlordNotificationsWorkerService } from './workers/tasks-landlord-notifications-worker.service';
-import { TasksAdminObjectSubmitRenterWorkerService } from './workers/tasks-admin-object-submit-renter-worker.service';
 import { TasksNewObjectRenterPushWorkerService } from './workers/tasks-new-object-renter-push-worker.service';
 import { TasksObjectsOutdatedWorkerService } from './workers/tasks-objects-outdated-worker.service';
 import { TasksSendMessageWorkerService } from './workers/tasks-send-message-worker.service';
@@ -25,7 +24,6 @@ import { TasksSendMessageWorkerService } from './workers/tasks-send-message-work
   ],
   providers: [
     TasksLandlordNotificationsWorkerService,
-    TasksAdminObjectSubmitRenterWorkerService,
     TasksNewObjectRenterPushWorkerService,
     TasksObjectsOutdatedWorkerService,
     TasksSendMessageWorkerService,

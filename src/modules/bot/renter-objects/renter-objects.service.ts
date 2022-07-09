@@ -120,6 +120,9 @@ export class RenterObjectsService {
       RENTER_ACTION,
       isAdminObject ? RENTER_INFO_SEND2_EVENT : RENTER_INFO_SEND_EVENT,
     );
+    if (isAdminObject) {
+      return false;
+    }
     return true;
   };
 }

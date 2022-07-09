@@ -4,14 +4,11 @@ import { LoggerService } from '../../logger/logger.service';
 import { TasksRepository } from '../repositories/tasks.repository';
 import { TaskTypeEnumInterface } from '../interfaces/TaskTypeEnum.interface';
 import {
-  TaskDataAdminObjectSubmitRenterInterface,
   TaskDataLandlordRenewNotificationInterface,
   TaskDataNewObjectToRenterInterface,
 } from '../interfaces/TaskData.interface';
 import { LandlordObjectEntity } from '../../api/landlord-objects/entities/LandlordObject.entity';
 import { getObjectRenewTimestamp } from '../../api/landlord-objects/constants/landlord-object-active-time.constant';
-
-const EIGHT_HOURS_TIMESTAMP = 8 * 60 * 60 * 1000;
 
 @Injectable()
 export class TasksSchedulerService {
@@ -42,15 +39,6 @@ export class TasksSchedulerService {
       return;
     }
     await entityManager.getCustomRepository(TasksRepository).update(prevTask.id, { scheduledFor: date });
-  }
-
-  async setAdminObjectSubmitRenter(
-    data: TaskDataAdminObjectSubmitRenterInterface,
-    entityManager: EntityManager = this.entityManager,
-  ): Promise<void> {
-    const type = TaskTypeEnumInterface.admin_object_submit_renter;
-    const date = new Date(Date.now() + EIGHT_HOURS_TIMESTAMP);
-    await entityManager.getCustomRepository(TasksRepository).createAndSave(type, date, data);
   }
 
   async setPushNewObjectToRenter(data: TaskDataNewObjectToRenterInterface): Promise<void> {
