@@ -175,8 +175,14 @@ export class LandlordsHandlersService {
     const text = this.landlordsTextsService.getFirstTipTexts(usersCount);
     await ctx.reply(text[0]);
     await ctx.reply(text[1]);
+
+    await new Promise(res => setTimeout(res, 5000));
+    const onboardPhotoSrc =
+      'https://s3.eu-central-1.amazonaws.com/telegram.sendpulse.prod/attachments/e97ea7c9281452db256460bbd2ea3af5/77868bf6-39be-4fc8-ac44-86fa580bc292.png';
+    await ctx.replyWithPhoto(onboardPhotoSrc);
+
     sendAnalyticsEvent(ctx, LANDLORD_ACTION, LANDLORD_HELLO_EVENT);
-    await new Promise(res => setTimeout(res, 6000));
+    await new Promise(res => setTimeout(res, 5000));
 
     await this.mainMenuService.getMenu(ctx);
   };
