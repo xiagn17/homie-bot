@@ -57,7 +57,7 @@ function getDetailText(detail: string, notCross: boolean): string {
 }
 
 export function getDefaultObjectText(object: ApiObjectResponse): string {
-  const firstRow = `#home${object.number}${object.isAdmin ? ' <i>(админ.)</i>' : ''}` + '\n';
+  const firstRow = `#home${object.number}` + '\n';
   const secondRow = getSecondRow(object) + '\n\n';
   const thirdRow = `${EMOJI_SUBWAY} <i>Метро</i>: ${object.address}` + '\n';
   const fourRow = `${EMOJI_MONEY} <i>Стоимость</i>: ${object.price} руб./мес` + '\n';
