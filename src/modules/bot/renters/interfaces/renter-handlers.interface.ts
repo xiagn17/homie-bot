@@ -21,3 +21,5 @@ export type HandlerOnGender = (
   ctx: MyContext & MenuFlavor,
   next: NextFunction,
 ) => Promise<void>;
+
+export type HandlerOnAfterOnboarding = (ctx: MyContext) => Promise<void>;

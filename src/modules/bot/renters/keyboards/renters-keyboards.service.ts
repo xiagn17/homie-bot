@@ -44,8 +44,11 @@ import {
   EMOJI_PHOTOS,
   EMOJI_PROFESSION,
   EMOJI_ROOMS,
+  EMOJI_SUPER,
 } from '../../constants/emoji';
 import { GetMainMenu } from '../../main-menu/interfaces/main-menu.interface';
+
+export const KEYBOARD_RENTER_ONBOARDING_PREFIX = 'renter_onboarding_good';
 
 @Injectable()
 export class RentersKeyboardsService {
@@ -111,6 +114,10 @@ export class RentersKeyboardsService {
 
   getRenterInfoPhotosKeyboard(): InlineKeyboard {
     return new InlineKeyboard().text(`${EMOJI_CHECK} Готово`, `renterInfo_photos_submit`);
+  }
+
+  getRenterOnboardingKeyboard(): InlineKeyboard {
+    return new InlineKeyboard().text(`${EMOJI_SUPER} Все понятно`, KEYBOARD_RENTER_ONBOARDING_PREFIX);
   }
 
   initFiltersKeyboard(

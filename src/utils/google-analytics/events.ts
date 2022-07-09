@@ -18,6 +18,7 @@ export const RENTER_OBJECT_VIEW_EVENT = 'renter_object-view';
 export const RENTER_INFO_ASK_EVENT = 'renter_ank-ask';
 export const RENTER_INFO_SEND_EVENT = 'renter_ank-send';
 export const RENTER_INFO_SEND2_EVENT = 'renter_ank-send2';
+export const RENTER_OK_ONBOARDING = 'renter_ok-onboarding';
 
 export const LANDLORD_HELLO_EVENT = 'LL-_hellow';
 export const LANDLORD_FORM_START_EVENT = 'LL_form-start';

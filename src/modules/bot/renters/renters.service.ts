@@ -47,6 +47,7 @@ import {
   SendPhotoQuestion,
   SendUpdatePhoto,
   UpdateRenterPhoto,
+  SendOnboarding,
 } from './interfaces/renters.interface';
 import { RentersKeyboardsService } from './keyboards/renters-keyboards.service';
 import { RentersApiService } from './api/renters-api.service';
@@ -358,10 +359,18 @@ export class RentersService {
     });
   };
 
+  sendOnboarding: SendOnboarding = async ctx => {
+    const imgSrc =
+      'https://s3.eu-central-1.amazonaws.com/telegram.sendpulse.prod/attachments/e97ea7c9281452db256460bbd2ea3af5/ae215019-f24e-445d-85cc-c74ffb1fe4cb.jpeg';
+    await ctx.replyWithPhoto(imgSrc, {
+      reply_markup: this.rentersKeyboardsService.getRenterOnboardingKeyboard(),
+    });
+  };
+
   public createRenterWithGender: CreateRenterWithGender = async (gender, ctx) => {
     const chatId = ctx.from?.id?.toString() as string;
     await this.rentersApiService.create({ gender, chatId });
 
-    await this.renterObjectsService.sendNextObject(ctx);
+    await this.sendOnboarding(ctx);
   };
 }
