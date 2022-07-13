@@ -32,7 +32,6 @@ import {
   LANDLORD_FORM_CONFIRMED_EVENT,
   LANDLORD_STOP_SEARCH,
 } from '../../../utils/google-analytics/events';
-import { RentersApiService } from '../renters/api/renters-api.service';
 import { RenterReferralsEnum } from '../../api/renters/interfaces/renter-referrals.interface';
 import { TelegramUserType } from '../session-storage/interfaces/session-storage.interface';
 import { ReviewsTextsService } from '../reviews/texts/reviews-texts.service';
@@ -56,7 +55,6 @@ export class BroadcastService implements OnModuleInit {
     private readonly landlordsKeyboardsService: LandlordsKeyboardsService,
 
     private readonly rentersTextsService: RentersTextsService,
-    private readonly rentersApiService: RentersApiService,
 
     private readonly landlordRentersKeyboardsService: LandlordRentersKeyboardsService,
 
@@ -115,18 +113,6 @@ export class BroadcastService implements OnModuleInit {
     await this.sendMessage(chatId, contactsText, {
       reply_markup: this.renterObjectsKeyboardsService.getContactsKeyboard(object.id, true, tgUsername),
     });
-
-    if (object.isAdmin) {
-      const renterInfo = await this.rentersApiService.getRenterInfo(chatId);
-      if (!renterInfo) {
-        return;
-      }
-      await this.sendMessage(chatId, this.rentersTextsService.getCopyText());
-      await this.sendPhoto(chatId, renterInfo.photo, {
-        caption: this.rentersTextsService.getRenterInfoForCopyText(renterInfo),
-        parse_mode: 'HTML',
-      });
-    }
   }
 
   async sendRenewObjectToLandlord(object: ApiObjectResponse, { chatId }: ForwardOptions): Promise<void> {
