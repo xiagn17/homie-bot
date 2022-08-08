@@ -319,6 +319,10 @@ export class RentersHandlersService implements OnModuleInit {
       await this.rentersService.sendAboutQuestion(ctx);
       return;
     }
+    if (about.length > 500) {
+      await ctx.reply('Слишком длинное описание. Максимальная длина сообщения - 500 символов.');
+      await this.rentersService.sendAboutQuestion(ctx);
+    }
 
     const session = await ctx.session;
     const infoStepsData = session.renter.infoStepsData ?? {};
@@ -428,8 +432,12 @@ export class RentersHandlersService implements OnModuleInit {
 
   onUpdateAboutHandler: HandlerOnUpdateAbout = async (about, ctx) => {
     if (!about) {
-      await this.rentersService.sendUpdateProfession(ctx);
+      await this.rentersService.sendUpdateAbout(ctx);
       return;
+    }
+    if (about.length > 500) {
+      await ctx.reply('Слишком длинное описание. Максимальная длина сообщения - 500 символов.');
+      await this.rentersService.sendUpdateAbout(ctx);
     }
 
     await this.rentersService.updateRenterAbout(about, ctx);
