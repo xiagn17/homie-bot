@@ -176,6 +176,10 @@ export class RentersTextsService {
     return `${EMOJI_CELEBRATE} <b>Супер!</b> Ты заполнил анкету, отправляю твой запрос по объекту...`;
   }
 
+  getSuccessfulAutoFilledInfo(): string {
+    return `${EMOJI_CELEBRATE} Мы заполнили анкету за тебя, но ты сможешь изменить её, кликнув по соответствующему пункту`;
+  }
+
   getReferralDaysText(from: RenterReferralsEnum): string {
     if (from === RenterReferralsEnum.onFillRenterInfo) {
       return (

@@ -11,6 +11,7 @@ export type SendProfessionQuestion = (ctx: MyContext) => Promise<void>;
 export type SendAboutQuestion = (ctx: MyContext) => Promise<void>;
 export type SendPhotoQuestion = (ctx: MyContext) => Promise<void>;
 export type SubmitRenterInfo = (ctx: MyContext) => Promise<void>;
+export type AutoSubmitRenterInfo = (ctx: MyContext) => Promise<void>;
 
 export type SendUpdateName = (ctx: MyContext) => Promise<void>;
 export type UpdateRenterName = (name: string, ctx: MyContext) => Promise<void>;

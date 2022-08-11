@@ -5,6 +5,7 @@ import { RENTER_DEFAULT_PHOTO } from '../constants/imageUrls';
 import { sendAnalyticsEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
 import {
   RENTER_ACTION,
+  RENTER_ANKETA_AUTO_FILL_EVENT,
   RENTER_ANKETA_DONE_EVENT,
   RENTER_ANKETA_Q2_EVENT,
   RENTER_ANKETA_Q3_EVENT,
@@ -15,6 +16,7 @@ import {
   RENTER_ANKETA_Q8_EVENT,
   RENTER_ANKETA_START_EVENT,
 } from '../../../utils/google-analytics/events';
+import { ApiRenterInfoDraft } from '../../api/renters/interfaces/renter-info.interface';
 import {
   SendAboutQuestion,
   SendBirthdayYearQuestion,
@@ -48,6 +50,7 @@ import {
   SendUpdatePhoto,
   UpdateRenterPhoto,
   SendOnboarding,
+  AutoSubmitRenterInfo,
 } from './interfaces/renters.interface';
 import { RentersKeyboardsService } from './keyboards/renters-keyboards.service';
 import { RentersApiService } from './api/renters-api.service';
@@ -274,6 +277,53 @@ export class RentersService {
       setTimeout(() => void this.renterObjectsService.sendObjectRequest(objectId, ctx), 1000);
     } else if (infoFillFrom === 'menu') {
       await this.sendRenterInfoMessage(ctx);
+    }
+  };
+
+  autoSubmitRenterInfo: AutoSubmitRenterInfo = async ctx => {
+    const session = await ctx.session;
+    session.renter.infoStep = undefined;
+
+    const chatId = ctx.from?.id.toString() as string;
+    const infoData: ApiRenterInfoDraft = {
+      name: '-',
+      birthdayYear: 2000,
+      phoneNumber: '-',
+      socials: '-',
+      lifestyle: {
+        dogCat: false,
+        smallAnimals: false,
+        dontSmoke: false,
+        dontDrink: false,
+        kids: false,
+        workRemotely: false,
+      },
+      profession: '-',
+      about: '-',
+      photo: RENTER_DEFAULT_PHOTO,
+      zodiacSign: null,
+      chatId: chatId,
+    };
+
+    try {
+      await this.rentersApiService.createInfo(infoData);
+      sendAnalyticsEvent(chatId, RENTER_ACTION, RENTER_ANKETA_AUTO_FILL_EVENT);
+    } catch (e) {
+      await ctx.reply('Упс, при сохранении произошла ошибка, напишите в поддержку');
+      session.renter.infoStep = undefined;
+      return;
+    }
+
+    const infoFillFrom =
+      session.renter.infoFillFrom === 'menu' ? 'menu' : session.renter.infoFillFrom?.split('_')[0];
+    if (infoFillFrom === 'object') {
+      const objectId = session.renter.infoFillFrom?.split('_')[1] as string;
+
+      await ctx.reply(this.rentersTextsService.getSuccessfulFilledInfoAfterObjectRequestText());
+      setTimeout(() => void this.renterObjectsService.sendObjectRequest(objectId, ctx), 1000);
+    } else if (infoFillFrom === 'menu') {
+      await ctx.reply(this.rentersTextsService.getSuccessfulAutoFilledInfo());
+      setTimeout(() => void this.sendRenterInfoMessage(ctx), 1000);
     }
   };
 

@@ -79,6 +79,7 @@ export class MainMenuHandlersService implements OnModuleInit {
 
     this.rentersKeyboardsService.initRenterInfoKeyboard(
       this.rentersHandlersService.onFillInfoHandler,
+      this.rentersHandlersService.onAutoFillInfoHandler,
       this.mainMenuService.getMenu,
       this.rentersService.sendUpdateName,
       this.rentersService.sendUpdateSocials,

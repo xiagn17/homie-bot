@@ -245,6 +245,13 @@ export class RentersHandlersService implements OnModuleInit {
     await this.rentersService.sendNameQuestion(ctx);
   };
 
+  onAutoFillInfoHandler: HandlerOnFillInfo = async (from, ctx) => {
+    const session = await ctx.session;
+    session.renter.infoFillFrom = from;
+
+    await this.rentersService.autoSubmitRenterInfo(ctx);
+  };
+
   onAnswerNameHandler: HandlerOnAnswerName = async (name, ctx) => {
     if (!name) {
       await this.rentersService.sendNameQuestion(ctx);

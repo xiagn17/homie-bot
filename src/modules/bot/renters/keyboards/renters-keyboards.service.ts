@@ -32,6 +32,7 @@ import {
   EMOJI_BEDS,
   EMOJI_CAT,
   EMOJI_CHECK,
+  EMOJI_CLOCK,
   EMOJI_COMMENT,
   EMOJI_GENDER_MAN,
   EMOJI_GENDER_WOMAN,
@@ -201,6 +202,7 @@ export class RentersKeyboardsService {
 
   initRenterInfoKeyboard(
     onFillInfo: HandlerOnFillInfo,
+    onAutoFillInfo: HandlerOnFillInfo,
     onBackToMainMenu: GetMainMenu,
     onSendUpdateName: SendUpdateName,
     onSendUpdateSocials: SendUpdateSocials,
@@ -214,9 +216,13 @@ export class RentersKeyboardsService {
         const chatId = mainCtx.from?.id.toString() as string;
         const isInfoExists = await this.rentersApiService.isInfoExists(chatId);
         if (!isInfoExists) {
-          range.text(`${EMOJI_COMMENT} Заполнить`, async ctx => {
-            await onFillInfo('menu', ctx);
-          });
+          range
+            .text(`${EMOJI_COMMENT} Заполнить`, async ctx => {
+              await onFillInfo('menu', ctx);
+            })
+            .text(`${EMOJI_CLOCK} Не хочу заполнять`, async ctx => {
+              await onAutoFillInfo('menu', ctx);
+            });
           return;
         }
         range

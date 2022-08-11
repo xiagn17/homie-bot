@@ -11,6 +11,7 @@ export const RENTER_ANKETA_Q6_EVENT = 'renter_anketa-q6-work';
 export const RENTER_ANKETA_Q7_EVENT = 'renter_anketa-q7-about';
 export const RENTER_ANKETA_Q8_EVENT = 'renter_anketa-q8-photo';
 export const RENTER_ANKETA_DONE_EVENT = 'renter_anketa-done';
+export const RENTER_ANKETA_AUTO_FILL_EVENT = 'renter_anketa-auto-fill';
 export const RENTER_LIKE_CLICK_EVENT = 'renter_like-click';
 export const RENTER_STOP_CLICK_EVENT = 'renter_stop-click';
 export const RENTER_NEXT_CLICK_EVENT = 'renter_next-click';
