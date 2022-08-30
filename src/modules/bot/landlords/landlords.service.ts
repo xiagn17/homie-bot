@@ -2,50 +2,36 @@ import { Injectable } from '@nestjs/common';
 import { InputMediaPhoto } from 'grammy/out/platform.node';
 import { OBJECT_DEFAULT_PHOTO } from '../constants/imageUrls';
 import { ObjectTypeEnum } from '../../api/renters/entities/RenterFilters.entity';
-import { EMOJI_CELEBRATE } from '../constants/emoji';
 import { sendAnalyticsEvent } from '../../../utils/google-analytics/sendAnalyticsEvent';
 import {
   LANDLORD_ACTION,
   LANDLORD_FORM_DONE_EVENT,
   LANDLORD_FORM_Q10_KV_EVENT,
   LANDLORD_FORM_Q10_RM_EVENT,
-  LANDLORD_FORM_Q11_KV_EVENT,
-  LANDLORD_FORM_Q11_RM_EVENT,
   LANDLORD_FORM_Q12_KV_EVENT,
-  LANDLORD_FORM_Q12_RM_EVENT,
-  LANDLORD_FORM_Q13_KV_EVENT,
   LANDLORD_FORM_Q13_RM_EVENT,
   LANDLORD_FORM_Q14_RM_EVENT,
-  LANDLORD_FORM_Q15_RM_EVENT,
   LANDLORD_FORM_Q2_EVENT,
   LANDLORD_FORM_Q3_EVENT,
-  LANDLORD_FORM_Q4_EVENT,
   LANDLORD_FORM_Q5_EVENT,
   LANDLORD_FORM_Q6_EVENT,
   LANDLORD_FORM_Q7_EVENT,
   LANDLORD_FORM_Q8_EVENT,
-  LANDLORD_FORM_Q9_EVENT,
   LANDLORD_FORM_START_EVENT,
 } from '../../../utils/google-analytics/events';
 import { AdminKeyboardsService } from '../admin/keyboards/admin-keyboards.service';
 import {
   SendLandlordObjectForm,
   SendObjectFormAddressQuestion,
-  SendObjectFormApartmentsFloorsQuestion,
   SendObjectFormCommentQuestion,
-  SendObjectFormDetailsQuestion,
   SendObjectFormLocationQuestion,
   SendObjectFormNameQuestion,
   SendObjectFormObjectTypeQuestion,
   SendObjectFormPhoneNumberQuestion,
   SendObjectFormPhotosQuestion,
-  SendObjectFormPlaceOnSitesQuestion,
   SendObjectFormPriceQuestion,
-  SendObjectFormRoomBedAverageAgeQuestion,
-  SendObjectFormRoomBedPeopleNumberQuestion,
   SendObjectFormRoomBedPreferredGenderQuestion,
   SendObjectFormRoomsNumberQuestion,
-  SendObjectFormStartArrivalDateQuestion,
   SubmitObjectForm,
 } from './interfaces/landlords.interface';
 import { LandlordsKeyboardsService } from './keyboards/landlords-keyboards.service';
@@ -109,15 +95,6 @@ export class LandlordsService {
     sendAnalyticsEvent(ctx, LANDLORD_ACTION, LANDLORD_FORM_Q3_EVENT);
   };
 
-  public sendObjectFormStartArrivalDateQuestion: SendObjectFormStartArrivalDateQuestion = async ctx => {
-    const session = await ctx.session;
-    session.landlord.objectStep = 'startArrivalDate';
-    await ctx.reply(this.landlordsTextsService.getObjectFormStartArrivalDateText(), {
-      reply_markup: this.landlordsKeyboardsService.getLandlordObjectFormStartArrivalDateKeyboard(),
-    });
-    sendAnalyticsEvent(ctx, LANDLORD_ACTION, LANDLORD_FORM_Q4_EVENT);
-  };
-
   public sendObjectFormPriceQuestion: SendObjectFormPriceQuestion = async ctx => {
     const session = await ctx.session;
     session.landlord.objectStep = 'price';
@@ -159,16 +136,6 @@ export class LandlordsService {
     sendAnalyticsEvent(ctx, LANDLORD_ACTION, LANDLORD_FORM_Q8_EVENT);
   };
 
-  public sendObjectFormDetailsQuestion: SendObjectFormDetailsQuestion = async ctx => {
-    const session = await ctx.session;
-    session.landlord.objectStep = 'details';
-
-    await ctx.reply(this.landlordsTextsService.getObjectFormDetailsText(), {
-      reply_markup: await this.landlordsKeyboardsService.getLandlordObjectFormDetailsKeyboard(ctx),
-    });
-    sendAnalyticsEvent(ctx, LANDLORD_ACTION, LANDLORD_FORM_Q9_EVENT);
-  };
-
   public sendObjectFormRoomsNumberQuestion: SendObjectFormRoomsNumberQuestion = async ctx => {
     const session = await ctx.session;
     session.landlord.objectStep = 'roomsNumber';
@@ -181,32 +148,6 @@ export class LandlordsService {
     const analyticsEvent =
       objectType === ObjectTypeEnum.apartments ? LANDLORD_FORM_Q10_KV_EVENT : LANDLORD_FORM_Q10_RM_EVENT;
     sendAnalyticsEvent(ctx, LANDLORD_ACTION, analyticsEvent);
-  };
-
-  public sendObjectFormApartmentsFloorsQuestion: SendObjectFormApartmentsFloorsQuestion = async ctx => {
-    const session = await ctx.session;
-    session.landlord.objectStep = 'floors';
-
-    await ctx.reply(this.landlordsTextsService.getObjectFormApartmentsFloorsText());
-    sendAnalyticsEvent(ctx, LANDLORD_ACTION, LANDLORD_FORM_Q11_KV_EVENT);
-  };
-
-  public sendObjectFormRoomBedPeopleNumberQuestion: SendObjectFormRoomBedPeopleNumberQuestion = async ctx => {
-    const session = await ctx.session;
-    session.landlord.objectStep = 'livingPeopleNumber';
-
-    await ctx.reply(this.landlordsTextsService.getObjectFormRoomBedPeopleNumberText(), {
-      reply_markup: this.landlordsKeyboardsService.getLandlordObjectFormRoomBedPeopleNumberKeyboard(),
-    });
-    sendAnalyticsEvent(ctx, LANDLORD_ACTION, LANDLORD_FORM_Q11_RM_EVENT);
-  };
-
-  public sendObjectFormRoomBedAverageAgeQuestion: SendObjectFormRoomBedAverageAgeQuestion = async ctx => {
-    const session = await ctx.session;
-    session.landlord.objectStep = 'averageAge';
-
-    await ctx.reply(this.landlordsTextsService.getObjectFormRoomBedAverageAgeText());
-    sendAnalyticsEvent(ctx, LANDLORD_ACTION, LANDLORD_FORM_Q12_RM_EVENT);
   };
 
   public sendObjectFormRoomBedPreferredGenderQuestion: SendObjectFormRoomBedPreferredGenderQuestion =
@@ -229,23 +170,6 @@ export class LandlordsService {
     const objectType = session.landlord.objectStepsData.objectType as ObjectTypeEnum;
     const analyticsEvent =
       objectType === ObjectTypeEnum.apartments ? LANDLORD_FORM_Q12_KV_EVENT : LANDLORD_FORM_Q14_RM_EVENT;
-    sendAnalyticsEvent(ctx, LANDLORD_ACTION, analyticsEvent);
-  };
-
-  public sendObjectFormPlaceOnSitesQuestion: SendObjectFormPlaceOnSitesQuestion = async ctx => {
-    const session = await ctx.session;
-    session.landlord.objectStep = 'placeOnSites';
-    session.landlord.objectStepsData.placeOnSites = true;
-    const placeOnSites = !!session.landlord.objectStepsData.placeOnSites;
-
-    await ctx.reply(`${EMOJI_CELEBRATE}`);
-    await ctx.reply(this.landlordsTextsService.getObjectFormPlaceOnSitesText(placeOnSites), {
-      reply_markup: this.landlordsKeyboardsService.getLandlordObjectFormPlaceOnSitesKeyboard(),
-    });
-
-    const objectType = session.landlord.objectStepsData.objectType as ObjectTypeEnum;
-    const analyticsEvent =
-      objectType === ObjectTypeEnum.apartments ? LANDLORD_FORM_Q13_KV_EVENT : LANDLORD_FORM_Q15_RM_EVENT;
     sendAnalyticsEvent(ctx, LANDLORD_ACTION, analyticsEvent);
   };
 

@@ -16,7 +16,6 @@ import {
   EMOJI_GENDER,
   EMOJI_GENDER_MAN,
   EMOJI_GENDER_WOMAN,
-  EMOJI_NEXT,
   EMOJI_OK,
   EMOJI_ROOMS,
 } from '../../constants/emoji';
@@ -24,10 +23,6 @@ import { LandlordsApiService } from '../api/landlords-api.service';
 import { HandlerDeleteObject, HandlerLandlordObjectForm } from '../interfaces/landlords-handlers.interface';
 import { LocationsEnum, ObjectTypeEnum } from '../../../api/renters/entities/RenterFilters.entity';
 import { PreferredGenderEnumType } from '../../../api/landlord-objects/entities/LandlordObject.entity';
-import {
-  KEYBOARD_OBJECT_FORM_DETAILS_PREFIX,
-  objectDetailsKeyboardData,
-} from './helpers/objectDetailsKeyboard';
 
 export const KEYBOARD_OBJECT_FORM_OBJECT_TYPE_PREFIX = 'object_form_object_type_';
 export const KEYBOARD_OBJECT_FORM_LOCATION_PREFIX = 'object_form_location_';
@@ -36,7 +31,6 @@ export const KEYBOARD_OBJECT_FORM_ROOMS_NUMBER_PREFIX = 'object_form_rooms_numbe
 export const KEYBOARD_OBJECT_FORM_ROOM_BED_PEOPLE_NUMBER_PREFIX = 'object_form_people_number_';
 export const KEYBOARD_OBJECT_FORM_PREFERRED_GENDER_PREFIX = 'object_form_preferred_gender_';
 export const KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX = 'object_form_place_on_sites_';
-export const KEYBOARD_OBJECT_FORM_START_ARRIVAL_DATE_PREFIX = 'kb_objectFormStartDate_';
 
 export const KEYBOARD_RENEW_OBJECT_PREFIX = 'kb_renewObject_';
 
@@ -118,24 +112,6 @@ export class LandlordsKeyboardsService {
       .text(`${EMOJI_CUT} Удалить послед. фото`, `${KEYBOARD_OBJECT_FORM_PHOTOS_PREFIX}delete`);
   }
 
-  async getLandlordObjectFormDetailsKeyboard(ctx: MyContext): Promise<InlineKeyboard> {
-    const { data, texts } = await objectDetailsKeyboardData(ctx);
-    return new InlineKeyboard()
-      .text(texts.couples, data.couples)
-      .text(texts.animals, data.animals)
-      .row()
-      .text(texts.kids, data.kids)
-      .text(texts.fridge, data.fridge)
-      .row()
-      .text(texts.washer, data.washer)
-      .text(texts.dishWasher, data.dishWasher)
-      .row()
-      .text(texts.conditioner, data.conditioner)
-      .text(texts.internet, data.internet)
-      .row()
-      .text(`${EMOJI_NEXT} Далее`, `${KEYBOARD_OBJECT_FORM_DETAILS_PREFIX}submit`);
-  }
-
   getLandlordObjectFormRoomsNumberKeyboard(objectType: ObjectTypeEnum): InlineKeyboard {
     if (objectType === ObjectTypeEnum.apartments) {
       return new InlineKeyboard()
@@ -155,17 +131,6 @@ export class LandlordsKeyboardsService {
       .text(`4+`, `${KEYBOARD_OBJECT_FORM_ROOMS_NUMBER_PREFIX}4+`);
   }
 
-  getLandlordObjectFormRoomBedPeopleNumberKeyboard(): InlineKeyboard {
-    return new InlineKeyboard()
-      .text(`1`, `${KEYBOARD_OBJECT_FORM_ROOM_BED_PEOPLE_NUMBER_PREFIX}1`)
-      .text(`2`, `${KEYBOARD_OBJECT_FORM_ROOM_BED_PEOPLE_NUMBER_PREFIX}2`)
-      .text(`3`, `${KEYBOARD_OBJECT_FORM_ROOM_BED_PEOPLE_NUMBER_PREFIX}3`)
-      .row()
-      .text(`4`, `${KEYBOARD_OBJECT_FORM_ROOM_BED_PEOPLE_NUMBER_PREFIX}4`)
-      .text(`5`, `${KEYBOARD_OBJECT_FORM_ROOM_BED_PEOPLE_NUMBER_PREFIX}5`)
-      .text(`5+`, `${KEYBOARD_OBJECT_FORM_ROOM_BED_PEOPLE_NUMBER_PREFIX}5+`);
-  }
-
   getLandlordObjectFormPreferredGenderKeyboard(): InlineKeyboard {
     return new InlineKeyboard()
       .text(
@@ -181,20 +146,6 @@ export class LandlordsKeyboardsService {
         `${EMOJI_GENDER_WOMAN} Женщину`,
         `${KEYBOARD_OBJECT_FORM_PREFERRED_GENDER_PREFIX}${PreferredGenderEnumType.FEMALE}`,
       );
-  }
-
-  getLandlordObjectFormPlaceOnSitesKeyboard(): InlineKeyboard {
-    return new InlineKeyboard()
-      .text(`Изменить статус`, `${KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX}change`)
-      .row()
-      .text(`${EMOJI_CHECK} Подтвердить`, `${KEYBOARD_OBJECT_FORM_PLACE_ON_SITES_PREFIX}submit`);
-  }
-
-  getLandlordObjectFormStartArrivalDateKeyboard(): InlineKeyboard {
-    return new InlineKeyboard().text(
-      'В ближайшее время',
-      `${KEYBOARD_OBJECT_FORM_START_ARRIVAL_DATE_PREFIX}now`,
-    );
   }
 
   getObjectRenewKeyboard(objectId: string): InlineKeyboard {

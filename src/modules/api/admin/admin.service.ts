@@ -11,14 +11,11 @@ export class AdminService {
     if (validate !== VALIDATE_STRING) {
       return 'У вас нет доступа';
     }
-    const objects = await this.landlordObjectsService.getLatestObjects();
+    const objects = await this.landlordObjectsService.getLatestObjects(100);
 
     const htmlObjects = objects.map(o => {
       const mainText = getDefaultObjectText(o);
-      const textAgreePlaceOnSites = o.placeOnSites
-        ? 'Согласен на размещение на площадках'
-        : 'Не согласен на размещение на площадках';
-      return '<div>' + textAgreePlaceOnSites + `\n\n` + mainText + '<br><br><br></div>';
+      return '<div>' + mainText + '<br><br><br></div>';
     });
 
     return `<div>${htmlObjects.join('')}</div>`;

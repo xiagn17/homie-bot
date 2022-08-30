@@ -37,7 +37,7 @@ export class RentersObjectsKeyboardsService {
 
   getObjectsKeyboard(objectId: string, withNext: boolean): InlineKeyboard {
     const keyboard = new InlineKeyboard()
-      .text(`${EMOJI_SEND_REQUEST} Отправить анкету`, `request_${objectId}`)
+      .text(`${EMOJI_SEND_REQUEST} Связаться`, `request_${objectId}`)
       .row()
       .text(`${EMOJI_STOP} Стоп`, `renter_object_stop`);
     if (withNext) {

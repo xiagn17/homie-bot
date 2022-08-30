@@ -5,7 +5,6 @@ import {
   EMOJI_BAG,
   EMOJI_BELL,
   EMOJI_CALL_PHONE,
-  EMOJI_CAT,
   EMOJI_CELEBRATE,
   EMOJI_CLOCK,
   EMOJI_COMMENT,
@@ -90,10 +89,6 @@ export class LandlordsTextsService {
     return `${EMOJI_HOUSE_TYPE} Выберите <b>тип жилья</b>:`;
   }
 
-  getObjectFormStartArrivalDateText(): string {
-    return `${EMOJI_CLOCK} С какого числа возможен <b>заезд</b>? (дд.мм.гггг)`;
-  }
-
   getObjectFormPriceText(): string {
     return `${EMOJI_MONEY} <b>Укажите стоимость</b> месячной аренды в рублях.`;
   }
@@ -115,12 +110,6 @@ export class LandlordsTextsService {
       `${EMOJI_PHOTOS_OBJECT} <b>Пришлите фотографии</b> спальни, кухни, ванны, туалета и прочих зон - до <b>10</b> шт.\n` +
       `\n` +
       `${EMOJI_FORBIDDEN} Запрещены фотографии с водяными знаками.`
-    );
-  }
-
-  getObjectFormDetailsText(): string {
-    return (
-      `${EMOJI_CAT} <b>Детали об объекте</b>\n` + `\n` + `Выберите детали, которые будут доступны съемщику.`
     );
   }
 

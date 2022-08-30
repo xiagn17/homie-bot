@@ -3,7 +3,6 @@ import { MiddlewareFn, LazySessionFlavor } from 'grammy';
 import { MyContext } from '../../main/interfaces/bot.interface';
 import { RentersInfoLifestyleInterface } from '../../../api/renters/interfaces/renters-info-lifestyle.interface';
 import { LocationsEnum, ObjectTypeEnum } from '../../../api/renters/entities/RenterFilters.entity';
-import { LandlordObjectDetails } from '../../../api/landlord-objects/interfaces/landlord-object-details.interface';
 import { PreferredGenderEnumType } from '../../../api/landlord-objects/entities/LandlordObject.entity';
 import { LandlordObjectApartmentsInfoInterface } from '../../../api/landlord-objects/interfaces/landlord-object-apartments-info.interface';
 import { LandlordObjectRoomBedInfoInterface } from '../../../api/landlord-objects/interfaces/landlord-object-room-bed-info.interface';
@@ -52,25 +51,15 @@ export interface LandlordObjectFormStepsData {
   name?: string;
   phoneNumber?: string;
   objectType?: ObjectTypeEnum;
-  startArrivalDate?: string;
   price?: string;
   location?: LocationsEnum;
   address?: string;
   photoIds?: string[];
-  details?: LandlordObjectDetails;
   comment?: string;
   roomsNumber?: string;
   preferredGender?: PreferredGenderEnumType;
-  placeOnSites?: boolean;
-
-  apartmentsInfo?: {
-    floors?: string;
-  };
-  roomBedInfo?: {
-    livingPeopleNumber?: string;
-    averageAge?: number;
-  };
 }
+
 export type LandlordObjectFormStep =
   | keyof LandlordObjectFormStepsData
   | keyof LandlordObjectApartmentsInfoInterface
