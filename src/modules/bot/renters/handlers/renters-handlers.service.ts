@@ -46,6 +46,7 @@ import {
   RENTER_OK_ONBOARDING,
 } from '../../../../utils/google-analytics/events';
 import { RenterObjectsService } from '../../renter-objects/renter-objects.service';
+import { GenderEnumType } from '../../../api/renters/interfaces/renters.type';
 import { validateBirthdayYear } from './helpers/birthdayYear.validate';
 import { validatePhoneNumber } from './helpers/phoneNumber.validate';
 import { validateSocials } from './helpers/socials.validate';
@@ -501,7 +502,7 @@ export class RentersHandlersService implements OnModuleInit {
     const text = this.rentersTextsService.getGenderText(gender);
     await ctx.editMessageText(text);
 
-    await this.rentersService.createRenterWithGender(gender, ctx);
+    await this.rentersService.createRenterWithGender(gender ?? GenderEnumType.FEMALE, ctx);
 
     await next();
   };

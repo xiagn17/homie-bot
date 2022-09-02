@@ -189,7 +189,7 @@ export class RentersService {
   public async startTrialSubscription(renterId: string): Promise<void> {
     const startedAt = new Date();
     const endsAt = new Date();
-    endsAt.setDate(startedAt.getDate() + 7);
+    endsAt.setDate(startedAt.getDate() + 1);
 
     await this.connection
       .getCustomRepository(RenterSettingsRepository)
@@ -203,8 +203,8 @@ export class RentersService {
   ): Promise<void> {
     const startedAt = new Date();
     const endsAt = new Date();
-    subscriptionType === PaymentItems['subscription-month']
-      ? endsAt.setMonth(startedAt.getMonth() + 1)
+    subscriptionType === PaymentItems['subscription-1-week']
+      ? endsAt.setMonth(startedAt.getDate() + 7)
       : endsAt.setDate(startedAt.getDate() + 14);
 
     await entityManager

@@ -69,6 +69,9 @@ export class RentersKeyboardsService {
       .text(`${EMOJI_GENDER_WOMAN} Женщина`, async (ctx, next) => {
         await handler(GenderEnumType.FEMALE, ctx, next);
       })
+      .text(`Пропустить`, async (ctx, next) => {
+        await handler(null, ctx, next);
+      })
       .row();
   }
 

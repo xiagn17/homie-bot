@@ -17,7 +17,7 @@ export type HandlerOnFiltersLocation = (
 export type HandlerOnFiltersPriceQuestion = (ctx: MyContext) => Promise<void>;
 
 export type HandlerOnGender = (
-  gender: GenderEnumType,
+  gender: GenderEnumType | null,
   ctx: MyContext & MenuFlavor,
   next: NextFunction,
 ) => Promise<void>;

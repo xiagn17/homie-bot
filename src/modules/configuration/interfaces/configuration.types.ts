@@ -29,6 +29,7 @@ export interface BotConfigType {
 }
 
 export interface PaymentsPricesConfigType {
+  subscriptionOneWeek: string;
   subscriptionTwoWeeks: string;
   subscriptionMonth: string;
 }

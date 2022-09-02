@@ -23,6 +23,7 @@ declare namespace NodeJS {
 
     YOUKASSA_KEY: string;
     YOUKASSA_SHOP_ID: string;
+    ONE_WEEK_SUBSCRIPTION_PRICE: string;
     TWO_WEEKS_SUBSCRIPTION_PRICE: string;
     MONTH_SUBSCRIPTION_PRICE: string;
 

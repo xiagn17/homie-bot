@@ -16,6 +16,7 @@ import { PaymentItems } from '../../../api/payments/interfaces/payment-item.inte
 import { getReferralLink } from '../../helpers/referralLink/getReferralLink';
 import { HandlerOnFreeContactsMenuButton } from '../interfaces/renter-objects-handlers.interface';
 import { SendNextObject } from '../interfaces/renter-objects.interface';
+import { TEXT_ZA_MENYA } from '../texts/renter-objects-texts.service';
 
 export const KEYBOARD_RENTER_SEE_OBJECTS_PREFIX = 'kb_renterSeeObjects_';
 
@@ -69,14 +70,15 @@ export class RentersObjectsKeyboardsService {
     const apiPrefix = this.configService.get('apiPrefix') as string;
     this.paySubscriptionMenu = new Menu<MyContext>('menu-payContacts').dynamic((ctx, range) => {
       const chatId = ctx.from?.id?.toString() as string;
+      const subscriptionOneWeekUrl = `${apiPrefix}/payments/${chatId}/${PaymentItems['subscription-1-week']}`;
       const subscriptionTwoWeeksUrl = `${apiPrefix}/payments/${chatId}/${PaymentItems['subscription-2-weeks']}`;
-      const subscriptionMonthUrl = `${apiPrefix}/payments/${chatId}/${PaymentItems['subscription-month']}`;
       range
         // .text('Получить бесплатно', onFreeSubscriptionButtonHandler)
         .row()
-        .url(`${prices.subscriptionTwoWeeks} ₽ / 2 нед`, subscriptionTwoWeeksUrl)
+        .url(`${prices.subscriptionOneWeek} ₽ / 1 нед`, subscriptionOneWeekUrl)
         .row()
-        .url(`${prices.subscriptionMonth} ₽ / месяц`, subscriptionMonthUrl);
+        .url(`${prices.subscriptionTwoWeeks} ₽ / 2 нед`, subscriptionTwoWeeksUrl)
+        .text(`Сделайте все за меня 💫`, ctx => ctx.reply(TEXT_ZA_MENYA));
     });
 
     this.freeSubscriptionMenu = new Menu<MyContext>('menu-payContacts-sub').dynamic((ctx, range) => {

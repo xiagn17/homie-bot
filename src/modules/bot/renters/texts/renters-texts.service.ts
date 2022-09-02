@@ -161,7 +161,7 @@ export class RentersTextsService {
     return `${EMOJI_ATTENTION}️ На основе этой анкеты арендодатели Homie будут <b>принимать решение</b>, делиться с тобой контактом, либо нет.\n\n${text}`;
   }
 
-  getGenderText(gender?: GenderEnumType): string {
+  getGenderText(gender?: GenderEnumType | null): string {
     const maleText = `<b>Мужчина ${EMOJI_GENDER_MAN}</b>`;
     const femaleText = `<b>Женщина ${EMOJI_GENDER_WOMAN}</b>`;
 

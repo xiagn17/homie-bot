@@ -15,7 +15,8 @@ export class PaymentSucceededListener {
   async handlePaymentSucceededEvent(data: PaymentSucceededEvent): Promise<void> {
     if (
       data.item === PaymentItems['subscription-2-weeks'] ||
-      data.item === PaymentItems['subscription-month']
+      data.item === PaymentItems['subscription-month'] ||
+      data.item === PaymentItems['subscription-1-week']
     ) {
       await this.rentersService.startSubscription(data.telegramUserId, data.item, data.entityManager);
       return;

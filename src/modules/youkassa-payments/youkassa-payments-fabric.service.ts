@@ -26,6 +26,8 @@ export class YoukassaPaymentsFabricService {
       return 'Две недели подписки Homie';
     } else if (item === PaymentItems['subscription-month']) {
       return 'Месяц подписки Homie';
+    } else if (item === PaymentItems['subscription-1-week']) {
+      return 'Неделя подписки Homie';
     } else {
       return 'Покупка';
     }
@@ -39,6 +41,8 @@ export class YoukassaPaymentsFabricService {
       amount.value = this.prices.subscriptionMonth;
     } else if (item === PaymentItems['subscription-2-weeks']) {
       amount.value = this.prices.subscriptionTwoWeeks;
+    } else if (item === PaymentItems['subscription-1-week']) {
+      amount.value === this.prices.subscriptionOneWeek;
     }
     const postfix = '.00';
     amount.value += postfix;

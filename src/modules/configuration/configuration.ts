@@ -32,6 +32,7 @@ export default (): ConfigurationType => {
       secretKey: String(process.env.YOUKASSA_KEY),
       shopId: String(process.env.YOUKASSA_SHOP_ID),
       prices: {
+        subscriptionOneWeek: String(process.env.ONE_WEEK_SUBSCRIPTION_PRICE),
         subscriptionTwoWeeks: String(process.env.TWO_WEEKS_SUBSCRIPTION_PRICE),
         subscriptionMonth: String(process.env.MONTH_SUBSCRIPTION_PRICE),
       },
