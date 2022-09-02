@@ -4,4 +4,4 @@ import { ApiObjectResponse } from '../../../api/landlord-objects/interfaces/land
 export type SendNextObject = (ctx: MyContext) => Promise<void>;
 export type SendObject = (object: ApiObjectResponse, ctx: MyContext) => Promise<void>;
 export type SendRenterInfoNotExists = (objectId: string, ctx: MyContext) => Promise<void>;
-export type SendObjectRequest = (objectId: string, ctx: MyContext) => Promise<boolean>;
+export type SendObjectRequest = (objectId: string, isInfoExist: boolean, ctx: MyContext) => Promise<boolean>;

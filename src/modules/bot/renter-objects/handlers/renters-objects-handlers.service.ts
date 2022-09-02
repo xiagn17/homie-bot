@@ -9,11 +9,13 @@ import {
   HandlerOnFindObjectCallback,
   HandlerOnFindObjectMenuButton,
   HandlerOnFreeContactsMenuButton,
+  HandlerOnRenterNoAnketaConnect,
   HandlerRenterStopSearch,
   HandlerSendRequest,
 } from '../interfaces/renter-objects-handlers.interface';
 import { RenterObjectsApiService } from '../api/renter-objects-api.service';
 import {
+  KEYBOARD_RENTER_CONNECT_NO_ANKETA_PREFIX,
   KEYBOARD_RENTER_SEE_OBJECTS_PREFIX,
   RentersObjectsKeyboardsService,
 } from '../keyboards/renters-objects-keyboards.service';
@@ -90,6 +92,10 @@ export class RentersObjectsHandlersService implements OnModuleInit {
       await ctx.answerCallbackQuery();
     });
     this.composer.callbackQuery(
+      new RegExp(`^${KEYBOARD_RENTER_CONNECT_NO_ANKETA_PREFIX}`),
+      this.onRenterNoAnketaHandler,
+    );
+    this.composer.callbackQuery(
       new RegExp(`^${KEYBOARD_RENTER_SEE_OBJECTS_PREFIX}`),
       this.renterObjectsService.sendNextObject,
     );
@@ -145,7 +151,7 @@ export class RentersObjectsHandlersService implements OnModuleInit {
       return;
     }
 
-    const sent = await this.renterObjectsService.sendObjectRequest(objectId, ctx);
+    const sent = await this.renterObjectsService.sendObjectRequest(objectId, true, ctx);
     if (!sent) {
       return;
     }
@@ -188,5 +194,13 @@ export class RentersObjectsHandlersService implements OnModuleInit {
     setTimeout(() => {
       this.reviewsService.sendReviewReason(ctx);
     }, 600);
+  };
+
+  private onRenterNoAnketaHandler: HandlerOnRenterNoAnketaConnect = async ctx => {
+    const data = ctx.callbackQuery.data;
+    const objectId = data.split(KEYBOARD_RENTER_CONNECT_NO_ANKETA_PREFIX)[1];
+
+    await this.renterObjectsService.sendObjectRequest(objectId, false, ctx);
+    await ctx.answerCallbackQuery();
   };
 }

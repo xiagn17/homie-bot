@@ -39,16 +39,20 @@ export class RenterObjectsApiService {
         landlordObjectId: data.objectId,
         chatId: data.chatId,
       },
+      false,
       entityManager,
     );
   }
 
-  async markObjectAsInterested(data: ChangeRenterStatusOfObjectData): Promise<void> {
-    await this.objectMatchesForRenterService.changeRenterStatusOfObject({
-      renterStatus: MatchStatusEnumType.resolved,
-      landlordObjectId: data.objectId,
-      chatId: data.chatId,
-    });
+  async markObjectAsInterested(data: ChangeRenterStatusOfObjectData, isInfoExists: boolean): Promise<void> {
+    await this.objectMatchesForRenterService.changeRenterStatusOfObject(
+      {
+        renterStatus: MatchStatusEnumType.resolved,
+        landlordObjectId: data.objectId,
+        chatId: data.chatId,
+      },
+      isInfoExists,
+    );
   }
 
   async startTrialSubscription(renterId: string): Promise<void> {

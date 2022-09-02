@@ -44,4 +44,3 @@ export type GetRenterInfoWithText = (
 export type SendRenterInfo = (ctx: MyContext) => Promise<void>;
 
 export type CreateRenterWithGender = (gender: GenderEnumType, ctx: MyContext) => Promise<void>;
-export type SendOnboarding = (ctx: MyContext) => Promise<void>;

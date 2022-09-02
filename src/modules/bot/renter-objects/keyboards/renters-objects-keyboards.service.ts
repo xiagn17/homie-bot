@@ -19,7 +19,7 @@ import { SendNextObject } from '../interfaces/renter-objects.interface';
 import { TEXT_ZA_MENYA } from '../texts/renter-objects-texts.service';
 
 export const KEYBOARD_RENTER_SEE_OBJECTS_PREFIX = 'kb_renterSeeObjects_';
-
+export const KEYBOARD_RENTER_CONNECT_NO_ANKETA_PREFIX = 'kb_renterNoAnketaConnect_';
 @Injectable()
 export class RentersObjectsKeyboardsService {
   public paySubscriptionMenu: Menu<MyContext>;
@@ -29,7 +29,13 @@ export class RentersObjectsKeyboardsService {
   constructor(private readonly configService: ConfigService) {}
 
   getNoInfoKeyboard(objectId: string): InlineKeyboard {
-    return new InlineKeyboard().text(`${EMOJI_COMMENT} Заполнить`, `info_fill_object_${objectId}`);
+    return new InlineKeyboard()
+      .text(`${EMOJI_COMMENT} Заполнить`, `info_fill_object_${objectId}`)
+      .row()
+      .text(
+        `${EMOJI_COMMENT} Связаться без анкеты`,
+        `${KEYBOARD_RENTER_CONNECT_NO_ANKETA_PREFIX}${objectId}`,
+      );
   }
 
   getSendRequestKeyboard(objectId: string): InlineKeyboard {

@@ -49,7 +49,6 @@ import {
   SendPhotoQuestion,
   SendUpdatePhoto,
   UpdateRenterPhoto,
-  SendOnboarding,
   AutoSubmitRenterInfo,
 } from './interfaces/renters.interface';
 import { RentersKeyboardsService } from './keyboards/renters-keyboards.service';
@@ -274,7 +273,7 @@ export class RentersService {
       const objectId = session.renter.infoFillFrom?.split('_')[1] as string;
 
       await ctx.reply(this.rentersTextsService.getSuccessfulFilledInfoAfterObjectRequestText());
-      setTimeout(() => void this.renterObjectsService.sendObjectRequest(objectId, ctx), 1000);
+      setTimeout(() => void this.renterObjectsService.sendObjectRequest(objectId, true, ctx), 1000);
     } else if (infoFillFrom === 'menu') {
       await this.sendRenterInfoMessage(ctx);
     }
@@ -320,7 +319,7 @@ export class RentersService {
       const objectId = session.renter.infoFillFrom?.split('_')[1] as string;
 
       await ctx.reply(this.rentersTextsService.getSuccessfulFilledInfoAfterObjectRequestText());
-      setTimeout(() => void this.renterObjectsService.sendObjectRequest(objectId, ctx), 1000);
+      setTimeout(() => void this.renterObjectsService.sendObjectRequest(objectId, true, ctx), 1000);
     } else if (infoFillFrom === 'menu') {
       await ctx.reply(this.rentersTextsService.getSuccessfulAutoFilledInfo());
       setTimeout(() => void this.sendRenterInfoMessage(ctx), 1000);
@@ -409,18 +408,10 @@ export class RentersService {
     });
   };
 
-  sendOnboarding: SendOnboarding = async ctx => {
-    const imgSrc =
-      'https://s3.eu-central-1.amazonaws.com/telegram.sendpulse.prod/attachments/e97ea7c9281452db256460bbd2ea3af5/ae215019-f24e-445d-85cc-c74ffb1fe4cb.jpeg';
-    await ctx.replyWithPhoto(imgSrc, {
-      reply_markup: this.rentersKeyboardsService.getRenterOnboardingKeyboard(),
-    });
-  };
-
   public createRenterWithGender: CreateRenterWithGender = async (gender, ctx) => {
     const chatId = ctx.from?.id?.toString() as string;
     await this.rentersApiService.create({ gender, chatId });
 
-    await this.sendOnboarding(ctx);
+    await this.renterObjectsService.sendNextObject(ctx);
   };
 }

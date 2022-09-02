@@ -26,26 +26,17 @@ import {
 } from '../../session-storage/interfaces/session-storage.interface';
 import { RentersService } from '../renters.service';
 import {
-  HandlerOnAfterOnboarding,
   HandlerOnFiltersLocation,
   HandlerOnFiltersObjectTypes,
   HandlerOnFiltersPriceQuestion,
   HandlerOnGender,
 } from '../interfaces/renter-handlers.interface';
 import { RentersInfoLifestyleInterface } from '../../../api/renters/interfaces/renters-info-lifestyle.interface';
-import {
-  KEYBOARD_RENTER_ONBOARDING_PREFIX,
-  RentersKeyboardsService,
-} from '../keyboards/renters-keyboards.service';
+import { RentersKeyboardsService } from '../keyboards/renters-keyboards.service';
 import { RentersTextsService } from '../texts/renters-texts.service';
 import { RentersApiService } from '../api/renters-api.service';
 import { sendAnalyticsEvent } from '../../../../utils/google-analytics/sendAnalyticsEvent';
-import {
-  RENTER_ACTION,
-  RENTER_HELLO_EVENT,
-  RENTER_OK_ONBOARDING,
-} from '../../../../utils/google-analytics/events';
-import { RenterObjectsService } from '../../renter-objects/renter-objects.service';
+import { RENTER_ACTION, RENTER_HELLO_EVENT } from '../../../../utils/google-analytics/events';
 import { GenderEnumType } from '../../../api/renters/interfaces/renters.type';
 import { validateBirthdayYear } from './helpers/birthdayYear.validate';
 import { validatePhoneNumber } from './helpers/phoneNumber.validate';
@@ -89,8 +80,6 @@ export class RentersHandlersService implements OnModuleInit {
     private readonly rentersKeyboardsService: RentersKeyboardsService,
     private readonly rentersTextsService: RentersTextsService,
     private readonly rentersApiService: RentersApiService,
-
-    private readonly renterObjectsService: RenterObjectsService,
   ) {}
 
   onModuleInit(): void {
@@ -224,8 +213,6 @@ export class RentersHandlersService implements OnModuleInit {
         await ctx.answerCallbackQuery();
       },
     );
-
-    this.composer.callbackQuery(new RegExp(`^${KEYBOARD_RENTER_ONBOARDING_PREFIX}`), this.afterOnboarding);
 
     this.routerFilters.route(ROUTE_FILTER_PRICE, this.onFiltersPriceQuestionHandler);
     this.routerGender.route(ROUTE_GENDER, this.onGenderRouteHandler);
@@ -505,15 +492,5 @@ export class RentersHandlersService implements OnModuleInit {
     await this.rentersService.createRenterWithGender(gender ?? GenderEnumType.FEMALE, ctx);
 
     await next();
-  };
-
-  private afterOnboarding: HandlerOnAfterOnboarding = async ctx => {
-    sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_OK_ONBOARDING);
-
-    await ctx.editMessageReplyMarkup({
-      reply_markup: undefined,
-    });
-    await ctx.reply('Подбор подходящих объектов...');
-    await this.renterObjectsService.sendNextObject(ctx);
   };
 }

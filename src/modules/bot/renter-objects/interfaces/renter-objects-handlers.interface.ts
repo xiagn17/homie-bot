@@ -11,3 +11,4 @@ export type HandlerOnFreeContactsMenuButton = Middleware<
   Filter<MyContext, 'callback_query:data'> & MenuFlavor
 >;
 export type HandlerOnFindObjectCallback = Middleware<MyContext>;
+export type HandlerOnRenterNoAnketaConnect = Middleware<Filter<MyContext, 'callback_query:data'>>;

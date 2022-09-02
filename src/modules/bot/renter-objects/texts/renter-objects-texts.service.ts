@@ -11,7 +11,6 @@ import {
   EMOJI_OK,
   EMOJI_REFUND_GARRANTY,
   EMOJI_SAD,
-  EMOJI_SEND_REQUEST,
   EMOJI_SHARE,
   EMOJI_SPEAK,
 } from '../../constants/emoji';
@@ -53,7 +52,10 @@ export class RenterObjectsTextsService {
   }
 
   getNoRenterInfoText(): string {
-    return `<b>${EMOJI_SEND_REQUEST} Твоя анкета еще не заполнена.</b> Чтобы получить контакт этого арендодателя, необходимо отправить ему заполненную анкету.\n`;
+    return (
+      '📧<b> Вы можете сразу отправить свою анкету сдающему, однако можете пропустить этот шаг и все равно получить контакт.</b>\n' +
+      'Вернуться к заполнению анкеты можно в любой момент.'
+    );
   }
 
   getSendRequestTrialStartedText(objectNumber: number, trialEndsAt: Date): string {

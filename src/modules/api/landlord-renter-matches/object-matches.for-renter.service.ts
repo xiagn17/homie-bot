@@ -125,6 +125,7 @@ export class ObjectMatchesForRenterService {
   // тут сразу renterId тоже
   public async changeRenterStatusOfObject(
     renterStatusOfObjectDto: ChangeRenterStatusOfObjectDto,
+    isRenterInfoExist: boolean,
     entityManager: EntityManager = this.entityManager,
   ): Promise<void> {
     const renter = await entityManager
@@ -163,7 +164,7 @@ export class ObjectMatchesForRenterService {
       .getFullObject(renterStatusOfObjectDto.landlordObjectId);
 
     const isPublishedByAdmins = landlordObject.isAdmin;
-    if (isPublishedByAdmins) {
+    if (isPublishedByAdmins || isRenterInfoExist) {
       await entityManager
         .getCustomRepository(LandlordObjectRenterMatchesRepository)
         .changeLandlordStatus(

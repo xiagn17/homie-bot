@@ -74,7 +74,7 @@ export class RenterObjectsService {
     sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_INFO_ASK_EVENT);
   };
 
-  sendObjectRequest: SendObjectRequest = async (objectId, ctx) => {
+  sendObjectRequest: SendObjectRequest = async (objectId, isInfoExist, ctx) => {
     const chatId = ctx.from?.id.toString() as string;
     const renter = await this.renterObjectsApiService.getRenterEntityOfUser(chatId);
 
@@ -92,7 +92,10 @@ export class RenterObjectsService {
       return false;
     }
 
-    await this.renterObjectsApiService.markObjectAsInterested({ objectId: objectId, chatId: chatId });
+    await this.renterObjectsApiService.markObjectAsInterested(
+      { objectId: objectId, chatId: chatId },
+      isInfoExist,
+    );
     const object = await this.renterObjectsApiService.getObject(objectId);
     const isAdminObject = object.isAdmin;
     const objectNumber = object.number;
