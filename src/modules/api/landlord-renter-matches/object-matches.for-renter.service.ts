@@ -164,7 +164,7 @@ export class ObjectMatchesForRenterService {
       .getFullObject(renterStatusOfObjectDto.landlordObjectId);
 
     const isPublishedByAdmins = landlordObject.isAdmin;
-    if (isPublishedByAdmins || isRenterInfoExist) {
+    if (isPublishedByAdmins || !isRenterInfoExist) {
       await entityManager
         .getCustomRepository(LandlordObjectRenterMatchesRepository)
         .changeLandlordStatus(
