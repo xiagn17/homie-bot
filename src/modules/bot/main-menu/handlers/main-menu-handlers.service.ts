@@ -39,8 +39,7 @@ export class MainMenuHandlersService implements OnModuleInit {
     const session = await ctx.session;
     const renterSession = session.renter;
     const userType = session.type;
-    const isTimeToShowMenu =
-      renterSession.viewedObjects >= 2 && !renterSession.firstMenuTip && userType === TelegramUserType.renter;
+    const isTimeToShowMenu = !renterSession.firstMenuTip && userType === TelegramUserType.renter;
     const notSendRequestAction = !ctx.callbackQuery?.data?.includes('request_');
     const route1 = isTimeToShowMenu && notSendRequestAction ? ROUTE_MENU_TIP : undefined;
     return route1;

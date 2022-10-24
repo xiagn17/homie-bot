@@ -411,7 +411,5 @@ export class RentersService {
   public createRenterWithGender: CreateRenterWithGender = async (gender, ctx) => {
     const chatId = ctx.from?.id?.toString() as string;
     await this.rentersApiService.create({ gender, chatId });
-
-    await this.renterObjectsService.sendNextObject(ctx);
   };
 }
