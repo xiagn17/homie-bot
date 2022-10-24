@@ -146,12 +146,15 @@ export class RentersObjectsHandlersService implements OnModuleInit {
   private onSendRequestHandler: HandlerSendRequest = async (objectId, ctx) => {
     sendAnalyticsEvent(ctx, RENTER_ACTION, RENTER_LIKE_CLICK_EVENT);
     const infoExists = await this.renterObjectsApiService.isInfoExists(ctx.from?.id.toString() as string);
-    if (!infoExists) {
+    const session = await ctx.session;
+
+    if (!infoExists && !session.renter.firstNoInfoWatning) {
       await this.renterObjectsService.sendRenterInfoNotExists(objectId, ctx);
+      session.renter.firstNoInfoWatning = true;
       return;
     }
 
-    const sent = await this.renterObjectsService.sendObjectRequest(objectId, true, ctx);
+    const sent = await this.renterObjectsService.sendObjectRequest(objectId, infoExists, ctx);
     if (!sent) {
       return;
     }

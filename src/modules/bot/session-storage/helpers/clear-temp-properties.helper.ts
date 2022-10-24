@@ -8,6 +8,8 @@ export function clearTemporaryPropertiesRenterHelper(session: SessionDataInterfa
     infoFillFrom: undefined,
     viewedObjects: session.renter.viewedObjects,
     firstMenuTip: session.renter.firstMenuTip,
+    firstNoInfoWatning: session.renter.firstNoInfoWatning,
+
     filterStep: undefined,
     router: undefined,
   };

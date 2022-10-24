@@ -38,6 +38,7 @@ export class SessionStorageService implements OnModuleInit {
         infoStepUpdate: false,
         viewedObjects: 0,
         firstMenuTip: false,
+        firstNoInfoWatning: false,
       },
       landlord: {
         firstTip: false,

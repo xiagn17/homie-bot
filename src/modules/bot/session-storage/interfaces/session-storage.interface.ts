@@ -43,6 +43,7 @@ export interface RenterSessionData {
   viewedObjects: number;
   firstMenuTip: boolean;
   filterStep?: 'priceRange';
+  firstNoInfoWatning: boolean;
 
   router?: RenterInfoRouterSteps;
 }
