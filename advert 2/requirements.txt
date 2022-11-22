@@ -1,0 +1,11 @@
+telethon
+loguru==0.6.0
+sqlalchemy
+siaskynet
+httpx
+psycopg2
+aiofiles
+ratelimit
+aiogram
+facebook_scraper
+imgbbpy
