@@ -55,14 +55,16 @@ export class LandlordObjectsService {
         .createWithRelations(landlordObjectDbData);
 
       // todo[TECH] заменить на просто массив, убрать отдельную таблицу с фотками (сделать как у рентера)
-      const photoEntitiesCreatePromise = landlordObjectDraft.photoIds.map(photoId =>
-        manager.save(
-          manager.getRepository(LandlordObjectPhotoEntity).create({
-            photoId,
-            landlordObjectId: landlordObjectEntity.id,
-          }),
-        ),
-      );
+      const photoEntitiesCreatePromise = landlordObjectDraft.photoIds
+        ? landlordObjectDraft.photoIds.map(photoId =>
+            manager.save(
+              manager.getRepository(LandlordObjectPhotoEntity).create({
+                photoId,
+                landlordObjectId: landlordObjectEntity.id,
+              }),
+            ),
+          )
+        : [];
       await Promise.all(photoEntitiesCreatePromise);
 
       return manager.getCustomRepository(LandlordObjectsRepository).getFullObject(landlordObjectEntity.id);

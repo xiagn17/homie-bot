@@ -116,7 +116,7 @@ export class LandlordObjectsRepository extends Repository<LandlordObjectEntity> 
   ): SelectQueryBuilder<LandlordObjectEntity> {
     return landlordObjectQb
       .innerJoinAndSelect('landlordObject.telegramUser', 'telegramUser')
-      .innerJoinAndSelect('landlordObject.photos', 'photos');
+      .leftJoinAndSelect('landlordObject.photos', 'photos');
   }
 
   countOfApprovedObjects(telegramUserId: string): Promise<number> {

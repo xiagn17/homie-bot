@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { LandlordObjectsService } from './landlord-objects.service';
-import { ApiLandlordObjectDraft, ApiObjectResponse } from './interfaces/landlord-objects.type';
+import { ApiObjectResponse } from './interfaces/landlord-objects.type';
+import { LandlordObjectCreate } from './dto/landlord-objects.dto';
 
 @Controller('landlord-objects')
 export class LandlordObjectsController {
@@ -17,7 +18,7 @@ export class LandlordObjectsController {
   @Post()
   async createObject(
     @Query('validate') validate: string,
-    @Body() landlordObjectDraft: ApiLandlordObjectDraft,
+    @Body() landlordObjectDraft: LandlordObjectCreate,
   ): Promise<void> {
     if (validate === 'kojih32uj4khu534k') {
       await this.landlordObjectsService.createObject(landlordObjectDraft);
