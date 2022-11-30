@@ -81,14 +81,16 @@ async def my_event_handler(event):
                 # if 'tg://user?id=' in username:
                 #     checked_usernames.append(username)
                 #     continue
+                if username.endswith('bot'):
+                    continue
                 if 'vk.com' in username:
                     checked_usernames.append(username)
                     continue
-                # data = await client.get_entity(username)
-                # logger.debug(data)
-                # is_user = isinstance(data,User)
-                # if is_user:
-                checked_usernames.append(username)
+                data = await client.get_entity(username)
+                logger.debug(data)
+                is_user = isinstance(data,User)
+                if is_user:
+                    checked_usernames.append(username)
             except Exception as err:
                 logger.debug(f'Error checking {username} because {err}')
         advert.link=' ; '.join(checked_usernames)

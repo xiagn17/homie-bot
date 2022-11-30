@@ -71,6 +71,8 @@ def sync():
         # структура где хранятся все их записи
         api_records = json.loads(proto)['data']
         db_records = db.get_all()
+        logger.debug(f"API RECORDS: {len(api_records)}")
+        logger.debug(f"DB  RECORDS: {len(db_records)}")
         for db_record in db_records:
             if (db_record[15]!=0 and db_record[16]is None) or (db_record[15]!=len(db_record[16])):
                 logger.debug('SKIPPED RECORD WHILE SYNCING BECAUSE OF IMGS')
@@ -93,7 +95,7 @@ def sync():
                 photos = db_record[16]
                 if photos is None:
                     photos = []
-
+                
                 data = {
                     "name": f"* - {contact}",
                     "phoneNumber": contact,
@@ -109,10 +111,13 @@ def sync():
                 }
                 # data_json = json.dumps(data)
                 logger.debug(data)
-                r = ah.post(data)
-                logger.debug(r)
-                logger.debug(f'RESPONSE - {r.text}')
-                asyncio.run(send_message(f"Отправлен запрос на добавление новой записи\n{pprint.pformat(data, indent=4)}\n Ответ сервера: {r.text}"))
+                try:
+                    r = ah.post(data)
+                    logger.debug(r)
+                    logger.debug(f'RESPONSE - {r.text}')
+                    asyncio.run(send_message(f"Отправлен запрос на добавление новой записи\n{pprint.pformat(data, indent=4)}\n Ответ сервера: {r.text}"))
+                except Exception as err:
+                    logger.debug(f'RESPONSE - ERROR: {err}')
                 pass
             else:
                 logger.debug("NON UNIQUE RECORD")
@@ -122,7 +127,7 @@ def sync():
 
 logger.debug("LAUNCHED SYNCER")
 while (True):
-    time.sleep(15*60)
+    time.sleep(30)
     logger.debug("STARTED SYNC")
     try:
         sync()
