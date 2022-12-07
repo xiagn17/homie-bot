@@ -25,7 +25,8 @@ async def send_message(message):
             operator = Bot(config.api_bot)
             await operator.send_message(user, message)
         except Exception as err:
-            logger.debug(err)
+            pass
+            #logger.debug(err)
 
 
 def region_to_string(region):
@@ -127,7 +128,7 @@ def sync():
 
 logger.debug("LAUNCHED SYNCER")
 while (True):
-    time.sleep(30)
+    time.sleep(5*60)
     logger.debug("STARTED SYNC")
     try:
         sync()

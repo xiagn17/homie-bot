@@ -21,5 +21,6 @@ RUN pip install -r requirements.txt
 COPY . /src
 
 #ENTRYPOINT [ "sh","-c","python3 fb.py" ]
-ENTRYPOINT [ "sh","-c","nohup python3 image_remove.py & nohup python3 syncer.py & nohup python3 fb.py & python3 main.py" ]
+#ENTRYPOINT [ "sh","-c","nohup python3 image_remove.py & nohup python3 syncer.py & nohup python3 fb.py & python3 main.py" ]
+ENTRYPOINT [ "sh","-c","nohup python3 image_remove.py & nohup python3 syncer.py & python3 main.py" ]
 
