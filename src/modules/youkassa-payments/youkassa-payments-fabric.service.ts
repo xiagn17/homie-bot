@@ -42,7 +42,7 @@ export class YoukassaPaymentsFabricService {
     } else if (item === PaymentItems['subscription-2-weeks']) {
       amount.value = this.prices.subscriptionTwoWeeks;
     } else if (item === PaymentItems['subscription-1-week']) {
-      amount.value === this.prices.subscriptionOneWeek;
+      amount.value = this.prices.subscriptionOneWeek;
     }
     const postfix = '.00';
     amount.value += postfix;
